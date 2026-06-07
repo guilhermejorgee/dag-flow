@@ -21,6 +21,7 @@ A visual markdown table representing the DAG:
 | T1 | Implement DB schema | None | `src/schema.ts` | `src/schema.ts` | `npx eslint src/schema.ts` | Pending |
 | T2 | Create Auth Middleware | None | `src/auth.ts` | `src/auth.ts` | `npx tsc --noEmit` | Pending |
 | T3 | Implement API Endpoint | T1, T2 | `src/schema.ts`, `src/auth.ts` | `src/api.ts` | `npm test src/api.test.ts` | Pending |
+| T-Final | Map Delta Update | T3 | `N/A` | `N/A` | `gemini --prompt "Update context-mode indexing ONLY for src/api.ts and src/auth.ts. Update agentmemory invariants if architecture changed."` | Pending |
 
 **The "Done When" Gate (Test-Driven Auditing):**
 This column is **MANDATORY for every single task**. Without an executable gate, the DAG Runner cannot verify completion and the workflow will break. This column is NOT for vague descriptions (e.g., "Tests pass"). It MUST be the **exact, executable terminal command** the Bash Auditor will run. 
@@ -31,7 +32,12 @@ This column is **MANDATORY for every single task**. Without an executable gate, 
 The `Input Files` column is critical. Because the DAG Runner spawns *stateless* background workers, every file listed is read from scratch.
 - **Rule:** Be surgically precise. Never use wildcards like `src/*`. Only list the exact files needed to complete the task. This guarantees parallel execution is exponentially cheaper than keeping a monolithic session alive.
 
-### 4. Handoff to Execution (DAG Runner)
+### 4. Living Memory (The Delta Update Task)
+To ensure the project map does not rot, the Orchestrator MUST inject a final task (`T-Final`) into every DAG table. 
+- **The Token-Efficient Delta:** The Orchestrator MUST NOT ask for a full codebase re-scan. It must pass its exact architectural intent and list ONLY the newly modified folders/files for `ctx_index`.
+- This ensures the Map stays fresh with zero token waste and preserves the high-level design intent.
+
+### 5. Handoff to Execution (DAG Runner)
 The Orchestrator DOES NOT generate raw CLI prompts. Instead, it instructs the user to invoke the automated DAG Runner:
 
 ```bash

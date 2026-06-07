@@ -55,19 +55,20 @@ O dag-flow abandona a efemeridade do chat em prol de uma "Biblioteca da Verdade"
 
 - **DAG Runner (`run_dag.sh`):** O Orquestrador condensa seu plano em um Grafo Acíclico Direcionado (DAG). A execução descentralizada é coordenada por este *script* Bash que invoca *workers* em paralelo respeitando as dependências do nó.
 - **Firewall Financeiro:** O isolamento cirúrgico restringe o LLM temporário apenas aos `Input Files` listados no DAG, proibindo escaneamentos massivos com *wildcards*, tornando o ciclo altamente viável economicamente.
+- **Living Memory (Delta Updates):** A fase de Mapeamento profundo roda **apenas uma vez** na vida do projeto (no primeiro boot). A partir daí, para garantir que o mapa da arquitetura evolua com o código sem desperdiçar tokens com re-scans, o Orquestrador sempre injeta uma tarefa final (`T-Final`) no DAG. Isso garante que cada nova funcionalidade faça um *upsert* cirúrgico das pastas modificadas no `context-mode` e das novas invariantes no `agentmemory`, mantendo o orquestrador perfeitamente atualizado para desenhar a próxima *feature* em um loop infinito.
 - **Loop de Auto-Cura (Backprop Reflex):** Se o código falha, os *stack traces* e avisos do linter são retroalimentados diretamente no subagente (Worker) para auto-resolução. O Orquestrador é blindado e não sofre desgaste processando erros de sintaxe alheios.
 - **Auditoria Independente (Test-Driven & LLM-as-a-Judge):** A validação inicial é puramente determinística, com o script rodando comandos reais de terminal (Testes Unitários, Linters, Grep). Apenas em tarefas de alto nível um juiz autônomo (LLM), cego ao histórico da sessão, é invocado para inspecionar invariantes complexas e exigir aderência infalível ao `SPEC.md` e aos `ADRs. Qualquer regressão estrutural aciona uma correção punitiva.
 
 ---
 
-## 6. Modos Operacionais (Workflows)
+## 6. Modos Operacionais (Fases do SDD V2)
 
-1. **A. Specify (O Erradicador):** Interrogação Socrática. Saída: `spec.md` e `CONTEXT.md`.
-2. **B. Design (O Arquiteto):** Proposição arquitetural com pontuação de confiança. Saída: `design.md` e `ADRs`.
-3. **C. Tasks (O Engenheiro):** Conversão em fluxo executável. Saída: `tasks.md` (o DAG atômico).
-4. **D. Implement (O Chão de Fábrica):** Execução assíncrona coordenada pelo `run_dag.sh` alimentando Workers cegos.
-5. **E. Quick Mode (O Diagnóstico):** Mini-DAG de sequenciamento rápido para hot-patches rigorosos sem planejamento massivo.
-6. **F. Map (O Cartógrafo):** Análise estática profunda (Brownfield) alimentando as fases inicias.
+0. **A. Map (O Cartógrafo):** Pré-requisito automático para projetos Brownfield. Vasculha as fronteiras do repositório (via `ctx_execute`) para alimentar o `agentmemory` com invariantes e o `context-mode` com a topologia estrutural. Mantido vivo pelo *Delta Update* (`T-Final`).
+1. **B. Specify (O Erradicador):** Interrogação Socrática. Saída: `spec.md` e `CONTEXT.md`.
+2. **C. Design (O Arquiteto):** Proposição arquitetural com pontuação de confiança. Saída: `design.md` e `ADRs`.
+3. **D. Tasks (O Engenheiro):** Conversão em fluxo executável. Saída: `tasks.md` (o DAG atômico).
+4. **E. Implement (O Chão de Fábrica):** Execução assíncrona coordenada pelo `run_dag.sh` alimentando Workers cegos.
+5. **F. Quick Mode (O Diagnóstico):** Mini-DAG de sequenciamento rápido para hot-patches rigorosos sem planejamento massivo.
 
 ---
 
