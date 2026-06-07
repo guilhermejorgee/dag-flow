@@ -75,7 +75,7 @@ O dag-flow abandona a efemeridade do chat em prol de uma "Biblioteca da Verdade"
 
 | Ferramenta | Papel | Natureza |
 | :--- | :--- | :--- |
-| **Orquestrador** (Nossa Sessão) | Estrategista, Arquiteto e Interrogador Socrático | LLM (*Stateful*) |
+| **Orquestrador** | Estrategista, Arquiteto e Interrogador Socrático | LLM (*Stateful*) |
 | **Worker** (Sub-agentes) | Operário executor apátrida de modificações | LLM (*Stateless*/Efêmero) |
 | `run_dag.sh` | Motor de agendamento paralelo e Auto-Healing | Bash Script |
 | `auditor.sh` | Portão de Qualidade Determinístico (Testes) e Inspetor LLM-as-a-Judge | Bash Script (Primário) + LLM Assíncrono |
