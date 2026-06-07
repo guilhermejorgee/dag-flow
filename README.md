@@ -15,8 +15,8 @@ Os sistemas multiagentes e fluxos de Desenvolvimento Orientado a Especificaçõe
 ## 2. A Fundação Neurocognitiva (O Paradigma dag-flow)
 
 Para superar essas deficiências, o **dag-flow** abandona o monólito e implementa um modelo inspirado na neurociência cognitiva, focado na separação estrita entre controle executivo e função motora:
-- **O Córtex Pré-Frontal (Controle Executivo):** O Orquestrador (nossa sessão principal) atua puramente na análise sistêmica, governança e decomposição arquitetural. Seu acesso motor a arquivos fonte é **fisicamente revogado**. Ele raciocina e planeja.
-- **O Sistema Motor (Execução):** O trabalho braçal é despachado para subagentes "burros", apátridas (*stateless*) e amnésicos, que recebem diretivas atômicas e permissão estrita apenas de I/O. Eles nascem, alteram o código, testam e morrem.
+- **O Córtex Pré-Frontal (Controle Executivo):** O Orquestrador atua puramente na análise sistêmica, governança e decomposição arquitetural. Seu acesso motor a arquivos fonte é **fisicamente revogado**. Ele raciocina e planeja.
+- **O Sistema Motor (Execução):** O trabalho braçal é despachado para subagentes "burros", apátridas (*stateless*) e amnésicos, que recebem diretivas atômicas e permissão estrita apenas de I/O. Eles nascem, alteram o código e morrem.
 
 ---
 
