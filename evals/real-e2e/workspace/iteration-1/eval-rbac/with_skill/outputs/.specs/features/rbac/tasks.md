@@ -1,0 +1,10 @@
+# DAG Tasks: RBAC API
+
+| ID | Description | Context Ref | Depends On | Input Files | Output Files | Done When (Gate) | Status |
+|---|---|---|---|---|---|---|---|
+| T1 | Project Initialization | Spec: Node.js/Express project with jsonwebtoken | None | `N/A` | `package.json` | `npm init -y | T1 | Project Initialization | Spec: Node.js/Express project with jsonwebtoken | None | `N/A` | `package.json` | `npm init -y && npm install express jsonwebtoken && npm install --save-dev supertest` | Pending || T1 | Project Initialization | Spec: Node.js/Express project with jsonwebtoken | None | `N/A` | `package.json` | `npm init -y && npm install express jsonwebtoken && npm install --save-dev supertest` | Pending | npm install express jsonwebtoken | T1 | Project Initialization | Spec: Node.js/Express project with jsonwebtoken | None | `N/A` | `package.json` | `npm init -y && npm install express jsonwebtoken && npm install --save-dev supertest` | Pending || T1 | Project Initialization | Spec: Node.js/Express project with jsonwebtoken | None | `N/A` | `package.json` | `npm init -y && npm install express jsonwebtoken && npm install --save-dev supertest` | Pending | npm install --save-dev supertest` | Done |
+| T2 | Create DB | Design: Persistence in-memory User object | T1 | `N/A` | `src/db.js` | `node -c src/db.js` | Done |
+| T3 | Create Auth Middleware | Design: authorize and authenticate | T2 | `src/db.js` | `src/middleware.js` | `node -c src/middleware.js` | Done |
+| T4 | Create Express App | Spec: Routes /login, /admin-data, /editor-data | T3 | `src/db.js, src/middleware.js` | `src/app.js` | `node -c src/app.js` | Done |
+| T5 | Unit Tests | Spec: node:test validation | T4 | `src/app.js, src/middleware.js, src/db.js` | `test/api.test.js` | `node --test test/api.test.js` | Done |
+| T-Final | Map Delta Update | Orchestrator Rule | T5 | `N/A` | `N/A` | `gemini --prompt "Update context-mode indexing ONLY for src and test. Update agentmemory invariants if architecture changed."` | Pending |

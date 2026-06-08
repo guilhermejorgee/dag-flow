@@ -20,7 +20,7 @@ echo "🚀 Starting DAG Runner for $TASKS_FILE"
 # We assume format: | ID | Description | Depends On | Input Files | Output Files | Done When (Gate) | Status |
 grep "^| *[T0-9]* *|" "$TASKS_FILE" | grep -v "ID" > /tmp/dag_tasks.tmp
 
-while IFS="|" read -r empty id desc context_ref deps inputs outputs gate status; do
+while IFS="|" read -u 3 -r empty id desc context_ref deps inputs outputs gate status; do
     id=$(echo "$id" | xargs)
     desc=$(echo "$desc" | xargs)
     context_ref=$(echo "$context_ref" | xargs)
@@ -56,7 +56,7 @@ while IFS="|" read -r empty id desc context_ref deps inputs outputs gate status;
 
         # Spawn Worker
         echo "🤖 Spawning Gemini CLI Worker..."
-        gemini --prompt "$PROMPT"
+        gemini --approval-mode auto_edit --prompt "$PROMPT"
         
         # Run Auditor
         echo "🔬 Running Auditor for Task $id..."
@@ -78,11 +78,11 @@ while IFS="|" read -r empty id desc context_ref deps inputs outputs gate status;
 
     if [ $SUCCESS -eq 1 ]; then
         # Update Status to Done
-        sed -i "s#| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
-        sed -i "s#| *$id *|.*|.*Failed.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
+        sed -i "s#^| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
+        sed -i "s#^| *$id *|.*|.*Failed.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
     else
         echo "🚨 Task $id failed after $MAX_ATTEMPTS attempts. Halting DAG execution."
-        sed -i "s#| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Failed |#" "$TASKS_FILE"
+        sed -i "s#^| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Failed |#" "$TASKS_FILE"
         
         # Error Handoff for Orchestrator Escalation Phase
         LOG_PATH="$(dirname "$TASKS_FILE")/last_failure.log"
@@ -92,6 +92,6 @@ while IFS="|" read -r empty id desc context_ref deps inputs outputs gate status;
         exit 1
     fi
 
-done < /tmp/dag_tasks.tmp
+done 3< /tmp/dag_tasks.tmp
 
 echo "🎉 All tasks executed successfully!"

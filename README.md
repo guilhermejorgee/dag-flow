@@ -1,6 +1,17 @@
 # dag-flow
 
+[![The Benchmark: Baseline vs dag-flow](https://img.shields.io/badge/View_E2E_Benchmark-Passing-brightgreen?style=for-the-badge)](#-the-proof-baseline-llms-vs-dag-flow)
+
 Uma arquitetura avançada de desenvolvimento orientado a especificações (SDD) para agentes autônomos. O **dag-flow** é um **Framework de Governança Cognitiva Autônomo**, financeiramente otimizado e estruturalmente resiliente.
+
+---
+
+## 🏆 The Proof: Baseline LLMs vs `dag-flow`
+Cansado de agentes cuspindo 200 linhas de código espaguete em um único arquivo porque a janela de contexto está saturada? Nós também.
+
+Para provar a efetividade arquitetural desta ferramenta, rodamos um Teste E2E (End-to-End) pedindo para construir uma API RBAC (Role-Based Access Control) completa. Comparamos um Agente de IA Conversacional Clássico (Baseline) contra a skill do `dag-flow`.
+
+**[👉 Clique aqui para ler o Estudo de Caso (O Fim do Monolithic Dumping)](docs/EVALUATIONS.md)**
 
 ---
 

@@ -1,0 +1,23 @@
+{
+  "eval_name": "dag-flow-evaluation-v2",
+  "scenarios": [
+    {
+      "id": "eval-0",
+      "description": "Socratic Interrogation Anti-Hallucination Test",
+      "prompt": "Plan a login feature.",
+      "input_files": []
+    },
+    {
+      "id": "eval-1",
+      "description": "Strict DAG Generator Test",
+      "prompt": "Generate the tasks.md DAG for the user authentication feature based on the provided spec.md.",
+      "input_files": ["evals/mock-inputs/spec.md"]
+    },
+    {
+      "id": "eval-2",
+      "description": "Quick Mode Escalation Protocol Test",
+      "prompt": "The execution failed. Here is the auditor output: 'Error in src/auth.js: missing validation on input string'. Provide the Quick Mode Mini-DAG to fix this.",
+      "input_files": []
+    }
+  ]
+}
