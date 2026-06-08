@@ -48,6 +48,7 @@ O dag-flow abandona a efemeridade do chat em prol de uma "Biblioteca da Verdade"
   - **caveman:** Protocolo de restrição sintática (verbosidade zero) utilizado nos artefatos vitais para economizar agressivamente o *overhead* gramatical passivo.
   - **context-mode:** Camada de virtualização MCP que proíbe o agente de ler *dumps* massivos. Força o modelo a "Pensar em Código" (*sandbox scripts*), extraindo resumos cirúrgicos indexados (FTS5) e reduzindo a poluição do contexto em até 98%.
   - **agentmemory:** Interface de persistência abstrata que gere a recuperação de observações passadas e decisões sistêmicas sem abarrotar o hipocampo efêmero do orquestrador.
+  - **Sincronização Multi-Dev (Automated Onboarding):** Como `context-mode` e `agentmemory` são bancos locais na máquina do desenvolvedor, quando um novo membro clona o repositório, seu Orquestrador inicia "cego". Essa ausência de memória aciona a Fase **Map** localmente, que escaneia o código e lê a jurisprudência do git (`CONTEXT.md` e `docs/adr/`). Isso popula imediatamente o *harness* local do novo membro com as regras do time, sincronizando a equipe perfeitamente sem intervenção humana.
 
 ---
 
