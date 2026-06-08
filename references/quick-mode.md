@@ -1,4 +1,4 @@
-# SDD V2: Quick Mode (Bug Fixes & Hot-Patches)
+# dag-flow: Quick Mode (Bug Fixes & Hot-Patches)
 
 Quick Mode bypasses the extensive Spec and Design phases for immediate diagnostic and patching scenarios, while strictly retaining the architectural separation of concerns (PAGRL and automated delegated execution).
 
@@ -25,7 +25,11 @@ Generate a simplified, sequential table. Unlike the full `tasks.md` process, a M
 **Output to `.specs/hotfixes/[issue_id].md`:**
 1. **Diagnosis Summary:** Brief explanation of the root cause.
 2. **Mini-DAG Table:**
-   `ID | Description | Input Files | Output Files | Done When (Verification Gate) | Status`
+   `| ID | Description | Depends On | Input Files | Output Files | Done When (Gate) | Status |`
+   - *Note on `Depends On`:* You MUST include this column to avoid breaking the DAG Runner parser. Fill it sequentially (e.g., T2 depends on T1).
+   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `Done When` gate must execute `gemini --prompt "ctx_index .specs/hotfixes/[issue_id].md and [modified_files]"` to sync the project memory.
+
+*Note on In-Code Documentation:* Instruct the worker to leave an explicit inline code comment explaining the hotfix logic. This enables automated multi-dev onboarding without bloating `CONTEXT.md`.
 
 *Note on Tokens (Financial Firewall):* Be extremely precise with `Input Files`. The automated runner will inject only these files into the stateless worker to save tokens.
 

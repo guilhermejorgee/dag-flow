@@ -1,6 +1,6 @@
-# SDD V2: Map Phase (The Context Cartographer)
+# dag-flow: Map Phase (The Context Cartographer)
 
-The **Map Phase** is the foundational prerequisite of Spec-Driven Development V2 in brownfield (existing) projects. It ensures the Orchestrator has an accurate, token-efficient understanding of the codebase's existing architecture, sub-contexts, and invariants before any feature specification begins.
+The **Map Phase** is the foundational prerequisite of dag-flow in brownfield (existing) projects. It ensures the Orchestrator has an accurate, token-efficient understanding of the codebase's existing architecture, sub-contexts, and invariants before any feature specification begins.
 
 ## Trigger
 

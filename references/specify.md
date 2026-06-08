@@ -1,6 +1,6 @@
-# SDD V2: Specify Phase
+# dag-flow: Specify Phase
 
-The **Specify Phase** represents the bedrock of Spec-Driven Development V2. Its core objective is to systematically eradicate ambiguity before a single line of architecture or code is written.
+The **Specify Phase** represents the bedrock of dag-flow. Its core objective is to systematically eradicate ambiguity before a single line of architecture or code is written.
 
 ## Trigger
 "Specify feature X", "Plan project", or initiating a new major feature.

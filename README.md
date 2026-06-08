@@ -62,18 +62,63 @@ O dag-flow abandona a efemeridade do chat em prol de uma "Biblioteca da Verdade"
 
 ---
 
-## 6. Modos Operacionais (Fases do SDD V2)
+## 6. Modos Operacionais (Fases do dag-flow)
 
 0. **A. Map (O Cartógrafo):** Pré-requisito automático para projetos Brownfield. Vasculha as fronteiras do repositório (via `ctx_execute`) para alimentar o `agentmemory` com invariantes e o `context-mode` com a topologia estrutural. Mantido vivo pelo *Delta Update* (`T-Final`).
-1. **B. Specify (O Erradicador):** Interrogação Socrática. Saída: `spec.md` e `CONTEXT.md`.
-2. **C. Design (O Arquiteto):** Proposição arquitetural com pontuação de confiança. Saída: `design.md` e `ADRs`.
+1. **B. Specify (O Erradicador):** Interrogação Socrática de Negócios. Saída: `spec.md` e `CONTEXT.md`.
+2. **C. Design (O Arquiteto):** Proposição técnica com pontuação de confiança. Saída: `design.md` e `ADRs` (se houver trade-offs pesados). Caso a feature não exija escopo de arquitetura, essa fase sofre um *Bypass* direto para a Fase Tasks.
 3. **D. Tasks (O Engenheiro):** Conversão em fluxo executável. Saída: `tasks.md` (o DAG atômico).
 4. **E. Implement (O Chão de Fábrica):** Execução assíncrona coordenada pelo `run_dag.sh` alimentando Workers cegos.
 5. **F. Quick Mode (O Diagnóstico):** Mini-DAG de sequenciamento rápido para hot-patches rigorosos sem planejamento massivo.
 
 ---
 
-## 7. A Nova Toolchain do dag-flow
+## 7. Exemplos Práticos: Linhas do Tempo
+
+Para materializar a separação de responsabilidades (e quando os artefatos são gerados), considere os dois principais fluxos de desenvolvimento do dag-flow:
+
+### A. Geração de Especificação (Nova Feature)
+
+Considere o fluxo de criação de uma funcionalidade de "Carrinho de Compras":
+
+**1. Fase Specify (O Quê vamos fazer?)**
+O Orquestrador usa a Interrogação Socrática focada no negócio: *"O carrinho expira? Como chamamos o item na base?"*.
+- **Ação Imediata:** Atualiza o dicionário ubíquo (`CONTEXT.md`) com a nova nomenclatura aprovada.
+- **Saída:** O documento de requisitos e regras de negócio (`spec.md`) é consolidado.
+*(Nota: Nenhuma decisão técnica foi tomada ainda. Nenhuma ADR gerada).*
+
+**2. O Bypass Check (Transição PAGRL)**
+O Orquestrador avalia o `spec.md`: *"Essa regra de negócio exige novos componentes de infraestrutura ou altera o padrão arquitetural?"*
+- Se NÃO: O Orquestrador faz um *Bypass* na Fase Design e pula direto para a geração de Tasks (pois não há escopo de arquitetura).
+- Se SIM (ex: precisamos persistir o carrinho temporariamente): Avança para Design.
+
+**3. Fase Design (Como vamos fazer?)**
+O Orquestrador faz a proposição técnica: *"Proponho usar Redis em vez do banco SQL primário para manter a baixa latência nas interações de tela."*
+- **Ação Imediata:** O Orquestrador detecta o trade-off crítico (ganho de latência x risco de perda volátil) e gera uma `ADR` justificando a escolha para a posteridade.
+- **Saída:** O mapa técnico e a planta baixa (`design.md`) são consolidados.
+
+**4. Fase Tasks (A Ordem de Execução)**
+O Orquestrador traduz o `design.md` em um grafo estrito (`tasks.md`), incluindo o `T-Final` (Delta Update) para que os novos arquivos e a ADR sejam mapeados automaticamente pelo `run_dag.sh` no final da execução.
+
+### B. O Fluxo de Emergência (Quick Mode / Hotfix)
+
+Considere um cenário de emergência: *"Fix bug no login que falha com timeout"*.
+
+**1. Fase Diagnosis (O que quebrou?)**
+O Orquestrador usa o PAGRL para isolar a falha sem editar o código.
+- **Saída:** O arquivo `.specs/hotfixes/login-timeout.md` é gerado, contendo o resumo do diagnóstico e a tabela do Mini-DAG estruturada com 7 colunas (incluindo dependências sequenciais).
+
+**2. Fase Execution (O Chão de Fábrica Efêmero)**
+O usuário invoca o `run_dag.sh` passando o arquivo de hotfix.
+- **Ação:** O *stateless worker* conserta o bug no código-fonte e insere um **comentário in-code** obrigatório explicando o racional da correção para futuros desenvolvedores.
+
+**3. Living Memory (A Sincronia do T-Final)**
+- **Ação Automática:** A última tarefa do Mini-DAG (T-Final) roda silenciosamente, invocando o comando de indexação.
+- **Resultado:** O banco vetorial local (`context-mode`) ingere a alteração do código e o markdown do hotfix recém-criado. A memória do Orquestrador é atualizada instantaneamente para as próximas interações, preservando a governança descentralizada sem burocracia.
+
+---
+
+## 8. A Nova Toolchain do dag-flow
 
 | Ferramenta | Papel | Natureza |
 | :--- | :--- | :--- |
@@ -84,7 +129,7 @@ O dag-flow abandona a efemeridade do chat em prol de uma "Biblioteca da Verdade"
 
 ---
 
-## 8. Benefícios e Diferenciais Estratégicos
+## 9. Benefícios e Diferenciais Estratégicos
 
 1. **Soberania Lógica Perene:** Transição do raciocínio efêmero preso em sessões de LLM para uma "Biblioteca da Verdade" no disco (LFE).
 2. **Imunidade Sistêmica ao Spec-Drift:** Com um auditor isolado como portão final, subagentes são banidos de comprometer o escopo, sacrificando arquitetura em prol de resoluções temporárias fáceis.
