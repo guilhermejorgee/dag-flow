@@ -49,7 +49,7 @@ To ensure the project map does not rot, the Orchestrator MUST inject a final tas
 The Orchestrator DOES NOT generate raw CLI prompts. Instead, it instructs the user to invoke the automated DAG Runner:
 
 ```bash
-./dag-flow/v2/scripts/run_dag.sh .specs/features/[feature]/tasks.md
+<path-to-skill>/scripts/run_dag.sh .specs/features/[feature]/tasks.md
 ```
 
 **What happens next (out of the Orchestrator's sight):**

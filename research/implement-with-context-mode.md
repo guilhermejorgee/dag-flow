@@ -21,11 +21,12 @@ Se a teoria se confirmar em testes futuros, o fluxo evoluirá da seguinte forma:
 4. **O Escudo Perfeito:** Centenas de megabytes de logs de erro quebram nos subagentes dentro do sandbox. A janela de tokens do Orquestrador permanece imaculada.
 5. Ao finalizar, o Orquestrador recebe apenas o veredito: `"🎉 All tasks executed successfully!"` e pode continuar o trabalho.
 
-## 4. Próximos Passos (Sessão de Investigação)
-Para validar esta tese no futuro, precisaremos investigar:
-- **Timeouts:** O `ctx_execute` permite execuções longas (assíncronas) que um DAG inteiro pode exigir?
-- **Streaming:** O Orquestrador ficaria "congelado" esperando o sandbox terminar, ou precisamos usar um modelo de *polling* (ex: enviar para o background e ler o status)?
-- **Recursividade:** O `run_dag.sh` dispara o Gemini CLI via terminal. O `ctx_execute` permite que ferramentas CLI que instanciam novos agentes rodem corretamente dentro de seu ambiente isolado?
+## 4. Conclusão (Grill Session)
 
-> [!TIP]
-> Se isso for validado, o `dag-flow` atinge o Nível 5 de Autonomia, onde o humano apenas revisa a arquitetura e o sistema faz o chão de fábrica rodar de forma invisível.
+A tese foi invalidada após uma sessão de *grill-with-docs*. 
+
+Embora o uso de ferramentas assíncronas (como polling de logs) resolva os problemas técnicos de timeout do `ctx_execute`, a proposta falha fundamentalmente no quesito de **Experiência do Desenvolvedor (DX)**.
+
+Executar o DAG de forma invisível dentro do sandbox retira toda a observabilidade do usuário. O usuário fica "cego" em relação ao progresso dos *workers* e aos loops de *auto-healing*. Caso o sistema entre em um loop infinito ou cometa erros críticos, o usuário não tem como intervir prontamente.
+
+**Decisão:** A execução manual pelo terminal é mantida como uma **feature** intencional do framework para garantir visibilidade e confiança. Esta decisão está consolidada no documento `docs/adr/0001-intentional-manual-execution.md`.

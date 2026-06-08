@@ -1,5 +1,5 @@
 #!/bin/bash
-# Independent DAG Runner - SDD V2
+# Independent DAG Runner - DAG-FLOW
 # Parses tasks.md, executes stateless Gemini CLI workers, runs auditor, and auto-heals.
 
 if [ -z "$1" ]; then
@@ -61,7 +61,7 @@ while IFS="|" read -r empty id desc context_ref deps inputs outputs gate status;
         # Run Auditor
         echo "🔬 Running Auditor for Task $id..."
         SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-        "$SCRIPT_DIR/auditor.sh" "$id" > /tmp/auditor_out.txt 2>&1
+        "$SCRIPT_DIR/auditor.sh" "$id" "$TASKS_FILE" > /tmp/auditor_out.txt 2>&1
         AUDIT_CODE=$?
 
         if [ $AUDIT_CODE -eq 0 ]; then
@@ -69,7 +69,7 @@ while IFS="|" read -r empty id desc context_ref deps inputs outputs gate status;
             SUCCESS=1
             break
         else
-            LAST_ERROR=$(cat /tmp/auditor_out.txt | tail -n 10 | tr '\n' ' ')
+            LAST_ERROR=$(cat /tmp/auditor_out.txt)
             echo "❌ Task $id FAILED the verification gate. Error snippet:"
             echo "$LAST_ERROR"
             ATTEMPT=$((ATTEMPT + 1))
@@ -83,6 +83,12 @@ while IFS="|" read -r empty id desc context_ref deps inputs outputs gate status;
     else
         echo "🚨 Task $id failed after $MAX_ATTEMPTS attempts. Halting DAG execution."
         sed -i "s#| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Failed |#" "$TASKS_FILE"
+        
+        # Error Handoff for Orchestrator Escalation Phase
+        LOG_PATH="$(dirname "$TASKS_FILE")/last_failure.log"
+        echo "$LAST_ERROR" > "$LOG_PATH"
+        echo "🚨 Error logged to $LOG_PATH. Show this path to the Orchestrator."
+        
         exit 1
     fi
 

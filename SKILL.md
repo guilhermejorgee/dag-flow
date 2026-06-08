@@ -21,13 +21,13 @@ Before advancing phases or initiating any major plan, you must output your reaso
 ## 2. Phase: Map (Brownfield Prerequisite)
 **Trigger:** Automatic via initial PAGRL at boot or before Specify.
 **Goal:** Establish an accurate, token-efficient understanding of the existing codebase.
-- **Reference:** For execution rules using `context-mode` and `agentmemory`, see `references/map.md`.
+- **Reference:** For execution rules using `context-mode` and `agentmemory`, see [`references/map.md`](./references/map.md).
 - Do not proceed to Specify until the Context Cartographer has mapped the invariants.
 
 ## 3. Phase: Specify (Socratic Interrogation)
 **Trigger:** "Specify feature X", "Plan project"
 **Goal:** Eradicate ambiguity before writing a single line of code.
-- **Reference:** For detailed execution rules, see `references/specify.md`.
+- **Reference:** For detailed execution rules, see [`references/specify.md`](./references/specify.md).
 - Do not advance to Design until all business logic edge cases are resolved.
 
 ## 4. The Bypass Check (PAGRL Transition)
@@ -45,17 +45,18 @@ Before advancing from **Specify** to **Design**, the Orchestrator MUST execute a
 ## 5. Phase: Tasks (The DAG Generator)
 **Trigger:** Design is complete OR the Bypass Check skipped Design.
 **Goal:** Translate the specification and design (if applicable) into an executable Directed Acyclic Graph (DAG) and an Execution Manifest.
-- **Reference:** For detailed formatting and execution prompt templates, see `references/tasks.md`.
+- **Reference:** For detailed formatting and execution prompt templates, see [`references/tasks.md`](./references/tasks.md).
 
 ## 6. Phase: Execute (Decentralized)
 **Trigger:** User runs the generated prompts.
 - As the Orchestrator, your job is largely done. The user will spawn independent CLI sessions using the prompts you generated in the Execution Manifest.
 - **The Worker:** The sub-session will act as the "Dumb Worker". It only reads inputs and writes outputs. It does NOT run tests.
-- **The Auditor:** After a worker finishes, the `scripts/auditor.sh` must be invoked to run the "Done When" gate and validate against `CONTEXT.md`. If it fails, the error feeds back into a new Worker prompt.
+- **The Auditor:** After a worker finishes, [`scripts/auditor.sh`](./scripts/auditor.sh) must be invoked to run the "Done When" gate and validate against `CONTEXT.md`. If it fails, the error feeds back into a new Worker prompt.
+- **Escalation Protocol:** If the user reports a DAG failure, read `last_failure.log` and read [`references/escalation-phase.md`](./references/escalation-phase.md) to initiate the recovery protocol.
 
 ## Emergency / Quick Mode
 **Trigger:** "Fix bug X", "Hot-patch issue Y"
-- **Reference:** For diagnosing and generating a Mini-DAG for rapid fixes without the full Specify/Design ceremony, see `references/quick-mode.md`.
+- **Reference:** For diagnosing and generating a Mini-DAG for rapid fixes without the full Specify/Design ceremony, see [`references/quick-mode.md`](./references/quick-mode.md).
 
 ## Strict Restrictions (Shadow LLM Enforced)
 - You (The Orchestrator) are **FORBIDDEN** from using `replace` or `write_file` on application source code (`src/`, `lib/`, `api/`) during the Specify and Design phases.

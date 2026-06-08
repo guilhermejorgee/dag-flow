@@ -1,5 +1,5 @@
 #!/bin/bash
-# Independent Auditor - SDD V2
+# Independent Auditor - DAG-FLOW
 # Evaluates a completed task node blindly against its constraints and tests.
 
 if [ -z "$1" ]; then
@@ -8,7 +8,11 @@ if [ -z "$1" ]; then
 fi
 
 TASK_ID=$1
-TASKS_FILE=".specs/features/*/tasks.md" # Simplified glob, assumes one active feature for the script
+if [ -n "$2" ]; then
+    TASKS_FILE="$2"
+else
+    TASKS_FILE=".specs/features/*/tasks.md" # Simplified glob, assumes one active feature for the script
+fi
 
 echo "Initializing Independent Auditor for Task: $TASK_ID"
 
@@ -30,8 +34,8 @@ if [ -z "$GATE_COMMAND" ]; then
 fi
 
 echo "Running Execution Gate: $GATE_COMMAND"
-# 2. Execute the test/validation command
-EVAL_OUTPUT=$(eval "$GATE_COMMAND" 2>&1)
+# 2. Execute the test/validation command through rtk
+EVAL_OUTPUT=$(eval "rtk $GATE_COMMAND" 2>&1)
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -eq 0 ]; then

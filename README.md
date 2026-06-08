@@ -43,8 +43,8 @@ O dag-flow abandona a efemeridade do chat em prol de uma "Biblioteca da Verdade"
 - **Sobrevivência:** Esses artefatos ficam persistidos **para sempre**. Em futuras interações, o agente e o auditor consultarão o `CONTEXT.md` e os antigos `ADRs` para garantir que novas *features* não quebrem a linguagem e a arquitetura estabelecidas no passado.
 
 *(Obs: O processo de criação é simbiótico. Enquanto o agente especifica a funcionalidade no `spec.md`, ele retroalimenta o `CONTEXT.md` em tempo real. Enquanto ele arquiteta o `design.md`, ele gera novos `ADRs`. E somente no final, ancorado por essas leis, ele constrói o DAG no `tasks.md`.)*
-- **Harness de Otimização e Virtualização:** O dag-flow opera encapsulado em uma suíte rigorosa de ferramentas (*harness*) desenvolvida para blindar a janela de contexto do LLM:
-  - **rtk-ai (Rust Token Killer):** Um *proxy* CLI transparente que intercepta e comprime as saídas de comandos operacionais do terminal (testes, logs) antes que cheguem à mente do modelo.
+- **Harness de Otimização e Virtualização:** O dag-flow opera encapsulado em uma suíte rigorosa de ferramentas (*harness*) desenvolvida para blindar a janela de contexto do LLM. (**Atenção:** `rtk-ai`, `context-mode` e `agentmemory` são dependências sistêmicas **obrigatórias** para a execução do motor e do orquestrador).
+  - **rtk-ai (Rust Token Killer):** Um *proxy* CLI transparente que intercepta e comprime as saídas de comandos operacionais do terminal (testes, logs) antes que cheguem à mente do modelo. No `dag-flow`, atua nativamente no `auditor.sh` para extração de stack traces zero-contexto.
   - **caveman:** Protocolo de restrição sintática (verbosidade zero) utilizado nos artefatos vitais para economizar agressivamente o *overhead* gramatical passivo.
   - **context-mode:** Camada de virtualização MCP que proíbe o agente de ler *dumps* massivos. Força o modelo a "Pensar em Código" (*sandbox scripts*), extraindo resumos cirúrgicos indexados (FTS5) e reduzindo a poluição do contexto em até 98%.
   - **agentmemory:** Interface de persistência abstrata que gere a recuperação de observações passadas e decisões sistêmicas sem abarrotar o hipocampo efêmero do orquestrador.
@@ -106,7 +106,7 @@ Considere um cenário de emergência: *"Fix bug no login que falha com timeout"*
 
 **1. Fase Diagnosis (O que quebrou?)**
 O Orquestrador usa o PAGRL para isolar a falha sem editar o código.
-- **Saída:** O arquivo `.specs/hotfixes/login-timeout.md` é gerado, contendo o resumo do diagnóstico e a tabela do Mini-DAG estruturada com 7 colunas (incluindo dependências sequenciais).
+- **Saída:** O arquivo `.specs/hotfixes/login-timeout.md` é gerado, contendo o resumo do diagnóstico e a tabela do Mini-DAG estruturada com 8 colunas (incluindo rastreabilidade).
 
 **2. Fase Execution (O Chão de Fábrica Efêmero)**
 O usuário invoca o `run_dag.sh` passando o arquivo de hotfix.
