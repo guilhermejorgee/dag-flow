@@ -21,8 +21,8 @@ if [ -z "$TASK_LINE" ]; then
     exit 1
 fi
 
-# Extract the 6th data column (which is field 7 in awk because of the leading '|')
-GATE_COMMAND=$(echo "$TASK_LINE" | awk -F'|' '{print $7}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/`//g')
+# Extract the 7th data column (which is field 8 in awk because of the leading '|')
+GATE_COMMAND=$(echo "$TASK_LINE" | awk -F'|' '{print $8}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/`//g')
 
 if [ -z "$GATE_COMMAND" ]; then
     echo "❌ Auditor Error: Could not find 'Done When' gate command for $TASK_ID."
@@ -37,13 +37,7 @@ EXIT_CODE=$?
 if [ $EXIT_CODE -eq 0 ]; then
     echo "✅ Tests Passed."
     
-    # 3. Simulate Structural/Invariant Check against CONTEXT.md
-    # This is where the LLM-as-a-judge would be invoked to check for ADR drift
-    # e.g., gemini --prompt "Review the recent changes against CONTEXT.md. Are there architectural violations?"
-    echo "🔍 Validating against Invariants (CONTEXT.md)..."
-    echo "✅ No Architectural Drift detected."
-    
-    # 4. Mark Task as Done
+    # 3. Mark Task as Done
     echo "Update tasks.md -> $TASK_ID Status: 🟢 Done"
     # (Sed command to update tasks.md would go here)
     exit 0

@@ -44,7 +44,7 @@ Before advancing from **Specify** to **Design**, the Orchestrator MUST execute a
 
 ## 5. Phase: Tasks (The DAG Generator)
 **Trigger:** Design is complete OR the Bypass Check skipped Design.
-**Goal:** Translate the design into an executable Directed Acyclic Graph (DAG) and an Execution Manifest.
+**Goal:** Translate the specification and design (if applicable) into an executable Directed Acyclic Graph (DAG) and an Execution Manifest.
 - **Reference:** For detailed formatting and execution prompt templates, see `references/tasks.md`.
 
 ## 6. Phase: Execute (Decentralized)

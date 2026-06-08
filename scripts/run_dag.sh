@@ -20,9 +20,10 @@ echo "🚀 Starting DAG Runner for $TASKS_FILE"
 # We assume format: | ID | Description | Depends On | Input Files | Output Files | Done When (Gate) | Status |
 grep "^| *[T0-9]* *|" "$TASKS_FILE" | grep -v "ID" > /tmp/dag_tasks.tmp
 
-while IFS="|" read -r empty id desc deps inputs outputs gate status; do
+while IFS="|" read -r empty id desc context_ref deps inputs outputs gate status; do
     id=$(echo "$id" | xargs)
     desc=$(echo "$desc" | xargs)
+    context_ref=$(echo "$context_ref" | xargs)
     deps=$(echo "$deps" | xargs)
     inputs=$(echo "$inputs" | sed 's/`//g' | xargs)
     outputs=$(echo "$outputs" | sed 's/`//g' | xargs)
@@ -48,7 +49,7 @@ while IFS="|" read -r empty id desc deps inputs outputs gate status; do
         echo "🔄 Attempt $ATTEMPT/$MAX_ATTEMPTS for $id..."
         
         # Build prompt
-        PROMPT="Execute SDD Task $id. Role: Stateless Worker. Context: $inputs. Edit: $outputs. Goal: $desc. Do not run tests. Do not update tasks.md."
+        PROMPT="Execute SDD Task $id. Role: Stateless Worker. Reason: $context_ref. Context: $inputs. Edit: $outputs. Goal: $desc. Do not run tests. Do not update tasks.md."
         if [ ! -z "$LAST_ERROR" ]; then
             PROMPT="$PROMPT The previous attempt failed. Fix this error: $LAST_ERROR"
         fi
@@ -59,7 +60,8 @@ while IFS="|" read -r empty id desc deps inputs outputs gate status; do
         
         # Run Auditor
         echo "🔬 Running Auditor for Task $id..."
-        ./dag-flow/v2/scripts/auditor.sh "$id" > /tmp/auditor_out.txt 2>&1
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        "$SCRIPT_DIR/auditor.sh" "$id" > /tmp/auditor_out.txt 2>&1
         AUDIT_CODE=$?
 
         if [ $AUDIT_CODE -eq 0 ]; then
@@ -76,11 +78,11 @@ while IFS="|" read -r empty id desc deps inputs outputs gate status; do
 
     if [ $SUCCESS -eq 1 ]; then
         # Update Status to Done
-        sed -i "s#| *$id *|.*|.*Pending.*#| $id | $desc | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
-        sed -i "s#| *$id *|.*|.*Failed.*#| $id | $desc | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
+        sed -i "s#| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
+        sed -i "s#| *$id *|.*|.*Failed.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
     else
         echo "🚨 Task $id failed after $MAX_ATTEMPTS attempts. Halting DAG execution."
-        sed -i "s#| *$id *|.*|.*Pending.*#| $id | $desc | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Failed |#" "$TASKS_FILE"
+        sed -i "s#| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Failed |#" "$TASKS_FILE"
         exit 1
     fi
 

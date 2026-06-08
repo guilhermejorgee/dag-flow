@@ -58,7 +58,7 @@ O dag-flow abandona a efemeridade do chat em prol de uma "Biblioteca da Verdade"
 - **Firewall Financeiro:** O isolamento cirúrgico restringe o LLM temporário apenas aos `Input Files` listados no DAG, proibindo escaneamentos massivos com *wildcards*, tornando o ciclo altamente viável economicamente.
 - **Living Memory (Delta Updates):** A fase de Mapeamento profundo roda **apenas uma vez** na vida do projeto (no primeiro boot). A partir daí, para garantir que o mapa da arquitetura evolua com o código sem desperdiçar tokens com re-scans, o Orquestrador sempre injeta uma tarefa final (`T-Final`) no DAG. Isso garante que cada nova funcionalidade faça um *upsert* cirúrgico das pastas modificadas no `context-mode` e das novas invariantes no `agentmemory`, mantendo o orquestrador perfeitamente atualizado para desenhar a próxima *feature* em um loop infinito.
 - **Loop de Auto-Cura (Backprop Reflex):** Se o código falha, os *stack traces* e avisos do linter são retroalimentados diretamente no subagente (Worker) para auto-resolução. O Orquestrador é blindado e não sofre desgaste processando erros de sintaxe alheios.
-- **Auditoria Independente (Test-Driven & LLM-as-a-Judge):** A validação inicial é puramente determinística, com o script rodando comandos reais de terminal (Testes Unitários, Linters, Grep). Apenas em tarefas de alto nível um juiz autônomo (LLM), cego ao histórico da sessão, é invocado para inspecionar invariantes complexas e exigir aderência infalível ao `SPEC.md` e aos `ADRs. Qualquer regressão estrutural aciona uma correção punitiva.
+- **Auditoria Independente (Zero-Context LLM-as-a-Judge):** A validação da execução opera sob um regime estrito de economia de tokens. O Auditor (script Bash) é propositalmente "cego" para os arquivos pesados de especificação e arquitetura. Para validar tarefas estruturais complexas, a arquitetura utiliza o *Zero-Context Auditor*: o próprio Orquestrador (na fase de planejamento) sintetiza a regra e injeta o comando do Juiz Autônomo (LLM) diretamente na coluna de validação (`Done When`) do grafo. Assim, a IA avalia o código apenas contra a diretriz mastigada da coluna `Context Ref`, sem precisar reler os arquivos do projeto. Qualquer regressão aciona o *Backprop Reflex*.
 
 ---
 
@@ -95,10 +95,10 @@ O Orquestrador avalia o `spec.md`: *"Essa regra de negócio exige novos componen
 **3. Fase Design (Como vamos fazer?)**
 O Orquestrador faz a proposição técnica: *"Proponho usar Redis em vez do banco SQL primário para manter a baixa latência nas interações de tela."*
 - **Ação Imediata:** O Orquestrador detecta o trade-off crítico (ganho de latência x risco de perda volátil) e gera uma `ADR` justificando a escolha para a posteridade.
-- **Saída:** O mapa técnico e a planta baixa (`design.md`) são consolidados.
+- **Saída:** O mapa técnico e a planta baixa (`design.md`) são consolidado.
 
-**4. Fase Tasks (A Ordem de Execução)**
-O Orquestrador traduz o `design.md` em um grafo estrito (`tasks.md`), incluindo o `T-Final` (Delta Update) para que os novos arquivos e a ADR sejam mapeados automaticamente pelo `run_dag.sh` no final da execução.
+**4. Fase Tasks (A Ordem de Execução):**
+O Orquestrador traduz a especificação (`spec.md`) e a arquitetura (`design.md`, se houver) em um grafo estrito (`tasks.md`). Para garantir a **Rastreabilidade Sistêmica**, o Orquestrador é obrigado a preencher a coluna `Context Ref` em cada tarefa com uma síntese hiper-detalhada da regra de negócio que a originou, blindando o sistema contra alucinações. O grafo também inclui o `T-Final` (Delta Update) para mapear os arquivos automaticamente pelo `run_dag.sh` no final.
 
 ### B. O Fluxo de Emergência (Quick Mode / Hotfix)
 
@@ -125,7 +125,7 @@ O usuário invoca o `run_dag.sh` passando o arquivo de hotfix.
 | **Orquestrador** | Estrategista, Arquiteto e Interrogador Socrático | LLM (*Stateful*) |
 | **Worker** (Sub-agentes) | Operário executor apátrida de modificações | LLM (*Stateless*/Efêmero) |
 | `run_dag.sh` | Motor de agendamento paralelo e Auto-Healing | Bash Script |
-| `auditor.sh` | Portão de Qualidade Determinístico (Testes) e Inspetor LLM-as-a-Judge | Bash Script (Primário) + LLM Assíncrono |
+| `auditor.sh` | Portão de Qualidade Determinístico (Executa Cegamente a Coluna `Done When`) | Bash Script |
 
 ---
 
