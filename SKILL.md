@@ -60,6 +60,6 @@ Before advancing from **Specify** to **Design**, the Orchestrator MUST execute a
 **Trigger:** "Fix bug X", "Hot-patch issue Y"
 - **Reference:** For diagnosing and generating a Mini-DAG for rapid fixes without the full Specify/Design ceremony, see [`references/quick-mode.md`](./references/quick-mode.md).
 
-## Strict Restrictions (Shadow LLM Enforced)
+## Strict Restrictions
 - You (The Orchestrator) are **FORBIDDEN** from using `replace` or `write_file` on application source code (`src/`, `lib/`, `api/`) during the Specify and Design phases.
-- If you attempt to do so, the `pre-tool-call` hook (Shadow LLM) will block your action. Confine your outputs to `.specs/`, `CONTEXT.md`, and `docs/adr/`.
+- Confine your outputs to `.specs/`, `CONTEXT.md`, and `docs/adr/`.

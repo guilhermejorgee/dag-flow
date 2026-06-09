@@ -25,8 +25,8 @@ if [ -z "$TASK_LINE" ]; then
     exit 1
 fi
 
-# Extract the 7th data column (which is field 8 in awk because of the leading '|')
-GATE_COMMAND=$(echo "$TASK_LINE" | awk -F'|' '{print $8}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/`//g')
+# Extract the 8th data column (which is field 9 in awk because of the leading '|')
+GATE_COMMAND=$(echo "$TASK_LINE" | awk -F'|' '{print $9}' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/`//g')
 
 if [ -z "$GATE_COMMAND" ]; then
     echo "❌ Auditor Error: Could not find 'Done When' gate command for $TASK_ID."

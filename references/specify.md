@@ -42,7 +42,7 @@ Use the Pre-Action Governance Reasoning Loop (PAGRL) before deciding whether to 
 ```
 
 ### 4. Zero Execution
-During the Specify Phase, the Orchestrator is **FORBIDDEN** from modifying any functional application code (`src/`, `lib/`, etc.). The shadow LLM (`pre-tool-call` hook) enforces this restriction. All writes must be confined to `.specs/` and `CONTEXT.md`.
+During the Specify Phase, the Orchestrator is **FORBIDDEN** from modifying any functional application code (`src/`, `lib/`, etc.). All writes must be confined to `.specs/` and `CONTEXT.md`.
 
 ## Exit Condition
 The Specify phase concludes only when all edge cases, domain entities, and requirements are unambiguously resolved. The system then automatically advances to the **Design Phase**.

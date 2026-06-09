@@ -16,12 +16,15 @@ The Orchestrator breaks down the requirements and design into isolated, atomic t
 **Output to `.specs/features/[feature]/tasks.md`:**
 A visual markdown table representing the DAG:
 
-| ID | Description | Context Ref | Depends On | Input Files | Output Files | Done When (Gate) | Status |
-|---|---|---|---|---|---|---|---|
-| T1 | Implement DB schema | Spec: Database rules | None | `src/schema.ts` | `src/schema.ts` | `npx eslint src/schema.ts` | Pending |
-| T2 | Create Auth Middleware | Design: Use JWT | None | `src/auth.ts` | `src/auth.ts` | `npx tsc --noEmit` | Pending |
-| T3 | Implement API Endpoint | Spec: User creation | T1, T2 | `src/schema.ts`, `src/auth.ts` | `src/api.ts` | `npm test src/api.test.ts` | Pending |
-| T-Final | Map Delta Update | Orchestrator Rule | T3 | `N/A` | `N/A` | `gemini --prompt "Update context-mode indexing ONLY for src/api.ts and src/auth.ts. Update agentmemory invariants if architecture changed."` | Pending |
+| ID | Description | Context Ref | Skill | Depends On | Input Files | Output Files | Done When (Gate) | Status |
+|---|---|---|---|---|---|---|---|---|
+| T1 | Implement DB schema | Spec: Database rules | None | None | `src/schema.ts` | `src/schema.ts` | `npx eslint src/schema.ts` | Pending |
+| T2 | Create Auth Middleware | Design: Use JWT | None | None | `src/auth.ts` | `src/auth.ts` | `npx tsc --noEmit` | Pending |
+| T3 | Implement API Endpoint | Spec: User creation | None | T1, T2 | `src/schema.ts`, `src/auth.ts` | `src/api.ts` | `npm test src/api.test.ts` | Pending |
+| T-Final | Map Delta Update | Orchestrator Rule | None | T3 | `N/A` | `N/A` | `gemini --prompt "Update context-mode indexing ONLY for src/api.ts and src/auth.ts. Update agentmemory invariants if architecture changed."` | Pending |
+
+**The MCP Skill Injection Rule:**
+The Orchestrator MUST use a **parallel search** strategy for `search_skills`. Instead of calling it row-by-row (which wastes roundtrips), identify all required technical domains (e.g., "react", "postgres"), execute multiple `search_skills` tool calls simultaneously in a single turn, and then write the entire table assigning the found skills to the `Skill` column. Use `None` if no specific skill is needed.
 
 **The Traceability Rule (Context Ref):**
 The Orchestrator MUST map every functional task to a specific rule in `spec.md` and every architectural task to a decision in `design.md`. This column provides the *Reason* for the task. It MUST be a **self-contained, highly detailed summary** of the exact rule to be evaluated (e.g., "The table must use UUID v4. The cache must use Redis per ADR-002." rather than just "Database rules"). This ensures the stateless Auditor can validate the code without reading the full spec files.

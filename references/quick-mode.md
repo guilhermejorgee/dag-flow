@@ -22,10 +22,13 @@ Even in an emergency, the Orchestrator NEVER directly edits functional code. Use
 ### 2. Mini-DAG Generation
 Generate a simplified, sequential table. Unlike the full `tasks.md` process, a Mini-DAG typically represents a linear sequence of atomic fixes.
 
+**Skill Injection Rule:**
+After outputting the `<PAGRL>`, the Orchestrator MUST use the `search_skills` tool based on the diagnosis to find relevant local skills for the worker. Only after receiving the search results, it should generate the Mini-DAG table.
+
 **Output to `.specs/hotfixes/[issue_id].md`:**
 1. **Diagnosis Summary:** Brief explanation of the root cause.
-2. **Mini-DAG Table (8 columns):**
-   `| ID | Description | Context Ref | Depends On | Input Files | Output Files | Done When (Gate) | Status |`
+2. **Mini-DAG Table (9 columns):**
+   `| ID | Description | Context Ref | Skill | Depends On | Input Files | Output Files | Done When (Gate) | Status |`
    - *Note on `Context Ref`:* The Orchestrator MUST populate this column with a rich, self-contained summary of the diagnostic failure (since there is no spec.md in Quick Mode). For `T-Final`, use `Orchestrator Rule`.
    - *Note on `Depends On`:* You MUST include this column to avoid breaking the DAG Runner parser. Fill it sequentially (e.g., T2 depends on T1).
    - *Note on `Done When`:* 

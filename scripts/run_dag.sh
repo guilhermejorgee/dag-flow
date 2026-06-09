@@ -17,18 +17,19 @@ fi
 echo "🚀 Starting DAG Runner for $TASKS_FILE"
 
 # Extract tasks (skip header rows and non-task rows)
-# We assume format: | ID | Description | Depends On | Input Files | Output Files | Done When (Gate) | Status |
+# We assume format: | ID | Description | Context Ref | Skill | Depends On | Input Files | Output Files | Done When (Gate) | Status |
 grep "^| *T[0-9A-Za-z-]* *|" "$TASKS_FILE" | grep -v "ID" > /tmp/dag_tasks.tmp
 
-while IFS="|" read -u 3 -r empty id desc context_ref deps inputs outputs gate status; do
-    id=$(echo "$id" | xargs)
-    desc=$(echo "$desc" | xargs)
-    context_ref=$(echo "$context_ref" | xargs)
-    deps=$(echo "$deps" | xargs)
-    inputs=$(echo "$inputs" | sed 's/`//g' | xargs)
-    outputs=$(echo "$outputs" | sed 's/`//g' | xargs)
-    gate=$(echo "$gate" | sed 's/`//g' | xargs)
-    status=$(echo "$status" | xargs)
+while IFS="|" read -u 3 -r empty id desc context_ref skill deps inputs outputs gate status; do
+    id=$(echo "$id" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    desc=$(echo "$desc" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    context_ref=$(echo "$context_ref" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    skill=$(echo "$skill" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    deps=$(echo "$deps" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    inputs=$(echo "$inputs" | sed 's/`//g' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    outputs=$(echo "$outputs" | sed 's/`//g' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    gate=$(echo "$gate" | sed 's/`//g' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    status=$(echo "$status" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
 
     if [ -z "$id" ]; then continue; fi
 
@@ -50,13 +51,16 @@ while IFS="|" read -u 3 -r empty id desc context_ref deps inputs outputs gate st
         
         # Build prompt
         PROMPT="Execute SDD Task $id. Role: Stateless Worker. Reason: $context_ref. Context: $inputs. Edit: $outputs. Goal: $desc. Do not run tests. Do not update tasks.md."
+        if [ -n "$skill" ] && [ "$skill" != "None" ]; then
+            PROMPT="$PROMPT Load the skill '$skill' using read_skill from the dag-flow-skills MCP before starting your edit."
+        fi
         if [ ! -z "$LAST_ERROR" ]; then
             PROMPT="$PROMPT The previous attempt failed. Fix this error: $LAST_ERROR"
         fi
 
         # Spawn Worker
-        echo "🤖 Spawning Gemini CLI Worker..."
-        gemini --approval-mode auto_edit --prompt "$PROMPT"
+        echo "🤖 Spawning Antigravity CLI Worker (Unsandboxed)..."
+        agy --dangerously-skip-permissions --prompt "$PROMPT"
         
         # Run Auditor
         echo "🔬 Running Auditor for Task $id..."
@@ -78,11 +82,11 @@ while IFS="|" read -u 3 -r empty id desc context_ref deps inputs outputs gate st
 
     if [ $SUCCESS -eq 1 ]; then
         # Update Status to Done
-        sed -i "s#^| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
-        sed -i "s#^| *$id *|.*|.*Failed.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
+        sed -i "s#^| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $skill | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
+        sed -i "s#^| *$id *|.*|.*Failed.*#| $id | $desc | $context_ref | $skill | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
     else
         echo "🚨 Task $id failed after $MAX_ATTEMPTS attempts. Halting DAG execution."
-        sed -i "s#^| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Failed |#" "$TASKS_FILE"
+        sed -i "s#^| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $skill | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Failed |#" "$TASKS_FILE"
         
         # Error Handoff for Orchestrator Escalation Phase
         LOG_PATH="$(dirname "$TASKS_FILE")/last_failure.log"

@@ -1,1 +1,28 @@
-__pycache__
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Debug scripts e outputs locais
+list_files.py
+log.txt
+
+# Estado local do agentmemory / context-mode
+data/state_store.db/
+data/stream_store/
+*.bin
+
+# Node
+node_modules/
+dist/
+build/
+
+# IDE and OS
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# Arquivos de sessão e scratch
+*.log
+.rtk/
