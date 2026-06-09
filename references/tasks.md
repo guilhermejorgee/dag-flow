@@ -43,6 +43,7 @@ The `Input Files` column is critical. Because the DAG Runner spawns *stateless* 
 ### 4. Living Memory (The Delta Update Task)
 To ensure the project map does not rot, the Orchestrator MUST inject a final task (`T-Final`) into every DAG table. 
 - **The Token-Efficient Delta:** The Orchestrator MUST NOT ask for a full codebase re-scan. It must pass its exact architectural intent and list ONLY the newly modified folders/files for `ctx_index`.
+- **CRITICAL TEMPLATE:** You MUST wrap the prompt in double quotes exactly like this: `gemini --prompt "Call ctx_index for src/file1.js and src/file2.js to update the architecture map."`
 - This ensures the Map stays fresh with zero token waste and preserves the high-level design intent.
 
 ### 5. Handoff to Execution (DAG Runner)

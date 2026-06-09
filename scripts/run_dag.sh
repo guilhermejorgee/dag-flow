@@ -18,7 +18,7 @@ echo "🚀 Starting DAG Runner for $TASKS_FILE"
 
 # Extract tasks (skip header rows and non-task rows)
 # We assume format: | ID | Description | Depends On | Input Files | Output Files | Done When (Gate) | Status |
-grep "^| *[T0-9]* *|" "$TASKS_FILE" | grep -v "ID" > /tmp/dag_tasks.tmp
+grep "^| *T[0-9A-Za-z-]* *|" "$TASKS_FILE" | grep -v "ID" > /tmp/dag_tasks.tmp
 
 while IFS="|" read -u 3 -r empty id desc context_ref deps inputs outputs gate status; do
     id=$(echo "$id" | xargs)

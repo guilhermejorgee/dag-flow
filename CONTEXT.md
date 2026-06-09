@@ -8,3 +8,5 @@
 **Escalation Phase**: Formal recovery protocol triggered when a worker task fails repeatedly. Orchestrator reads the failure log and plans a hotfix. _Avoid_: manual fixing, ad-hoc patching.
 **Double Verification**: Two-step validation during Escalation: first running the Mini-DAG execution, then manually running `auditor.sh` against the main DAG's gate to prove the hotfix works before resuming. _Avoid_: single check, blind resume.
 **Core Infrastructure**: The mandatory trinity of tools (`rtk-ai` for token-optimized CLI execution, `context-mode` for Orchestrator out-of-band file parsing, and `agentmemory` for state) required to run `dag-flow`. _Avoid_: ferramentas opcionais.
+**Global Indexing Hook**: Pre-boot script or session rule that populates `context-mode` FTS5 database with all repository files incrementally using Upsert. _Avoid_: map phase crawler, orchestrator indexing.
+**Task Context Discovery**: Orchestrator Map phase activity restricted strictly to using `ctx_search` to find relevant files for the specific task. _Avoid_: global crawling, native filesystem reads.

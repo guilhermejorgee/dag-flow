@@ -9,18 +9,16 @@ It queries `agentmemory` for the project's architectural map. If no map exists (
 
 ## Core Mechanics
 
-### 1. The Sandbox Crawler (`ctx_execute`)
-The Orchestrator does NOT read source code files directly into its context window. Instead, it writes a pure JavaScript script (using Node.js `fs` and `path`) and executes it via `context-mode`'s `ctx_execute`. 
+### 1. Task Context Discovery (`ctx_search`)
+The Orchestrator does NOT crawl or read source code files natively. Instead, it relies on the **Global Indexing Hook** (installed via `scripts/setup_indexer.sh`), which populates the `context-mode` FTS5 database before the session even starts. 
 
-Because modern projects are often monorepos containing varied stacks (code, IaC, docs) and architectures (Hexagonal, MVC, scripts), the crawler acts as a recursive boundary detector:
-- **Find Sub-Contexts:** Scans the directory tree (ignoring `.git`, `node_modules`, `dist`, etc.) for local boundary markers like `package.json`, `Cargo.toml`, `terraform/`, or isolated `docs/` folders.
-- **Detect Architectural Signatures:** Within each boundary, it looks for structural patterns (e.g., `domain/`, `application/`, `infrastructure/` indicates Hexagonal architecture; `controllers/`, `views/` indicates MVC).
+The Orchestrator's job during the Map Phase is purely surgical discovery. It uses `ctx_search` to query the pre-populated FTS5 index for architectural markers (like `package.json`, `Cargo.toml`, `terraform/`, or structural patterns like `domain/`, `controllers/`).
 
 ### 2. Output Routing (The Token Economy)
-To remain financially viable and protect the context window, the crawler's output is split into two distinct storage layers:
+To remain financially viable and protect the context window, the Map Phase consolidates its findings into persistent storage:
 
-- **High-Level State (`agentmemory`):** The Orchestrator saves the "Context Map" (which sub-projects exist, their inferred architectures, and core invariants) into persistent memory. This also acts as the flag that prevents the Map Phase from running again unnecessarily.
-- **Dense Mapping (`ctx_index`):** The heavy, file-by-file dependency graphs, module boundaries, and exported interfaces are sent directly to the local FTS5 database via `ctx_index`. The Orchestrator can later retrieve specific parts of this map using `ctx_search` when needed.
+- **High-Level State (`agentmemory`):** The Orchestrator synthesizes its search results into a "Context Map" (which sub-projects exist, their inferred architectures, and core invariants) and saves it into persistent memory. This acts as the flag that prevents the Map Phase from running again unnecessarily.
+- **Dense Mapping:** (Already handled out-of-band by the pre-boot hook using `ctx_index`, keeping the Orchestrator's context window pristine).
 
 ### 3. Focus on Invariants
 The ultimate goal of the Map Phase is to identify what *cannot change*. By establishing the architectural rules of the existing codebase, the Orchestrator ensures that new specifications (during the Specify Phase) do not violate the system's established structural integrity.

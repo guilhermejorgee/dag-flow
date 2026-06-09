@@ -75,7 +75,7 @@ O dag-flow abandona a efemeridade do chat em prol de uma "Biblioteca da Verdade"
 
 ## 6. Modos Operacionais (Fases do dag-flow)
 
-0. **A. Map (O Cartógrafo):** Pré-requisito automático para projetos Brownfield. Vasculha as fronteiras do repositório (via `ctx_execute`) para alimentar o `agentmemory` com invariantes e o `context-mode` com a topologia estrutural. Mantido vivo pelo *Delta Update* (`T-Final`).
+0. **A. Map (O Cartógrafo):** Pré-requisito automático para projetos Brownfield. Baseia-se no **Global Indexing Hook** (que pré-popula o `context-mode` no boot) e utiliza o `ctx_search` cirurgicamente para descobrir contextos e alimentar o `agentmemory` com invariantes. Mantido vivo pelo *Delta Update* (`T-Final`).
 1. **B. Specify (O Erradicador):** Interrogação Socrática de Negócios. Saída: `spec.md` e `CONTEXT.md`.
 2. **C. Design (O Arquiteto):** Proposição técnica com pontuação de confiança. Saída: `design.md` e `ADRs` (se houver trade-offs pesados). Caso a feature não exija escopo de arquitetura, essa fase sofre um *Bypass* direto para a Fase Tasks.
 3. **D. Tasks (O Engenheiro):** Conversão em fluxo executável. Saída: `tasks.md` (o DAG atômico).
