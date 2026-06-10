@@ -101,16 +101,21 @@ Run the indexing hook setup script for your specific runtime (e.g., `antigravity
 
 ---
 
-## The 6 Phases of dag-flow
+## The Core Feature Pipeline
 
 | Phase | Description | Key Output |
 |:---|:---|:---|
-| **A. Discovery** | **Living Memory Initialization:** Discovers the repo structure without expensive raw code scans, seeding the `context-mode` vector index. | `agentmemory` invariants |
-| **B. Specify** | Socratic interrogation to eradicate ambiguity. | `spec.md`, `CONTEXT.md` |
-| **C. Design** | Technical architecture and trade-off decisions. | `design.md`, `ADRs` |
-| **D. Tasks** | Converts specs/design into an executable graph. Includes **T-Final** to update the Living Memory. | `tasks.md` (The DAG) |
-| **E. Execute** | Decentralized Bash execution of stateless workers, powered by **Dynamic Skill Injection (MCP)**. | Application Source Code |
-| **F. Quick Mode** | **The Emergency Flow:** Bypasses heavy Spec/Design ceremony for rapid hotfixes. Diagnoses the bug and generates a streamlined Mini-DAG. | Mini-DAG |
+| **1. Specify** | Socratic interrogation to eradicate ambiguity. | `spec.md`, `CONTEXT.md` |
+| **2. Design** | Technical architecture and trade-off decisions. | `design.md`, `ADRs` |
+| **3. Tasks** | Converts specs/design into an executable graph. Includes **T-Final** to update the Living Memory. | `tasks.md` (The DAG) |
+| **4. Execute** | Decentralized Bash execution of stateless workers, powered by **Dynamic Skill Injection (MCP)**. | Application Source Code |
+
+## Standalone Operations
+
+| Operation | Description | Key Output |
+|:---|:---|:---|
+| **Discovery** | **Project Mapping:** Discovers the repo structure to learn architectural invariants. Manual initialization for brownfield projects. | `agentmemory` invariants |
+| **Quick Mode** | **The Emergency Flow:** Bypasses heavy Spec/Design ceremony for rapid hotfixes. Diagnoses the bug and generates a streamlined Mini-DAG. | Mini-DAG |
 
 ---
 

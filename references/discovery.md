@@ -4,8 +4,8 @@ The **Discovery Phase** is the foundational prerequisite of dag-flow in brownfie
 
 ## Trigger
 
-**Automatic.** The Orchestrator MUST perform a Pre-Action Governance Reasoning Loop (PAGRL) at the very start of any session or the Specify Phase. 
-It queries `agentmemory` (using `memory_recall`) for the project's Architectural Invariants. If no invariants exist (indicating it's blind to the project's state), the Discovery Phase is triggered automatically, halting user interaction until discovery is complete.
+**Manual / Explicit.** The user must explicitly request a discovery session (e.g., "Do a discovery of this project" or "Map the architecture"). The Orchestrator does NOT trigger this automatically during the Specify phase.
+It queries `agentmemory` (using `memory_recall`) to check for existing Architectural Invariants. If they exist, it updates them. If not, it creates them.
 
 ## Core Mechanics
 
@@ -24,4 +24,4 @@ To remain financially viable and protect the context window, the Discovery Phase
 The ultimate goal of the Discovery Phase is to identify what *cannot change*. By establishing the architectural rules of the existing codebase, the Orchestrator ensures that new specifications (during the Specify Phase) do not violate the system's established structural integrity.
 
 ## Exit Condition
-The Discovery Phase concludes when `agentmemory` is populated with the synthesized Architectural Invariants via the `memory_save` tool. The system then automatically advances to (or resumes) the **Specify Phase**.
+The Discovery Phase concludes when `agentmemory` is populated with the synthesized Architectural Invariants via the `memory_save` tool. The operation ends here, awaiting the user's next command.

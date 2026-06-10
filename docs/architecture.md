@@ -61,16 +61,23 @@ This guarantees that the worker has Senior-level expertise *exactly tailored to 
 
 ---
 
-## 2. The Operational Phases
+## 2. The Core Pipeline & Operations
 
-The architecture flows through 6 distinct phases:
+The architecture separates the core feature development pipeline from standalone administrative and emergency operations.
 
-1. **Discovery (The Context Discoverer):** Synthesizes the system's baseline architecture with the existing codebase structure (for brownfield projects) before specification begins.
-2. **Specify (The Eradicator):** Deep Socratic interrogation. Generates the `spec.md` and updates the ubiquitous language dictionary (`CONTEXT.md`).
-3. **Design (The Architect):** Identifies trade-offs, defines infrastructure, and generates Architecture Decision Records (`docs/adr/`).
-4. **Tasks (The Engineer):** Converts the Spec and Design into the executable Directed Acyclic Graph (`tasks.md`).
-5. **Implement (The Factory Floor):** The manual execution phase where `run_dag.sh` takes over and coordinates the Workers and Auditor.
-6. **Quick Mode (The Diagnostic):** A streamlined diagnostic phase for emergency hotfixes, bypassing the heavy Spec/Design ceremony to generate a Mini-DAG.
+### The Core Feature Pipeline
+The pipeline flows through 4 distinct sequential phases:
+
+1. **Specify (The Eradicator):** Deep Socratic interrogation. Generates the `spec.md` and updates the ubiquitous language dictionary (`CONTEXT.md`).
+2. **Design (The Architect):** Identifies trade-offs, defines infrastructure, and generates Architecture Decision Records (`docs/adr/`).
+3. **Tasks (The Engineer):** Converts the Spec and Design into the executable Directed Acyclic Graph (`tasks.md`).
+4. **Execute (The Factory Floor):** The decentralized execution phase where `run_dag.sh` takes over and coordinates the Workers and Auditor.
+
+### Standalone Operations
+These are executed independently of the core pipeline.
+
+- **Discovery (The Context Discoverer):** A manual initialization operation. Synthesizes the system's baseline architecture into `agentmemory` (for brownfield projects). Not part of the feature pipeline.
+- **Quick Mode (The Emergency Flow):** A streamlined diagnostic operation for hotfixes. Completely bypasses the Specify/Design ceremony to generate a Mini-DAG.
 
 ---
 
