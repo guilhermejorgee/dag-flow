@@ -18,11 +18,14 @@ Before advancing phases or initiating any major plan, you must output your reaso
 </PAGRL>
 ```
 
-## 2. Phase: Map (Brownfield Prerequisite)
+## Living Memory (Global Principle)
+`dag-flow` maintains a continuous memory of the project's architecture across sessions to prevent expensive re-scans. You initialize this memory in the **Discovery Phase** and update it in the **Tasks Phase**.
+
+## 2. Phase: Discovery (Brownfield Prerequisite)
 **Trigger:** Automatic via initial PAGRL at boot or before Specify.
 **Goal:** Establish an accurate, token-efficient understanding of the existing codebase.
-- **Reference:** You MUST use the `view_file` tool to read [`references/map.md`](./references/map.md) for execution rules using `context-mode` and `agentmemory`.
-- Do not proceed to Specify until the Context Cartographer has mapped the invariants.
+- **Reference:** You MUST use the `view_file` tool to read [`references/discovery.md`](./references/discovery.md) for execution rules using `context-mode` and `agentmemory`.
+- Do not proceed to Specify until the Context Discoverer has synthesized the Architectural Invariants.
 
 ## 3. Phase: Specify (Socratic Interrogation)
 **Trigger:** "Specify feature X", "Plan project"

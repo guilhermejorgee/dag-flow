@@ -9,4 +9,6 @@
 **Double Verification**: Two-step validation during Escalation: first running the Mini-DAG execution, then manually running `auditor.sh` against the main DAG's gate to prove the hotfix works before resuming. _Avoid_: single check, blind resume.
 **Core Infrastructure**: The mandatory trinity of tools (`rtk-ai` for token-optimized CLI execution, `context-mode` for Orchestrator out-of-band file parsing, and `agentmemory` for state) required to run `dag-flow`. _Avoid_: ferramentas opcionais.
 **Global Indexing Hook**: Pre-boot script or session rule that populates `context-mode` FTS5 database with all repository files incrementally using Upsert. _Avoid_: map phase crawler, orchestrator indexing.
-**Task Context Discovery**: Orchestrator Map phase activity restricted strictly to using `ctx_search` to find relevant files for the specific task. _Avoid_: global crawling, native filesystem reads.
+**Discovery Phase**: Initial initialization phase where the Orchestrator strictly uses `ctx_search` against the FTS5 index to discover the project state and synthesize the baseline architecture. _Avoid_: Map Phase, global crawling.
+**Architectural Invariants**: The synthesized, high-level map of the project structure, sub-contexts, and technical stack stored in `agentmemory`. _Avoid_: Context Map, High-Level State.
+**Living Memory**: The ongoing property of keeping Architectural Invariants synchronized with reality via T-Final Delta Updates after execution, avoiding full re-scans. _Avoid_: Map Phase (as a continuous state).

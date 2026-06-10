@@ -19,7 +19,7 @@ dag-flow v0.1.0 ships with six architectural phases, three of which are **new si
 
 | Phase | Key Output | New in v0.1.0? |
 |---|---|---|
-| **A. Map** | `agentmemory` invariants, FTS5 index seeded | ✅ Remodeled |
+| **A. Discovery** | `agentmemory` invariants, FTS5 index seeded | ✅ Remodeled |
 | **B. Specify** | `spec.md`, `CONTEXT.md` via Socratic Interrogation + PAGRL | — |
 | **C. Design** | `design.md`, optional ADRs | — |
 | **D. Tasks** | `tasks.md` (DAG) + `T-Final` delta task | ✅ Living Memory fixes |
@@ -60,7 +60,7 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 **Target state:** fresh `taskflow-api` skeleton (no prior feature)
 **Prompt to dag-flow:** _"Specify a new feature: user authentication with JWT. Tokens expire in 1 hour. Support token refresh."_
 **Prompt to baseline:** same, no skill context
-**Phases exercised:** Map → Specify → Design → Tasks → Execute → T-Final
+**Phases exercised:** Discovery → Specify → Design → Tasks → Execute → T-Final
 **What this proves:** The complete nominal flow works end-to-end from cold start.
 
 ---
@@ -69,8 +69,8 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 **Target state:** `taskflow-api` + S1 outputs already present (auth exists)
 **Prompt to dag-flow:** _"Specify a new feature: Role-Based Access Control. Admins create users. Editors create tasks. Viewers are read-only."_
 **Prompt to baseline:** same
-**Phases exercised:** All phases + Map must detect S1 artifacts, DAG must respect auth dependency
-**What this proves:** Map phase detects existing code. DAG generates correct dependency ordering. Living Memory from S1 accelerates S2 Map.
+**Phases exercised:** All phases + Discovery must detect S1 artifacts, DAG must respect auth dependency
+**What this proves:** Discovery Phase detects existing code. DAG generates correct dependency ordering. Living Memory from S1 accelerates S2 Discovery.
 
 ---
 
@@ -83,12 +83,12 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 
 ---
 
-### S4 — `brownfield-discovery` (Map Phase stress test)
+### S4 — `brownfield-discovery` (Discovery Phase stress test)
 **Target state:** `taskflow-api` + **40+ pre-populated files** injected (middleware chains, domain models, existing routes)
 **Prompt to dag-flow:** _"Specify a new feature: rate limiting on all API endpoints. Max 100 requests per 15 minutes per IP."_
 **Prompt to baseline:** same
-**Phases exercised:** Map Phase under realistic load, Specify must not hallucinate existing packages
-**What this proves:** Map correctly captures invariants from a dense codebase. Specify references real existing files. Living Memory saves architectural invariants accurately.
+**Phases exercised:** Discovery Phase under realistic load, Specify must not hallucinate existing packages
+**What this proves:** Discovery correctly captures invariants from a dense codebase. Specify references real existing files. Living Memory saves architectural invariants accurately.
 
 ---
 
@@ -112,30 +112,30 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 
 ## Per-Phase Metric Contracts
 
-### Phase A: Map
+### Phase A: Discovery
 
 > [!IMPORTANT]
-> **Implementer note — Map Phase has two separate layers. Do not conflate them.**
+> **Implementer note — Discovery Phase has two separate layers. Do not conflate them.**
 >
 > | Layer | Who does it | When | Where stored |
 > |---|---|---|---|
 > | **Dense indexing** (raw codebase) | Global Indexing Hook (`setup_indexer.sh`) | **Pre-boot**, before agent starts | `context-mode` FTS5 |
-> | **Invariant synthesis** (high-level map) | Orchestrator during Map Phase | During the session, via `ctx_search` | `agentmemory` |
+> | **Invariant synthesis** (high-level map) | Orchestrator during Discovery Phase | During the session, via `ctx_search` | `agentmemory` |
 >
 > **Consequence for the harness:** each scenario's `setup.sh` MUST run the indexer hook **before** launching the agent. The Orchestrator never indexes raw files itself — it only queries the pre-populated FTS5 and synthesizes results into `agentmemory`.
 >
-> **Consequence for timing:** `timing.json` for the Map phase captures only the Orchestrator's `ctx_search` + `memory_save` work. Hook indexing time is measured separately (it runs before the agent session begins) and reported as `hook_indexing_ms` — a distinct field, not included in Map phase token/time totals.
+> **Consequence for timing:** `timing.json` for the Discovery Phase captures only the Orchestrator's `ctx_search` + `memory_save` work. Hook indexing time is measured separately (it runs before the agent session begins) and reported as `hook_indexing_ms` — a distinct field, not included in Discovery Phase token/time totals.
 >
-> **Source of truth:** `references/map.md` (not `docs/architecture.md` — the latter has outdated language implying the Orchestrator does the indexing, which contradicts ADR-0002).
+> **Source of truth:** `references/discovery.md` (not `docs/architecture.md` — the latter has outdated language implying the Orchestrator does the indexing, which contradicts ADR-0002).
 
 | Metric | Measurement Method | Pass Threshold |
 |---|---|---|
 | Architectural marker recall | Inject N known markers into target; count how many `agentmemory` captures | ≥ 80% |
-| Invariants saved count | `memory_recall` → count entries created during Map | ≥ 5 |
+| Invariants saved count | `memory_recall` → count entries created during Discovery | ≥ 5 |
 | Zero raw file crawls | Transcript analysis: count `view_file` calls on source files | 0 crawls |
-| Token cost | `timing.json` total_tokens for Map phase | ≤ 3,000 |
+| Token cost | `timing.json` total_tokens for Discovery Phase | ≤ 3,000 |
 | Time to complete | `timing.json` duration_ms | ≤ 90s |
-| S2 Map acceleration | S2 Map tokens ≤ S1 Map tokens (Living Memory benefit) | ≤ S1 tokens |
+| S2 Discovery acceleration | S2 Discovery tokens ≤ S1 Discovery tokens (Living Memory benefit) | ≤ S1 tokens |
 
 ### Phase B: Specify
 
@@ -388,7 +388,7 @@ Rate 1-5 how semantically appropriate this skill is for the task.
     "with_dag_flow": ["CONTEXT.md", ".specs/features/auth-jwt/spec.md", ".specs/features/auth-jwt/design.md", ".specs/features/auth-jwt/tasks.md", "src/middleware/auth.js", "test/auth.test.js"],
     "baseline": ["app.js", "app.test.js"]
   },
-  "phases_exercised": ["map", "specify", "design", "tasks", "execute", "living_memory"]
+  "phases_exercised": ["discovery", "specify", "design", "tasks", "execute", "living_memory"]
 }
 ```
 
@@ -404,7 +404,7 @@ Rate 1-5 how semantically appropriate this skill is for the task.
     {
       "scenario_id": "s1-auth-jwt",
       "phases": {
-        "map":           { "hook_indexing_ms": 4200, "recall_pct": 0.85, "token_cost": 2100, "crawls": 0, "pass": true },
+        "discovery":     { "hook_indexing_ms": 4200, "recall_pct": 0.85, "token_cost": 2100, "crawls": 0, "pass": true },
         "specify":       { "completeness_score": 4.5, "hallucination_pass": true, "token_cost": 6200, "pass": true },
         "design":        { "tradeoff_present": true, "coherence_score": 4.0, "pass": true },
         "tasks":         { "t_final_present": true, "dag_score": 4.5, "orphan_tasks": 0, "pass": true },

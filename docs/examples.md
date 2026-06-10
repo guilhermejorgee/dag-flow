@@ -66,15 +66,15 @@ The final task of the Mini-DAG (`T-Final`) runs silently. The local vector datab
 
 ---
 
-## Example 3: Brownfield Onboarding (The Map Phase)
+## Example 3: Brownfield Onboarding (The Discovery Phase)
 
 What happens when a new developer clones an existing `dag-flow` project?
 
 1. The developer clones the repo and runs `./hooks/setup_indexer.sh`.
 2. The developer opens their Agent and types: *"Specify a new feature..."*
-3. The Orchestrator wakes up. It checks `agentmemory` and realizes it is "blind" (it has no architectural map of the project).
-4. **The Map Phase automatically triggers.** The Orchestrator uses the `context-mode` MCP to surgically search the codebase for invariants, `package.json`, and structural boundaries.
-5. The Orchestrator populates its `agentmemory` with the discovered Context Map.
+3. The Orchestrator wakes up. It checks `agentmemory` and realizes it is "blind" (it has no Architectural Invariants of the project).
+4. **The Discovery Phase automatically triggers.** The Orchestrator uses the `context-mode` MCP to surgically search the codebase for invariants, `package.json`, and structural boundaries.
+5. The Orchestrator populates `agentmemory` with the synthesized Architectural Invariants.
 6. Only after the mapping is complete does it respond to the user: *"Map complete. Now, regarding your feature..."*
 
 This guarantees perfectly synchronized team onboarding without human intervention.

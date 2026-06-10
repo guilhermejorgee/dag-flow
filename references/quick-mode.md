@@ -33,8 +33,8 @@ After outputting the `<PAGRL>`, the Orchestrator MUST use the `search_skills` to
    - *Note on `Depends On`:* You MUST include this column to avoid breaking the DAG Runner parser. Fill it sequentially (e.g., T2 depends on T1).
    - *Note on `Done When`:* 
      - **For Mechanical Tasks:** Use atomic test commands (e.g., `npm test file.test.ts` or `npx eslint file.ts`).
-     - **For Non-Mechanical Tasks (LLM-as-a-judge):** Use the Zero-Context Auditor template: `gemini --prompt "Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>"`. The Orchestrator MUST replace `[CONTEXT_REF]` with the rich text from the Context Ref column.
-   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `Done When` gate must execute `gemini --prompt "ctx_index .specs/hotfixes/[issue_id].md and [modified_files]"` to sync the project memory.
+     - **For Non-Mechanical Tasks (LLM-as-a-judge):** Use the Zero-Context Auditor template: `agy --dangerously-skip-permissions --prompt "Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>"`. The Orchestrator MUST replace `[CONTEXT_REF]` with the rich text from the Context Ref column.
+   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `Done When` gate must execute `agy --dangerously-skip-permissions --prompt "Call ctx_index for .specs/hotfixes/[issue_id].md and [modified_files]. Call memory_save to add the synthesized invariant if architecture changed."` to sync the project memory.
 
 *Note on In-Code Documentation:* Instruct the worker to leave an explicit inline code comment explaining the hotfix logic. This enables automated multi-dev onboarding without bloating `CONTEXT.md`.
 

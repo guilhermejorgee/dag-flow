@@ -105,7 +105,7 @@ Run the indexing hook setup script for your specific runtime (e.g., `antigravity
 
 | Phase | Description | Key Output |
 |:---|:---|:---|
-| **A. Map** | **Living Memory Initialization:** Discovers the repo structure without expensive raw code scans, seeding the `context-mode` vector index. | `agentmemory` invariants |
+| **A. Discovery** | **Living Memory Initialization:** Discovers the repo structure without expensive raw code scans, seeding the `context-mode` vector index. | `agentmemory` invariants |
 | **B. Specify** | Socratic interrogation to eradicate ambiguity. | `spec.md`, `CONTEXT.md` |
 | **C. Design** | Technical architecture and trade-off decisions. | `design.md`, `ADRs` |
 | **D. Tasks** | Converts specs/design into an executable graph. Includes **T-Final** to update the Living Memory. | `tasks.md` (The DAG) |

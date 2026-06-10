@@ -65,7 +65,7 @@ This guarantees that the worker has Senior-level expertise *exactly tailored to 
 
 The architecture flows through 6 distinct phases:
 
-1. **Map (The Cartographer):** Populates the system's memory with the existing codebase structure (for brownfield projects) before specification begins.
+1. **Discovery (The Context Discoverer):** Synthesizes the system's baseline architecture with the existing codebase structure (for brownfield projects) before specification begins.
 2. **Specify (The Eradicator):** Deep Socratic interrogation. Generates the `spec.md` and updates the ubiquitous language dictionary (`CONTEXT.md`).
 3. **Design (The Architect):** Identifies trade-offs, defines infrastructure, and generates Architecture Decision Records (`docs/adr/`).
 4. **Tasks (The Engineer):** Converts the Spec and Design into the executable Directed Acyclic Graph (`tasks.md`).
@@ -97,7 +97,7 @@ A common flaw in agentic coding is the need to constantly re-scan the entire cod
 
 `dag-flow` solves this via the **Living Memory ecosystem**, powered by `context-mode` and `agentmemory`:
 
-1. **The Map Phase (Initialization):** When `dag-flow` encounters a new repository, it doesn't read every file. It uses `context-mode` to surgically index the structural invariants, creating a highly compressed vector map of the architecture in `agentmemory`.
+1. **The Discovery Phase (Initialization):** When `dag-flow` encounters a new repository, it doesn't read every file. The indexing is handled out-of-band by a pre-boot Global Indexing hook (`setup_indexer.sh`). The Orchestrator uses `context-mode` solely to surgically query this pre-populated index, synthesizing highly compressed Architectural Invariants into `agentmemory`.
 2. **The T-Final Task (Delta Update):** When the Orchestrator generates the DAG (`tasks.md`), it injects a final task at the end (`T-Final`). Because the Orchestrator just planned the feature, it knows *exactly* which files will be modified by the workers. 
 3. **The Silent Sync:** Once the workers finish, the `T-Final` task instructs the indexer to update *only* those specific modified files. 
 
@@ -107,7 +107,7 @@ The system memory stays perfectly synchronized with the architecture in real-tim
 
 ## 5. Quick Mode (The Emergency Flow)
 
-While the full Governance loop (Map -> Specify -> Design -> Tasks) provides mathematical certainty, it is too heavy for emergency hotfixes. 
+While the full Governance loop (Discovery -> Specify -> Design -> Tasks) provides mathematical certainty, it is too heavy for emergency hotfixes. 
 
 **Quick Mode** is a dedicated architectural pathway designed for rapid response:
 - **Diagnostic Bypass:** It completely bypasses the Specification and Design ceremonies.

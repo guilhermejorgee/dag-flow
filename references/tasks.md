@@ -21,7 +21,7 @@ A visual markdown table representing the DAG:
 | T1 | Implement DB schema | Spec: Database rules | None | None | `src/schema.ts` | `src/schema.ts` | `npx eslint src/schema.ts` | Pending |
 | T2 | Create Auth Middleware | Design: Use JWT | None | None | `src/auth.ts` | `src/auth.ts` | `npx tsc --noEmit` | Pending |
 | T3 | Implement API Endpoint | Spec: User creation | None | T1, T2 | `src/schema.ts`, `src/auth.ts` | `src/api.ts` | `npm test src/api.test.ts` | Pending |
-| T-Final | Map Delta Update | Orchestrator Rule | None | T3 | `N/A` | `N/A` | `gemini --prompt "Update context-mode indexing ONLY for src/api.ts and src/auth.ts. Update agentmemory invariants if architecture changed."` | Pending |
+| T-Final | Living Memory Delta Update | Orchestrator Rule | None | T3 | `N/A` | `N/A` | `agy --dangerously-skip-permissions --prompt "Call ctx_index for src/api.ts. Call memory_save to add the synthesized invariant: 'Uses JWT for authentication' to Architectural Invariants."` | Pending |
 
 **The MCP Skill Injection Rule:**
 The Orchestrator MUST use a **parallel search** strategy for `search_skills`. Instead of calling it row-by-row (which wastes roundtrips), identify all required technical domains (e.g., "react", "postgres"), execute multiple `search_skills` tool calls simultaneously in a single turn, and then write the entire table assigning the found skills to the `Skill` column. Use `None` if no specific skill is needed.
@@ -36,17 +36,17 @@ This column is **MANDATORY for every single task**. Without an executable gate, 
 - Use atomic test commands: `npm test path/to/specific.test.ts` or `npx eslint src/schema.ts`.
 
 **For Architectural/Complex Tasks (LLM-as-a-judge):**
-- If the task implements a complex rule or architectural decision that cannot be verified by tests, you MUST use the following exact `gemini` command template in the `Done When` column. Replace the bracketed variables. Do NOT instruct the Auditor to read external context files, as the summarized `Context Ref` is sufficient:
-`gemini --prompt "Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>"`
+- If the task implements a complex rule or architectural decision that cannot be verified by tests, you MUST use the following exact `agy` command template in the `Done When` column. Replace the bracketed variables. Do NOT instruct the Auditor to read external context files, as the summarized `Context Ref` is sufficient:
+`agy --dangerously-skip-permissions --prompt "Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>"`
 
 ### 3. The Financial Firewall (Token Economy)
 The `Input Files` column is critical. Because the DAG Runner spawns *stateless* background workers, every file listed is read from scratch.
 - **Rule:** Be surgically precise. Never use wildcards like `src/*`. Only list the exact files needed to complete the task. This guarantees parallel execution is exponentially cheaper than keeping a monolithic session alive.
 
 ### 4. Living Memory (The Delta Update Task)
-To ensure the project map does not rot, the Orchestrator MUST inject a final task (`T-Final`) into every DAG table. 
+To ensure the project's Architectural Invariants do not rot, the Orchestrator MUST inject a final task (`T-Final`) into every DAG table. 
 - **The Token-Efficient Delta:** The Orchestrator MUST NOT ask for a full codebase re-scan. It must pass its exact architectural intent and list ONLY the newly modified folders/files for `ctx_index`.
-- **CRITICAL TEMPLATE:** You MUST wrap the prompt in double quotes exactly like this: `gemini --prompt "Call ctx_index for src/file1.js and src/file2.js to update the architecture map."`
+- **CRITICAL TEMPLATE:** The Orchestrator MUST synthesize the invariant change and pass it explicitly to the worker. You MUST wrap the prompt in double quotes exactly like this: `agy --dangerously-skip-permissions --prompt "Call ctx_index for src/api.ts. Call memory_save to add the synthesized invariant: 'Uses JWT for authentication' to Architectural Invariants."`
 - This ensures the Map stays fresh with zero token waste and preserves the high-level design intent.
 
 ### 5. Handoff to Execution (DAG Runner)
