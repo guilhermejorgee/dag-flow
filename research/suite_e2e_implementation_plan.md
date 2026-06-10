@@ -58,7 +58,7 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 
 ### S1 — `auth-jwt` (Nominal full flow, linear DAG)
 **Target state:** fresh `taskflow-api` skeleton (no prior feature)
-**Prompt to dag-flow:** _"Specify a new feature: user authentication with JWT. Tokens expire in 1 hour. Support token refresh."_
+**Prompt to dag-flow:** _"Map the architecture of this project. Then, specify a new feature: user authentication with JWT. Tokens expire in 1 hour. Support token refresh."_
 **Prompt to baseline:** same, no skill context
 **Phases exercised:** Discovery → Specify → Design → Tasks → Execute → T-Final
 **What this proves:** The complete nominal flow works end-to-end from cold start.
@@ -67,7 +67,7 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 
 ### S2 — `rbac-roles` (Multi-dependency DAG, topological order)
 **Target state:** `taskflow-api` + S1 outputs already present (auth exists)
-**Prompt to dag-flow:** _"Specify a new feature: Role-Based Access Control. Admins create users. Editors create tasks. Viewers are read-only."_
+**Prompt to dag-flow:** _"Map the architecture of this project. Then, specify a new feature: Role-Based Access Control. Admins create users. Editors create tasks. Viewers are read-only."_
 **Prompt to baseline:** same
 **Phases exercised:** All phases + Discovery must detect S1 artifacts, DAG must respect auth dependency
 **What this proves:** Discovery Phase detects existing code. DAG generates correct dependency ordering. Living Memory from S1 accelerates S2 Discovery.
@@ -85,7 +85,7 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 
 ### S4 — `brownfield-discovery` (Discovery Phase stress test)
 **Target state:** `taskflow-api` + **40+ pre-populated files** injected (middleware chains, domain models, existing routes)
-**Prompt to dag-flow:** _"Specify a new feature: rate limiting on all API endpoints. Max 100 requests per 15 minutes per IP."_
+**Prompt to dag-flow:** _"Map the architecture of this project. Then, specify a new feature: rate limiting on all API endpoints. Max 100 requests per 15 minutes per IP."_
 **Prompt to baseline:** same
 **Phases exercised:** Discovery Phase under realistic load, Specify must not hallucinate existing packages
 **What this proves:** Discovery correctly captures invariants from a dense codebase. Specify references real existing files. Living Memory saves architectural invariants accurately.
