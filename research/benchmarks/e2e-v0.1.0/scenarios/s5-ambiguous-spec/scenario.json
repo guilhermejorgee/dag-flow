@@ -1,0 +1,37 @@
+{
+  "scenario_id": "s5-ambiguous-spec",
+  "target_state": "fresh",
+  "dag_flow_prompt": "Add notifications to the app.",
+  "baseline_prompt": "Add notifications to the app.",
+  "user_context": {
+    "persona": "a product manager who wants to add a notification system to a task management app and is talking to the backend architect",
+    "feature_requirements": {
+      "notification_type": "In-app only for now. No email or push.",
+      "delivery_mechanism": "WebSocket — real-time push to connected clients via socket.io",
+      "triggers": [
+        "Task created",
+        "Task status changed (e.g., open → in-progress → done)",
+        "Task assigned to a user"
+      ],
+      "notification_structure": {
+        "id": "uuid",
+        "type": "task_created | task_updated | task_assigned",
+        "message": "Human-readable string, e.g. 'Task #42 was created'",
+        "read": false,
+        "created_at": "ISO8601 timestamp"
+      },
+      "persistence": "In-memory for now. An array per user. Max 50 notifications stored.",
+      "read_marking": "POST /api/notifications/:id/read endpoint to mark as read",
+      "fetch_endpoint": "GET /api/notifications — returns the current user's notifications, newest first",
+      "auth_required": true,
+      "unread_count_in_response": true
+    },
+    "answering_style": "Somewhat verbose but decisive. Happy to clarify. Uses product language (not code)."
+  },
+  "expected_artifacts": [],
+  "phases_exercised": [
+    "discovery",
+    "specify"
+  ],
+  "adr0003_check": false
+}

@@ -15,16 +15,33 @@
 
 ## Context
 
-dag-flow v0.1.0 ships with six architectural phases, three of which are **new since the RBAC benchmark**:
+### New Pipeline Model (ADR-0003 + nomenclature refactor)
 
-| Phase | Key Output | New in v0.1.0? |
-|---|---|---|
-| **A. Discovery** | `agentmemory` invariants, FTS5 index seeded | ✅ Remodeled |
-| **B. Specify** | `spec.md`, `CONTEXT.md` via Socratic Interrogation + PAGRL | — |
-| **C. Design** | `design.md`, optional ADRs | — |
-| **D. Tasks** | `tasks.md` (DAG) + `T-Final` delta task | ✅ Living Memory fixes |
-| **E. Execute** | Source code + Auditor gate, Skill Injection active | ✅ New MCP |
-| **F. Quick Mode** | Mini-DAG, no Specify/Design, in-code comment | — |
+The core feature pipeline is now strictly **4 phases**:
+
+| # | Phase | Key Output | New in v0.1.0? |
+|---|---|---|---|
+| 1 | **Specify** | `spec.md`, `CONTEXT.md` via Socratic Interrogation + PAGRL | — |
+| 2 | **Design** | `design.md`, optional ADRs | — |
+| 3 | **Tasks** | `tasks.md` (DAG) + `T-Final` | ✅ Living Memory fixes |
+| 4 | **Execute** | Source code, Auditor gate, Skill Injection | ✅ New MCP |
+
+**Standalone Operations** (user-triggered, decoupled from the pipeline):
+- **Discovery** (ex-"Map Phase") — explicit invocation: _"Map the architecture of this project"_
+- **Quick Mode** — explicit invocation: _"Fix bug X"_
+
+> [!IMPORTANT]
+> **"Map Phase" is eradicated.** All references must use **Discovery Phase** or **Discovery**. Source of truth: `references/discovery.md`.
+
+### CLI Execution — ADR-0003
+
+The Independent Auditor and `T-Final` tasks **MUST** use the `agy` CLI with sandbox bypass:
+
+```bash
+agy --dangerously-skip-permissions --prompt "..."
+```
+
+This is mandatory so workers can call local MCP tools (`ctx_index`, `memory_save`) without human approval blocks. **Any `tasks.md` that uses `gemini` CLI for Auditor or T-Final is a grading FAIL.**
 
 **The RBAC benchmark proved overall system superiority. This benchmark proves each component.**
 
@@ -164,6 +181,7 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 |---|---|---|
 | `tasks.md` exists | `ls tasks.md` | Pass |
 | T-Final injected | `grep -i "t-final"` in tasks.md | Pass |
+| **ADR-0003 compliance** | `grep "agy --dangerously-skip-permissions"` in Auditor + T-Final task prompts | Pass (FAIL if `gemini` CLI found instead) |
 | DAG topological correctness | Judge: dependencies listed are logically ordered | ≥ 4 / 5 |
 | Run prompt completeness | Judge: each task has execution prompt + done-when criteria | ≥ 80% of tasks |
 | No orphan task IDs | Script: all `depends_on` refs exist as task IDs | 0 orphans |
@@ -186,18 +204,20 @@ research/benchmarks/e2e-v0.1.0/targets/taskflow-api/
 | Metric | Measurement Method | Pass Threshold |
 |---|---|---|
 | T-Final task executed | Transcript: T-Final run confirmation | Pass |
+| **T-Final uses `agy` CLI** | `grep "agy --dangerously-skip-permissions"` in T-Final execution log | Pass |
 | agentmemory new entries | `memory_recall` post-execute count delta | ≥ 1 new entry |
 | Delta precision | Expected modified files == files actually re-indexed | 100% |
 | Next-session recall | Fresh session `ctx_search` returns updated content from prior feature | Pass |
 
-### Phase F: Quick Mode
+### Standalone: Quick Mode
 
 | Metric | Measurement Method | Pass Threshold |
 |---|---|---|
 | No `spec.md` generated | `ls .specs/ 2>/dev/null` | NOT present |
 | No `design.md` generated | `ls design.md 2>/dev/null` | NOT present |
-| `tasks.md` present | `ls tasks.md` | Pass |
+| `tasks.md` present (Mini-DAG) | `ls tasks.md` | Pass |
 | Mini-DAG is lean | Task count in tasks.md | ≤ 4 tasks |
+| **ADR-0003 compliance** | `grep "agy --dangerously-skip-permissions"` in tasks.md prompts | Pass |
 | In-code comment present | `grep -r "DAG-FLOW-QUICK\|QUICK.MODE\|hotfix" outputs/src/` | ≥ 1 match |
 | Bug fixed | `npm test` exit code post-fix | 0 |
 | Token cost vs S1 full flow | Quick Mode total_tokens ÷ S1 total_tokens | ≤ 35% |
@@ -338,13 +358,21 @@ research/benchmarks/e2e-v0.1.0/
 ### `grade_scenario.py` (automated gates)
 
 Reads `assertions.json` per scenario. Each assertion is one of:
-- `file_exists`: path → pass/fail
-- `file_not_exists`: path → pass/fail
+- `file_exists` / `file_not_exists`: path → pass/fail
 - `grep`: file + pattern → pass/fail
+- `grep_not`: file + pattern → must NOT match (e.g. `gemini` CLI in Auditor/T-Final prompt)
 - `exit_code`: command → expected code
 - `count_gte`: grep count ≥ threshold
 - `token_lte`: timing.json field ≤ threshold
-- `judge_gte`: defer to judge_verdict.json field ≥ threshold
+- `skill_in_set`: injected skill ∈ expected set for scenario
+- `judge_gte`: defer to judge_verdict.json score ≥ threshold
+
+**ADR-0003 gate (applied to S1–S6 where `adr0003_check: true`):**
+```python
+# Check Auditor and T-Final use agy CLI
+assert_grep(tasks_md, pattern="agy --dangerously-skip-permissions", label="adr0003_auditor")
+assert_grep_not(tasks_md, pattern=r"\bgemini\b", context="auditor|t-final", label="adr0003_no_gemini")
+```
 
 ### `judge_scenario.py` (Gemini 2.5 Flash judge)
 
@@ -381,14 +409,16 @@ Rate 1-5 how semantically appropriate this skill is for the task.
   "scenario_id": "s1-auth-jwt",
   "description": "Nominal full flow — JWT authentication from cold start",
   "target_state": "fresh",
-  "dag_flow_prompt": "Specify a new feature: user authentication with JWT. Tokens expire in 1 hour. Support token refresh.",
-  "baseline_prompt": "same",
+  "standalone_ops": ["discovery"],
+  "dag_flow_prompt": "Map the architecture of this project. Then, specify a new feature: user authentication with JWT. Tokens expire in 1 hour. Support token refresh.",
+  "baseline_prompt": "Specify a new feature: user authentication with JWT. Tokens expire in 1 hour. Support token refresh.",
   "setup_script": "scenarios/s1-auth-jwt/setup.sh",
   "expected_artifacts": {
     "with_dag_flow": ["CONTEXT.md", ".specs/features/auth-jwt/spec.md", ".specs/features/auth-jwt/design.md", ".specs/features/auth-jwt/tasks.md", "src/middleware/auth.js", "test/auth.test.js"],
     "baseline": ["app.js", "app.test.js"]
   },
-  "phases_exercised": ["discovery", "specify", "design", "tasks", "execute", "living_memory"]
+  "phases_exercised": ["discovery", "specify", "design", "tasks", "execute", "living_memory"],
+  "adr0003_check": true
 }
 ```
 
@@ -407,9 +437,9 @@ Rate 1-5 how semantically appropriate this skill is for the task.
         "discovery":     { "hook_indexing_ms": 4200, "recall_pct": 0.85, "token_cost": 2100, "crawls": 0, "pass": true },
         "specify":       { "completeness_score": 4.5, "hallucination_pass": true, "token_cost": 6200, "pass": true },
         "design":        { "tradeoff_present": true, "coherence_score": 4.0, "pass": true },
-        "tasks":         { "t_final_present": true, "dag_score": 4.5, "orphan_tasks": 0, "pass": true },
-        "execute":       { "auditor_exit": 0, "tests_pass": true, "skill_fired": true, "skill_score": 4.5, "pass": true },
-        "living_memory": { "t_final_ran": true, "delta_precision": 1.0, "pass": true }
+        "tasks":         { "t_final_present": true, "adr0003_compliant": true, "dag_score": 4.5, "orphan_tasks": 0, "pass": true },
+        "execute":       { "auditor_exit": 0, "tests_pass": true, "skill_fired": true, "skill_in_expected_set": true, "skill_score": 4.5, "pass": true },
+        "living_memory": { "t_final_ran": true, "t_final_agy_cli": true, "delta_precision": 1.0, "pass": true }
       },
       "configs": {
         "with_dag_flow": { "total_tokens": 45000, "duration_ms": 180000 },
@@ -424,7 +454,8 @@ Rate 1-5 how semantically appropriate this skill is for the task.
     "overall_pass_rate": 1.0,
     "avg_token_savings_vs_baseline": "49%",
     "avg_code_quality_score": 4.3,
-    "skill_injection_relevance_avg": 4.6
+    "skill_injection_relevance_avg": 4.6,
+    "adr0003_compliance_rate": 1.0
   }
 }
 ```

@@ -11,13 +11,57 @@
       "id": "eval-1",
       "description": "Strict DAG Generator Test",
       "prompt": "Generate the tasks.md DAG for the user authentication feature based on the provided spec.md.",
-      "input_files": ["evals/mock-inputs/spec.md"]
+      "input_files": [
+        "evals/mock-inputs/spec.md"
+      ]
     },
     {
       "id": "eval-2",
       "description": "Quick Mode Escalation Protocol Test",
       "prompt": "The execution failed. Here is the auditor output: 'Error in src/auth.js: missing validation on input string'. Provide the Quick Mode Mini-DAG to fix this.",
       "input_files": []
+    },
+    {
+      "id": "s1-auth-jwt",
+      "description": "S1 baseline flow",
+      "prompt": "Implement JWT authentication. Add POST /api/auth/login and POST /api/auth/register routes. Use bcrypt for password hashing and jsonwebtoken for token generation. Update app.js to mount the routes.",
+      "expected_output": "Auth route and middleware",
+      "files": []
+    },
+    {
+      "id": "s2-rbac-roles",
+      "description": "S2 dependency flow",
+      "prompt": "Add RBAC role management. Create Admin and User roles, and secure routes so only Admins can create or delete tasks.",
+      "expected_output": "RBAC route and role middleware",
+      "files": []
+    },
+    {
+      "id": "s3-file-upload",
+      "description": "S3 skill injection flow",
+      "prompt": "Implement a file upload endpoint using multer. Validate the file type and size.",
+      "expected_output": "Upload route implemented",
+      "files": []
+    },
+    {
+      "id": "s4-brownfield",
+      "description": "S4 discovery flow",
+      "prompt": "Implement a global rate limiter for the API using Redis.",
+      "expected_output": "Rate limit middleware implemented",
+      "files": []
+    },
+    {
+      "id": "s5-ambiguous-spec",
+      "description": "S5 hallucination flow",
+      "prompt": "Add notifications to the app.",
+      "expected_output": "Agent should ask clarifying questions before spec generation",
+      "files": []
+    },
+    {
+      "id": "s6-quick-mode-hotfix",
+      "description": "S6 quick mode hotfix",
+      "prompt": "Fix the 500 error in auth.js. The password validation is failing.",
+      "expected_output": "Auth middleware fixed in quick mode",
+      "files": []
     }
   ]
 }

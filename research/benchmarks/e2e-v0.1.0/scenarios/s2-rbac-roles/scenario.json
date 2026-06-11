@@ -1,0 +1,35 @@
+{
+  "scenario_id": "s2-rbac-roles",
+  "target_state": "s1-complete",
+  "dag_flow_prompt": "Add RBAC role management. Create Admin and User roles, and secure routes so only Admins can create or delete tasks.",
+  "baseline_prompt": "Add RBAC role management. Create Admin and User roles, and secure routes so only Admins can create or delete tasks.",
+  "user_context": {
+    "persona": "a backend developer building a task management REST API that already has JWT authentication",
+    "feature_requirements": {
+      "roles": ["User", "Admin"],
+      "default_role_on_register": "User",
+      "admin_creation": "Manually promoted in the user store or via an ENV-seeded admin account (ADMIN_EMAIL/ADMIN_PASSWORD). No self-registration as Admin.",
+      "protected_routes": {
+        "POST /api/tasks": "Admin only",
+        "DELETE /api/tasks/:id": "Admin only",
+        "GET /api/tasks": "Any authenticated user"
+      },
+      "role_storage": "Add a 'role' field to the existing in-memory user model",
+      "role_enforcement": "Middleware function checkRole('Admin') applied to protected routes",
+      "error_response": "HTTP 403 with JSON { error: 'Forbidden' } when role check fails"
+    },
+    "answering_style": "Direct. One decision at a time. No elaboration unless asked."
+  },
+  "expected_artifacts": [
+    "src/middleware/role.js",
+    "src/routes/rbac.js"
+  ],
+  "phases_exercised": [
+    "discovery",
+    "specify",
+    "design",
+    "implement",
+    "audit"
+  ],
+  "adr0003_check": true
+}

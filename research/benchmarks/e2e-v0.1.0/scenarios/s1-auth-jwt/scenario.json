@@ -1,0 +1,37 @@
+{
+  "scenario_id": "s1-auth-jwt",
+  "target_state": "fresh",
+  "dag_flow_prompt": "Implement JWT authentication. Add POST /api/auth/login and POST /api/auth/register routes. Use bcrypt for password hashing and jsonwebtoken for token generation. Update app.js to mount the routes.",
+  "baseline_prompt": "Implement JWT authentication. Add POST /api/auth/login and POST /api/auth/register routes. Use bcrypt for password hashing and jsonwebtoken for token generation. Update app.js to mount the routes.",
+  "user_context": {
+    "persona": "a backend developer building a task management REST API",
+    "feature_requirements": {
+      "storage": "In-memory array in src/models/user.js. No database for now.",
+      "registration_fields": ["email", "password"],
+      "login_fields": ["email", "password"],
+      "token_expiry": "24 hours",
+      "jwt_secret_source": "Environment variable JWT_SECRET, fallback to 'dev-secret' for local dev",
+      "password_hashing": "bcrypt with salt rounds 10",
+      "error_responses": {
+        "validation_error": "HTTP 400 with JSON { error: 'message' }",
+        "wrong_credentials": "HTTP 401 with JSON { error: 'Invalid credentials' }",
+        "user_already_exists": "HTTP 409 with JSON { error: 'User already exists' }"
+      },
+      "success_response": "HTTP 200 with JSON { token: '<jwt>' }",
+      "route_prefix": "/api/auth"
+    },
+    "answering_style": "Terse and direct. Answers only what was asked. No fluff."
+  },
+  "expected_artifacts": [
+    "src/middleware/auth.js",
+    "src/routes/auth.js"
+  ],
+  "phases_exercised": [
+    "discovery",
+    "specify",
+    "design",
+    "implement",
+    "audit"
+  ],
+  "adr0003_check": true
+}

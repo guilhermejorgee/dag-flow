@@ -1,0 +1,32 @@
+{
+  "scenario_id": "s4-brownfield",
+  "target_state": "brownfield",
+  "dag_flow_prompt": "Implement a global rate limiter for the API using Redis.",
+  "baseline_prompt": "Implement a global rate limiter for the API using Redis.",
+  "user_context": {
+    "persona": "a backend developer maintaining a production task management API that is getting hammered by bots",
+    "feature_requirements": {
+      "redis_connection": "Local Redis on localhost:6379, no auth. Use ioredis or redis npm package.",
+      "limit_strategy": "Fixed window counter — 100 requests per 15 minutes per IP",
+      "scope": "Global — applied to all routes via app.use() middleware",
+      "fail_open": true,
+      "fail_open_reason": "If Redis is unavailable, let requests through — don't block users because of infra issues",
+      "response_headers": ["X-RateLimit-Limit", "X-RateLimit-Remaining", "X-RateLimit-Reset"],
+      "blocked_response": "HTTP 429 with JSON { error: 'Too Many Requests' }",
+      "key_format": "ratelimit:<ip>",
+      "existing_codebase_note": "Express app with JWT auth already in place. Redis is not yet in the project."
+    },
+    "answering_style": "Practical. Prioritizes stability over strictness. Answers decisively."
+  },
+  "expected_artifacts": [
+    "src/middleware/rateLimit.js"
+  ],
+  "phases_exercised": [
+    "discovery",
+    "specify",
+    "design",
+    "implement",
+    "audit"
+  ],
+  "adr0003_check": true
+}

@@ -1,0 +1,25 @@
+{
+  "scenario_id": "s6-quick-mode-hotfix",
+  "target_state": "s1-complete-with-bug",
+  "depends_on": "s1-auth-jwt",
+  "dag_flow_prompt": "Fix the 500 error in auth.js. The password validation is failing.",
+  "baseline_prompt": "Fix the 500 error in auth.js. The password validation is failing.",
+  "user_context": {
+    "persona": "a senior developer doing an emergency hotfix on a production authentication bug",
+    "feature_requirements": {
+      "bug_description": "The login endpoint returns HTTP 500. The root cause is that bcrypt.compare() is not being awaited — it returns a Promise that is always truthy, bypassing password validation entirely.",
+      "expected_fix": "Add the missing 'await' keyword before bcrypt.compare() in the login handler",
+      "file_to_fix": "src/routes/auth.js (or src/middleware/auth.js depending on codebase layout)",
+      "urgency": "Production incident — minimal changes only. Fix the bug, don't refactor.",
+      "tests": "Run npm test after the fix to confirm the login tests pass"
+    },
+    "answering_style": "Urgent and direct. Very short answers. Already knows what the bug is."
+  },
+  "expected_artifacts": [
+    "src/middleware/auth.js"
+  ],
+  "phases_exercised": [
+    "quick-mode"
+  ],
+  "adr0003_check": true
+}

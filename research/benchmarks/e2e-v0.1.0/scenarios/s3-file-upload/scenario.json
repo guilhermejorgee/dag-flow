@@ -1,0 +1,35 @@
+{
+  "scenario_id": "s3-file-upload",
+  "target_state": "fresh",
+  "dag_flow_prompt": "Implement a file upload endpoint using multer. Validate the file type and size.",
+  "baseline_prompt": "Implement a file upload endpoint using multer. Validate the file type and size.",
+  "user_context": {
+    "persona": "a backend developer building a task management REST API that needs to support file attachments",
+    "feature_requirements": {
+      "allowed_mime_types": ["image/jpeg", "image/png", "image/gif", "application/pdf", "text/plain"],
+      "max_file_size_mb": 5,
+      "upload_destination": "Local disk in uploads/ directory (relative to project root)",
+      "endpoint": "POST /api/upload — accepts single file field named 'file'",
+      "success_response": "HTTP 200 with JSON { filename: '<stored_name>', originalName: '<original>', size: <bytes> }",
+      "error_responses": {
+        "wrong_type": "HTTP 400 with JSON { error: 'Invalid file type' }",
+        "too_large": "HTTP 400 with JSON { error: 'File too large. Max 5MB.' }",
+        "no_file": "HTTP 400 with JSON { error: 'No file provided' }"
+      },
+      "multiple_files": false,
+      "auth_required": false
+    },
+    "answering_style": "Short and decisive. States limits clearly when asked."
+  },
+  "expected_artifacts": [
+    "src/routes/upload.js"
+  ],
+  "phases_exercised": [
+    "discovery",
+    "specify",
+    "design",
+    "implement",
+    "audit"
+  ],
+  "adr0003_check": true
+}
