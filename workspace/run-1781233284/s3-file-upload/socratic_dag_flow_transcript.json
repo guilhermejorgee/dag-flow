@@ -1,0 +1,25 @@
+[
+  {
+    "interaction": 1,
+    "question": "Prioritizing Tool Usage ▸ Thought for 5s, 317 tokens Prioritizing Tool Usage ▸ Thought for 2s, 673 tokens Prioritizing Tool Usage [Upload endpoint] [Ask for limit] [Need exact number]. What is maximum file size?",
+    "answer": "Maximum file size limit is 5MB. Any upload exceeding this limit must return a 400 Bad Request error."
+  },
+  {
+    "interaction": 2,
+    "question": "Prioritizing Tool Usage [Upload endpoint] [Ask for limit] [Need exact number]. What is maximum file size? ▸ Thought for 2s, 654 tokens Prioritizing Tool Usage [Upload endpoint] [Ask for types] [Need exact types]. What file types or MIME types are allowed?",
+    "answer": "Maximum file size is 5MB. Allowed MIME types are `image/jpeg`, `image/png`, `image/gif`, `application/pdf`, and `text/plain`."
+  },
+  {
+    "interaction": 3,
+    "question": "Prioritizing Tool Usage [Upload endpoint] [Ask for types] [Need exact types]. What file types or MIME types are allowed? ▸ Thought for 6s, 514 tokens Prioritizing Tool Usage [Upload endpoint] [Ask for storage] [Need storage target]. Where should uploaded files be stored (local disk, memory buffer, or cloud storage)?",
+    "answer": "allowed mime types jpeg png gif pdf plain text. files store local disk uploads directory."
+  },
+  {
+    "interaction": 4,
+    "question": "Prioritizing Tool Usage [Upload endpoint] [Ask for storage] [Need storage target]. Where should uploaded files be stored (local disk, memory buffer, or cloud storage)? ▸ Thought for 7s, 532 tokens Prioritizing Tool Usage [Upload endpoint] [Ask for route and field] [Need exact endpoint]. What is route path (e.g.  POST /api/upload ) and form-data field name (e.g.  file )?",
+    "answer": "Store uploaded files on the local disk in the `uploads/` directory, relative to the project root. The route path is `POST /api/upload` and it accepts a single file field named `file`."
+  },
+  {
+    "event": "finished"
+  }
+]

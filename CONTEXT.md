@@ -12,3 +12,6 @@
 **Discovery Phase**: Initial initialization phase where the Orchestrator strictly uses `ctx_search` against the FTS5 index to discover the project state and synthesize the baseline architecture. _Avoid_: Map Phase, global crawling.
 **Architectural Invariants**: The synthesized, high-level map of the project structure, sub-contexts, and technical stack stored in `agentmemory`. _Avoid_: Context Map, High-Level State.
 **Living Memory**: The ongoing property of keeping Architectural Invariants synchronized with reality via T-Final Delta Updates after execution, avoiding full re-scans. _Avoid_: Map Phase (as a continuous state).
+**Design Phase**: The architectural step between Specify and Tasks that defines the concrete technical interfaces, components, and patterns to be implemented. _Avoid_: pattern definition only, abstract architecture.
+**DAG Validator Gate**: A mandatory shell-level interceptor script (`scripts/write_dag.sh`) that validates the DAG table schema before saving it, acting as the sole authorized writer to the physical file. _Avoid_: soft validation, read-time gate.
+**Topology Separation**: The architectural division of artifacts where free-text specs live in open directories (`.specs/features/`) and executable DAG tables live in locked directories (`.specs/dags/`), enabling OS-level physical gating. _Avoid_: unified specs folder.

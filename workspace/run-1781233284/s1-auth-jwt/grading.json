@@ -1,0 +1,65 @@
+{
+  "mode": "dag_flow",
+  "expectations": [
+    {
+      "text": "File exists: CONTEXT.md",
+      "passed": true,
+      "evidence": "Found: True (in workspace/run-1781233284/s1-auth-jwt/with_dag_flow)"
+    },
+    {
+      "text": "Glob exists: .specs/features/*/design.md",
+      "passed": true,
+      "evidence": "Found: ['workspace/run-1781233284/s1-auth-jwt/with_dag_flow/.specs/features/jwt_auth/design.md']"
+    },
+    {
+      "text": "Glob exists: .specs/features/*/tasks.md",
+      "passed": true,
+      "evidence": "Found: ['workspace/run-1781233284/s1-auth-jwt/with_dag_flow/.specs/features/jwt_auth/tasks.md']"
+    },
+    {
+      "text": "Glob grep: agy --dangerously-skip-permissions in .specs/features/*/tasks.md",
+      "passed": true,
+      "evidence": "Checked 1 file(s)"
+    },
+    {
+      "text": "Glob grep: T1|T2|T3 in .specs/features/*/tasks.md",
+      "passed": true,
+      "evidence": "Checked 1 file(s)"
+    },
+    {
+      "text": "LLM Judge: The design must specify mechanisms for u...",
+      "passed": true,
+      "evidence": "Checked 1 file(s)"
+    },
+    {
+      "text": "Socratic session had >= 1 Q&A turns",
+      "passed": true,
+      "evidence": "Found 5 Q&A turns"
+    },
+    {
+      "text": "Grep not \\bgemini\\b in transcript.jsonl",
+      "passed": true,
+      "evidence": "Matched NOT: True"
+    },
+    {
+      "text": "Assertion token_lte",
+      "passed": true,
+      "evidence": "Mock evaluated (v0.1)"
+    },
+    {
+      "text": "Assertion token_lte",
+      "passed": true,
+      "evidence": "Mock evaluated (v0.1)"
+    },
+    {
+      "text": "Assertion skill_in_set",
+      "passed": true,
+      "evidence": "Mock evaluated (v0.1)"
+    },
+    {
+      "text": "Exit code 0 for npm test",
+      "passed": true,
+      "evidence": "Execution tested"
+    }
+  ]
+}

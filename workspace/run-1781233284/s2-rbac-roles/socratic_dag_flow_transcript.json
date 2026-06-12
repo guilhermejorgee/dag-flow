@@ -1,0 +1,20 @@
+[
+  {
+    "interaction": 1,
+    "question": "ContinueInterrogation\n\n[Specify Phase] [Ask data store question]. Since the  models  and  routes  directories are currently empty, what data store (e.g., in-memory arrays, PostgreSQL, MongoDB) should we use to store the Users, Roles, and Tasks? How's the CLI experience so far? Help us improve: [1] Good  [2] Fine  [3] Bad  [0] Skip",
+    "answer": "Use in-memory arrays. CLI experience good [1]."
+  },
+  {
+    "interaction": 2,
+    "question": "ContinueInterrogation\n\n[Specify Phase] [Ask auth question]. How are users authenticated (e.g., JWT, session cookies, mock HTTP headers) before their RBAC roles are evaluated?",
+    "answer": "Users authenticate with JWT. Verify token first, then evaluate role."
+  },
+  {
+    "interaction": 3,
+    "question": "ContinueInterrogation\n\n[Specify Phase] [Ask error response question]. What is the expected API response behavior when an unauthorized user (or a User without Admin privileges) attempts to create or delete a task (e.g., return a  403 Forbidden  status with a specific JSON error structure)?",
+    "answer": "Return HTTP 403. Response body JSON `{ \"error\": \"Forbidden\" }`."
+  },
+  {
+    "event": "finished"
+  }
+]

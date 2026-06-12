@@ -1,9 +1,9 @@
 {
   "assertions": [
     { "type": "file_exists", "path": "CONTEXT.md" },
-    { "type": "glob_exists", "pattern": ".specs/features/*/tasks.md",
-      "comment": "Quick mode still generates tasks.md (scoped to feature dir)" },
-    { "type": "glob_grep", "glob": ".specs/features/*/tasks.md",
+    { "type": "glob_exists", "pattern": ".specs/hotfixes/*.md",
+      "comment": "Quick mode still generates hotfix md (scoped to hotfixes dir)" },
+    { "type": "glob_grep", "glob": ".specs/hotfixes/*.md",
       "pattern": "agy --dangerously-skip-permissions" },
     { "type": "file_not_exists", "path": ".specs/spec.md",
       "comment": "Quick mode skips spec.md — goes direct to tasks" },
@@ -12,6 +12,8 @@
     { "type": "socratic_turns", "min_turns": 0,
       "comment": "Quick mode may not ask questions (hotfix = speed over thoroughness)" },
     { "type": "token_lte", "phase": "quick-mode-total", "threshold_pct_of_s1": 35 },
-    { "type": "skill_in_set", "expected": ["security-review", "tdd-workflow", "backend-patterns"] }
+    { "type": "skill_in_set", "expected": ["security-review", "tdd-workflow", "backend-patterns"] },
+    { "type": "llm_judge", "glob": ".specs/hotfixes/*.md", 
+      "requirement": "The document must explicitly instruct adding the 'await' keyword before bcrypt.compare to fix the synchronous blocking/password validation bug." }
   ]
 }

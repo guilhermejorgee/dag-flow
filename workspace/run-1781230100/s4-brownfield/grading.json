@@ -1,0 +1,50 @@
+{
+  "mode": "dag_flow",
+  "expectations": [
+    {
+      "text": "File exists: CONTEXT.md",
+      "passed": true,
+      "evidence": "Found: True (in workspace/run-1781230100/s4-brownfield/with_dag_flow)"
+    },
+    {
+      "text": "Glob exists: .specs/features/*/design.md",
+      "passed": true,
+      "evidence": "Found: ['workspace/run-1781230100/s4-brownfield/with_dag_flow/.specs/features/global-rate-limiter/design.md']"
+    },
+    {
+      "text": "Glob exists: .specs/features/*/tasks.md",
+      "passed": true,
+      "evidence": "Found: ['workspace/run-1781230100/s4-brownfield/with_dag_flow/.specs/features/global-rate-limiter/tasks.md']"
+    },
+    {
+      "text": "Glob grep: agy --dangerously-skip-permissions in .specs/features/*/tasks.md",
+      "passed": true,
+      "evidence": "Checked 1 file(s)"
+    },
+    {
+      "text": "Glob grep: [Rr]edis|[Rr]ate.?[Ll]imit|throttl in .specs/features/*/design.md",
+      "passed": true,
+      "evidence": "Checked 1 file(s)"
+    },
+    {
+      "text": "Socratic session had >= 1 Q&A turns",
+      "passed": true,
+      "evidence": "Found 4 Q&A turns"
+    },
+    {
+      "text": "Assertion token_lte",
+      "passed": true,
+      "evidence": "Mock evaluated (v0.1)"
+    },
+    {
+      "text": "Assertion token_lte",
+      "passed": true,
+      "evidence": "Mock evaluated (v0.1)"
+    },
+    {
+      "text": "Assertion skill_in_set",
+      "passed": true,
+      "evidence": "Mock evaluated (v0.1)"
+    }
+  ]
+}

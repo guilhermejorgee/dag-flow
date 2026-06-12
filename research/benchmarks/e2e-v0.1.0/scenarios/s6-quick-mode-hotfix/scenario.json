@@ -1,7 +1,6 @@
 {
   "scenario_id": "s6-quick-mode-hotfix",
-  "target_state": "s1-complete-with-bug",
-  "depends_on": "s1-auth-jwt",
+  "target_state": "brownfield",
   "dag_flow_prompt": "Fix the 500 error in auth.js. The password validation is failing.",
   "baseline_prompt": "Fix the 500 error in auth.js. The password validation is failing.",
   "user_context": {
