@@ -79,18 +79,24 @@ PAGRL in the Design phase has its own field set, attacking the failure character
 
 ## Advancement Rule
 
-You may only write `.specs/features/[feature]/design.md` when **all** of the following hold in your most recent `<PAGRL phase="Design">`:
+The physical vault `.specs/features/` is locked (`chmod 555`). You cannot write to it directly.
+
+You may only advance when **all** of the following hold in your most recent `<PAGRL phase="Design">`:
 
 - `<ReferencesRead>` includes both `references/design.md` and `references/specify.md`
 - `<UnjustifiedDecisions>` is empty
 - `<Decision>` is 'WriteDesign'
 
-You may only advance to the Tasks phase after `design.md` has been written and every item in `<ADRsRequired>` has been created in `docs/adr/`.
+When advancing, you MUST:
+1. Write `design.md` and `design.pagrl.xml` to the staging area `.specs/staging/[feature]/`.
+2. Use the `run_command` tool to execute `scripts/commit_design.sh [feature]`. This script runs Python validation against your XML and, if successful, moves the files into the physically locked vault.
+
+You may only advance to the Tasks phase after the gate script succeeds and every item in `<ADRsRequired>` has been created in `docs/adr/`.
 
 ## Zero Execution
 
-During the Design Phase, the Orchestrator is FORBIDDEN from modifying any functional application code (`src/`, `lib/`, etc.). All writes must be confined to `.specs/`, `docs/adr/`, and (if a new domain term emerges) `CONTEXT.md`.
+During the Design Phase, the Orchestrator is FORBIDDEN from modifying any functional application code (`src/`, `lib/`, etc.). All writes must be confined to `.specs/staging/`, `docs/adr/`, and (if a new domain term emerges) `CONTEXT.md`.
 
 ## Exit Condition
 
-The Design Phase concludes when `design.md` has been written, all required ADRs exist in `docs/adr/`, and the most recent PAGRL has `<Decision>WriteDesign</Decision>` with all advancement-rule conditions met.
+The Design Phase concludes when `design.md` has been successfully vaulted via `scripts/commit_design.sh`, all required ADRs exist in `docs/adr/`, and the most recent PAGRL has `<Decision>WriteDesign</Decision>` with all advancement-rule conditions met.

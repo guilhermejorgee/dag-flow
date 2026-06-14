@@ -1,0 +1,27 @@
+{
+  "assertions": [
+    { "type": "file_exists", "path": "CONTEXT.md",
+      "comment": "dag-flow writes CONTEXT.md at workspace root" },
+    { "type": "glob_exists", "pattern": ".specs/features/*/design.md",
+      "comment": "dag-flow scopes specs under .specs/features/<feature>/" },
+    { "type": "glob_exists", "pattern": ".specs/dags/*.md",
+      "comment": "dag-flow scopes tasks under .specs/features/<feature>/" },
+    { "type": "glob_grep", "pattern": "agy --dangerously-skip-permissions",
+      "glob": ".specs/dags/*.md",
+      "comment": "Tasks must have LLM Auditor done-gates" },
+    { "type": "glob_grep", "pattern": "T1|T2|T3",
+      "glob": ".specs/dags/*.md",
+      "comment": "DAG must have at least 3 tasks" },
+    { "type": "llm_judge", "requirement": "The design must specify mechanisms for user login and registration.",
+      "glob": ".specs/features/*/design.md",
+      "comment": "Design must satisfy routing and persistence semantics" },
+    { "type": "socratic_turns", "min_turns": 1,
+      "comment": "Agent must have asked at least 1 Socratic question" },
+    { "type": "grep_not", "pattern": "\\bgemini\\b", "path": "transcript.jsonl",
+      "comment": "Model name must not appear in transcript (blind benchmark)" },
+    { "type": "token_lte", "phase": "discovery", "threshold": 3000 },
+    { "type": "token_lte", "phase": "specify", "threshold": 10000 },
+    { "type": "skill_in_set", "expected": ["security-review", "backend-patterns", "api-design"] },
+    { "type": "exit_code", "command": "npm test", "expected": 0 }
+  ]
+}

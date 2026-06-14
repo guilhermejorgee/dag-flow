@@ -5,7 +5,7 @@ The **Discovery Phase** is the foundational prerequisite of dag-flow in brownfie
 ## Trigger
 
 **Manual / Explicit.** The user must explicitly request a discovery session (e.g., "Do a discovery of this project" or "Map the architecture"). The Orchestrator does NOT trigger this automatically during the Specify phase.
-It queries `agentmemory` (using `memory_recall`) to check for existing Architectural Invariants. If they exist, it updates them. If not, it creates them.
+It verifies if `CONTEXT.md` contains the Architectural Invariants. If they exist, it updates them. If not, it creates them.
 
 ## Core Mechanics
 
@@ -17,11 +17,11 @@ The Orchestrator's job during the Discovery Phase is purely surgical discovery. 
 ### 2. Output Routing (The Token Economy)
 To remain financially viable and protect the context window, the Discovery Phase consolidates its findings into persistent storage:
 
-- **Architectural Invariants (`agentmemory`):** The Orchestrator synthesizes its search results into an architectural map (which sub-projects exist, their inferred architectures, and core invariants) and saves it into persistent memory using the `memory_save` MCP tool. This acts as the flag that prevents the Discovery Phase from running again unnecessarily.
+- **Architectural Invariants (`CONTEXT.md`):** The Orchestrator synthesizes its search results into an architectural map (which sub-projects exist, their inferred architectures, and core invariants) and saves it to `CONTEXT.md`. This acts as the flag that prevents the Discovery Phase from running again unnecessarily.
 - **Dense Mapping:** (Already handled out-of-band by the pre-boot hook using `ctx_index`, keeping the Orchestrator's context window pristine).
 
 ### 3. Focus on Invariants
 The ultimate goal of the Discovery Phase is to identify what *cannot change*. By establishing the architectural rules of the existing codebase, the Orchestrator ensures that new specifications (during the Specify Phase) do not violate the system's established structural integrity.
 
 ## Exit Condition
-The Discovery Phase concludes when `agentmemory` is populated with the synthesized Architectural Invariants via the `memory_save` tool. The operation ends here, awaiting the user's next command.
+The Discovery Phase concludes when `CONTEXT.md` is populated with the synthesized Architectural Invariants. The operation ends here, awaiting the user's next command.

@@ -2,12 +2,12 @@
 
 ## Counted PAGRL (Schema)
 
-PAGRL in the Tasks phase has its own field set, attacking the failure characteristic of this phase: improvising the artifact format (e.g., dumping tasks to the console instead of writing the strict markdown table to `.specs/features/[feature]/tasks.md`).
+PAGRL in the Tasks phase has its own field set, attacking the failure characteristic of this phase: improvising the artifact format (e.g., dumping tasks to the console instead of writing the strict markdown table to `.specs/dags/[feature].md`).
 
 | Field | Type | Why it exists |
 |---|---|---|
 | `<ReferencesRead>` | comma-separated list | Must include `references/tasks.md`. The benchmark failure where the model dumped to console originated in skipping this reference; declaring it as not-read here is self-incrimination. |
-| `<ArtifactPath>` | string | The exact path where the tasks table will be written. Must match `.specs/features/[feature]/tasks.md` for features (or `.specs/hotfixes/[issue_id].md` for Quick Mode). The literal string `console` is forbidden. |
+| `<ArtifactPath>` | string | The exact path where the tasks table will be written. Must match `.specs/dags/[feature].md` for features (or `.specs/dags/[issue_id].md` for Quick Mode). The literal string `console` is forbidden. |
 | `<UncreatedADRs>` | list of `<item>` elements | Lists any ADRs declared in `design.md` that have not yet been physically created in `docs/adr/`. Must be empty to advance. This is the entry gate auditing the Design phase exit condition. |
 | `<TableSchemaSource>` | enum | One of `references/tasks.md`, `references/quick-mode.md`, or `memory`. The value `memory` is forbidden - table schema must come from a reference file, not from the model's pretraining. |
 | `<Decision>` | enum | One of `WriteTasksTable`, `AbortToUser`. |
@@ -17,7 +17,7 @@ PAGRL in the Tasks phase has its own field set, attacking the failure characteri
 ```xml
 <PAGRL phase="Tasks">
   <ReferencesRead>references/tasks.md, references/specify.md, references/design.md</ReferencesRead>
-  <ArtifactPath>.specs/features/file-upload/tasks.md</ArtifactPath>
+  <ArtifactPath>.specs/dags/file-upload.md</ArtifactPath>
   <UncreatedADRs>
     <!-- empty: all promised ADRs exist -->
   </UncreatedADRs>
@@ -28,6 +28,8 @@ PAGRL in the Tasks phase has its own field set, attacking the failure characteri
 
 ## Advancement Rule
 
+The physical vault `.specs/dags/` is locked (`chmod 555`). You cannot write to it directly.
+
 You may only generate the tasks table when **all** of the following hold:
 
 - `<ReferencesRead>` includes `references/tasks.md`
@@ -35,6 +37,12 @@ You may only generate the tasks table when **all** of the following hold:
 - `<UncreatedADRs>` is empty
 - `<TableSchemaSource>` is a reference file path, never `memory`
 - `<Decision>` is `WriteTasksTable`
+
+When advancing, you MUST:
+1. Write your `tasks.pagrl.xml` to the staging area `.specs/staging/[feature]/`.
+2. Spawn a Subagent Planner (`define_subagent` with `enable_write_tools=false`) to generate the DAG table and send it back to you via message.
+3. Write the table to `.specs/staging/[feature]/dag.md`.
+4. Use the `run_command` tool to execute `scripts/write_dag.sh [feature] --phase tasks`. This script runs Python validation against your XML and, if successful, moves the DAG into the physically locked vault.
 
 The **Tasks Phase** is the bridge between specification/architecture and execution. The Orchestrator translates `.specs/features/[feature]/spec.md` (and `design.md`, if created) into an executable Directed Acyclic Graph (DAG) for the automated DAG Runner. The Orchestrator NEVER executes these tasks itself.
 
@@ -49,7 +57,7 @@ The Orchestrator reads `.specs/features/[feature]/spec.md` and (if it exists) `.
 ### 2. Generating the DAG Table
 The Orchestrator breaks down the requirements and design into isolated, atomic tasks. These tasks must have strict dependencies.
 
-**Output to `.specs/features/[feature]/tasks.md`:**
+**Output to `.specs/staging/[feature]/dag.md` (before gating):**
 A visual markdown table representing the DAG:
 
 | ID | Description | Context Ref | Skill | Depends On | Input Files | Output Files | Done When (Gate) | Status |
@@ -57,7 +65,7 @@ A visual markdown table representing the DAG:
 | T1 | Implement DB schema | Spec: Database rules | None | None | `src/schema.ts` | `src/schema.ts` | `npx eslint src/schema.ts` | Pending |
 | T2 | Create Auth Middleware | Design: Use JWT | None | None | `src/auth.ts` | `src/auth.ts` | `npx tsc --noEmit` | Pending |
 | T3 | Implement API Endpoint | Spec: User creation | None | T1, T2 | `src/schema.ts`, `src/auth.ts` | `src/api.ts` | `npm test src/api.test.ts` | Pending |
-| T-Final | Living Memory Delta Update | Orchestrator Rule | None | T3 | `N/A` | `N/A` | `agy --dangerously-skip-permissions --prompt "Call ctx_index for src/api.ts. Call memory_save to add the synthesized invariant: 'Uses JWT for authentication' to Architectural Invariants."` | Pending |
+| T-Final | Living Memory Delta Update | Orchestrator Rule | None | T3 | `N/A` | `N/A` | `agy --dangerously-skip-permissions --prompt "Call ctx_index for src/api.ts."` | Pending |
 
 **The MCP Skill Injection Rule:**
 The Orchestrator MUST use a **parallel search** strategy for `search_skills`. Instead of calling it row-by-row (which wastes roundtrips), identify all required technical domains (e.g., "react", "postgres"), execute multiple `search_skills` tool calls simultaneously in a single turn, and then write the entire table assigning the found skills to the `Skill` column. Use `None` if no specific skill is needed.
@@ -81,15 +89,15 @@ The `Input Files` column is critical. Because the DAG Runner spawns *stateless* 
 
 ### 4. Living Memory (The Delta Update Task)
 To ensure the project's Architectural Invariants do not rot, the Orchestrator MUST inject a final task (`T-Final`) into every DAG table. 
-- **The Token-Efficient Delta:** The Orchestrator MUST NOT ask for a full codebase re-scan. It must pass its exact architectural intent and list ONLY the newly modified folders/files for `ctx_index`.
-- **CRITICAL TEMPLATE:** The Orchestrator MUST synthesize the invariant change and pass it explicitly to the worker. You MUST wrap the prompt in double quotes exactly like this: `agy --dangerously-skip-permissions --prompt "Call ctx_index for src/api.ts. Call memory_save to add the synthesized invariant: 'Uses JWT for authentication' to Architectural Invariants."`
-- This ensures the Map stays fresh with zero token waste and preserves the high-level design intent.
+- **The Token-Efficient Delta:** The Orchestrator MUST NOT ask for a full codebase re-scan. It must list ONLY the newly modified folders/files for `ctx_index`.
+- **CRITICAL TEMPLATE:** The Orchestrator MUST wrap the prompt in double quotes exactly like this: `agy --dangerously-skip-permissions --prompt "Call ctx_index for src/api.ts."`
+- This ensures the search index stays fresh with zero token waste.
 
 ### 5. Handoff to Execution (DAG Runner)
 The Orchestrator DOES NOT generate raw CLI prompts. Instead, it instructs the user to invoke the automated DAG Runner:
 
 ```bash
-<path-to-skill>/scripts/run_dag.sh .specs/features/[feature]/tasks.md
+<path-to-skill>/scripts/run_dag.sh .specs/dags/[feature].md
 ```
 
 **What happens next (out of the Orchestrator's sight):**

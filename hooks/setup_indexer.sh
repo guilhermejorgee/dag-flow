@@ -13,6 +13,9 @@
 
 set -euo pipefail
 
+# Initialize locked DAG directory idempotently
+mkdir -p .specs/dags && chmod 555 .specs/dags
+
 SUPPORTED_RUNTIMES="antigravity | claude | codex | cursor | gemini-cli | vscode-copilot"
 
 if [ "${1:-}" != "--runtime" ] || [ -z "${2:-}" ]; then

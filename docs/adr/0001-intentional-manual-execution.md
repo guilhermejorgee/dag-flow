@@ -8,7 +8,7 @@ Accepted
 
 ## Context
 
-We evaluated a proposal (`research/implement-with-context-mode.md`) to achieve "Level 5 Autonomy" by having the Orchestrator autonomously run the DAG execution script (`run_dag.sh`) using the `context-mode` MCP sandbox (`ctx_execute`). 
+We evaluated a proposal (`docs/design/implement-with-context-mode.md`) to achieve "Level 5 Autonomy" by having the Orchestrator autonomously run the DAG execution script (`run_dag.sh`) using the `context-mode` MCP sandbox (`ctx_execute`). 
 While this approach successfully shields the Orchestrator's context window from terminal noise, it introduces a severe flaw: all execution logs and real-time streaming are hidden inside the sandbox. The user is left completely blind to the progress of the worker agents and the auto-healing loops.
 
 ## Decision

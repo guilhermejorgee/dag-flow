@@ -73,7 +73,9 @@ PAGRL in the Specify phase is not free prose. It is a structured XML block with 
 
 ### Advancement Rule
 
-You may only write `.specs/features/[feature]/spec.md` when **all** of the following hold in your most recent `<PAGRL phase="Specify">`:
+The physical vault `.specs/features/` is locked (`chmod 555`). You cannot write to it directly.
+
+You may only advance when **all** of the following hold in your most recent `<PAGRL phase="Specify">`:
 
 - `<QuestionsAsked>` ≥ 1
 - `<MissingContextTerms>` is empty
@@ -83,8 +85,12 @@ You may only write `.specs/features/[feature]/spec.md` when **all** of the follo
 
 If any of these fails, the only valid action is to ask another Socratic question (or, if blocked, set `<Decision>` to `AbortToUser` and surface the blocker explicitly).
 
+When advancing, you MUST:
+1. Write `spec.md` and `spec.pagrl.xml` to the staging area `.specs/staging/[feature]/`.
+2. Use the `run_command` tool to execute `scripts/commit_spec.sh [feature]`. This script runs Python validation against your XML and, if successful, moves the files into the physically locked vault.
+
 ### 4. Zero Execution
-During the Specify Phase, the Orchestrator is **FORBIDDEN** from modifying any functional application code (`src/`, `lib/`, etc.). All writes must be confined to `.specs/` and `CONTEXT.md`.
+During the Specify Phase, the Orchestrator is **FORBIDDEN** from modifying any functional application code (`src/`, `lib/`, etc.). All writes must be confined to `.specs/staging/`, `docs/adr/`, and `CONTEXT.md`.
 
 ## Exit Condition
 The Specify phase concludes only when all edge cases, domain entities, and requirements are unambiguously resolved. The system then automatically advances to the **Design Phase**.

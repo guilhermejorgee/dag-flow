@@ -1,0 +1,29 @@
+[
+  {
+    "interaction": 1,
+    "question": "ContinueInterrogation\n\n[GlobalRateLimiter] [need scope] [prevent ambiguity]. [Tell me scope: limit per IP, limit per user ID, or total global limit for entire API?]",
+    "answer": "Limit per IP globally across all routes. Use fixed window tracking 100 requests per 15 minutes. Fail open if Redis down."
+  },
+  {
+    "interaction": 2,
+    "question": "ContinueInterrogation\n\n[429 Response] [need format] [prevent ambiguity]. [Tell me response format: plain text, specific JSON structure, or include Retry-After header?]",
+    "answer": "Blocked response use JSON format `{ error: 'Too Many Requests' }` with HTTP 429. No Retry-After header needed to keep logic simple."
+  },
+  {
+    "event": "waiting",
+    "content_lines": 24,
+    "cursor": {
+      "row": 47
+    }
+  },
+  {
+    "event": "waiting",
+    "content_lines": 24,
+    "cursor": {
+      "row": 47
+    }
+  },
+  {
+    "event": "finished"
+  }
+]

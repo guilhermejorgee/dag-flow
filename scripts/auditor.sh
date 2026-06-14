@@ -11,7 +11,7 @@ TASK_ID=$1
 if [ -n "$2" ]; then
     TASKS_FILE="$2"
 else
-    TASKS_FILE=".specs/features/*/tasks.md" # Simplified glob, assumes one active feature for the script
+    TASKS_FILE=$(ls .specs/dags/*.md 2>/dev/null | head -n 1)
 fi
 
 echo "Initializing Independent Auditor for Task: $TASK_ID"

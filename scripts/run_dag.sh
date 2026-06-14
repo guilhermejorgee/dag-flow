@@ -2,12 +2,25 @@
 # Independent DAG Runner - DAG-FLOW
 # Parses tasks.md, executes stateless Gemini CLI workers, runs auditor, and auto-heals.
 
-if [ -z "$1" ]; then
-    echo "Usage: $0 <path/to/tasks.md>"
-    exit 1
+TASKS_FILE="${1:-}"
+
+if [ -z "$TASKS_FILE" ]; then
+    # Auto-find the only DAG if not specified
+    DAG_COUNT=$(ls .specs/dags/*.md 2>/dev/null | wc -l || echo 0)
+    if [ "$DAG_COUNT" -eq 1 ]; then
+        TASKS_FILE=$(ls .specs/dags/*.md)
+        echo "Auto-detected DAG: $TASKS_FILE"
+    else
+        echo "Usage: $0 <path/to/dag.md>"
+        echo "Note: Looks in .specs/dags/ automatically if only filename is provided."
+        exit 1
+    fi
 fi
 
-TASKS_FILE=$1
+if [ ! -f "$TASKS_FILE" ] && [ -f ".specs/dags/$TASKS_FILE" ]; then
+    TASKS_FILE=".specs/dags/$TASKS_FILE"
+fi
+
 
 if [ ! -f "$TASKS_FILE" ]; then
     echo "❌ Error: Could not find tasks file: $TASKS_FILE"
@@ -82,11 +95,15 @@ while IFS="|" read -u 3 -r empty id desc context_ref skill deps inputs outputs g
 
     if [ $SUCCESS -eq 1 ]; then
         # Update Status to Done
+        chmod 755 "$(dirname "$TASKS_FILE")" 2>/dev/null || true
         sed -i "s#^| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $skill | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
         sed -i "s#^| *$id *|.*|.*Failed.*#| $id | $desc | $context_ref | $skill | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Done |#" "$TASKS_FILE"
+        chmod 555 "$(dirname "$TASKS_FILE")" 2>/dev/null || true
     else
         echo "🚨 Task $id failed after $MAX_ATTEMPTS attempts. Halting DAG execution."
+        chmod 755 "$(dirname "$TASKS_FILE")" 2>/dev/null || true
         sed -i "s#^| *$id *|.*|.*Pending.*#| $id | $desc | $context_ref | $skill | $deps | \`$inputs\` | \`$outputs\` | \`$gate\` | Failed |#" "$TASKS_FILE"
+        chmod 555 "$(dirname "$TASKS_FILE")" 2>/dev/null || true
         
         # Error Handoff for Orchestrator Escalation Phase
         LOG_PATH="$(dirname "$TASKS_FILE")/last_failure.log"

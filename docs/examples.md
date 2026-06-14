@@ -34,7 +34,7 @@ The Orchestrator makes a technical proposition: *"I propose using Redis instead 
 The Orchestrator translates the `spec.md` and `design.md` into an executable Directed Acyclic Graph (DAG). 
 
 **Artifacts Generated:**
-- `.specs/features/cart/tasks.md`
+- The DAG table is piped through the OS-level gate (`scripts/write_dag.sh`) and securely saved to `.specs/dags/cart.md`.
 
 To ensure **Systemic Traceability**, the Orchestrator fills the `Context Ref` column for every task. This blind-proofs the process: the worker doesn't need to read the full specification; it only reads the summarized rule for its atomic task. 
 The Orchestrator also injects `T-Final` (the Delta Update) to map the new files back into the system's memory.
@@ -51,14 +51,13 @@ When a critical bug appears, the heavy ceremony of Spec and Design is bypassed, 
 The Orchestrator uses PAGRL to isolate the failure without touching the code.
 
 **Artifacts Generated:**
-- `.specs/hotfixes/login-timeout.md` is generated, containing a brief diagnosis and a simplified, sequential Mini-DAG.
+- `.specs/dags/login-timeout.md` is generated via `scripts/write_dag.sh`, containing a brief diagnosis and a simplified, sequential Mini-DAG.
 
 ### 2. The Execution Phase
 The user manually invokes the DAG runner:
 ```bash
-./scripts/run_dag.sh .specs/hotfixes/login-timeout.md
+./scripts/run_dag.sh .specs/dags/login-timeout.md
 ```
-
 The stateless worker fixes the bug in the source code. Because it is Quick Mode, the worker is instructed to insert a **mandatory in-code comment** explaining the rationale of the fix for future developers (since there is no formal `spec.md`).
 
 ### 3. Living Memory Sync
@@ -72,9 +71,9 @@ What happens when a new developer clones an existing `dag-flow` project?
 
 1. The developer clones the repo and runs `./hooks/setup_indexer.sh`.
 2. The developer opens their Agent and types: *"Specify a new feature..."*
-3. The Orchestrator wakes up. It checks `agentmemory` and realizes it is "blind" (it has no Architectural Invariants of the project).
+3. The Orchestrator wakes up. It checks `CONTEXT.md` and realizes it is "blind" (it has no Architectural Invariants of the project).
 4. **The Discovery Phase automatically triggers.** The Orchestrator uses the `context-mode` MCP to surgically search the codebase for invariants, `package.json`, and structural boundaries.
-5. The Orchestrator populates `agentmemory` with the synthesized Architectural Invariants.
+5. The Orchestrator populates `CONTEXT.md` with the synthesized Architectural Invariants.
 6. Only after the mapping is complete does it respond to the user: *"Map complete. Now, regarding your feature..."*
 
 This guarantees perfectly synchronized team onboarding without human intervention.

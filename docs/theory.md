@@ -45,6 +45,11 @@ The Orchestrator acts with incisive questioning (depth-first search) to eradicat
 ### PAGRL (Pre-Action Governance Reasoning Loop)
 This is a mandatory inhibitory mechanism. Before acting, the model is forced to explicitly declare its intention via a systemic trace (`<PAGRL>`), confronting its desired action with the established architectural rules. This prevents spontaneous deviation from the plan.
 
+### Semantic Gravity and OS-Level Gating
+Extensive benchmarking revealed a vulnerability in large language models: **Overconfidence and Few-Shot Ossification**. When a model recognizes a familiar pattern (like "build an auth system"), the gravitational pull of its pretraining data overrides local prompt instructions. No matter how strongly a prompt demands a specific format (e.g., "You MUST output a 9-column markdown table"), the model will eventually improvise. 
+
+To combat this, `dag-flow` implements **Topology Separation and OS-Level Gating**. Instead of relying purely on the LLM's semantic discipline to place files correctly and format them properly, `dag-flow` physically locks the executable DAG directory (`.specs/dags/`) via OS permissions (`chmod 555`). The model is forced to pipe its output through a deterministic bash script (`scripts/write_dag.sh`) that acts as a hard physical gate. If the model hallucinates the schema, the script rejects the input and crashes, providing immediate structural contradiction and forcing a reflexive correction.
+
 ---
 
 ## 4. Language Alignment Theory
@@ -61,6 +66,6 @@ This mechanism confines all extractions, negotiations, and systemic nomenclature
 
 ## Original Research
 
-The principles outlined above are summaries. The complete, original research documents detailing the architectural investigations, vulnerability reports, and paradigm shifts that led to the creation of dag-flow are preserved in their original language (Portuguese) in the `/research/` directory.
+The principles outlined above are summaries. The complete, original research documents detailing the architectural investigations, vulnerability reports, and paradigm shifts that led to the creation of dag-flow are preserved in their original language (Portuguese) in the `/docs/design/` directory.
 
-- See [Research Index](../research/README.md) for a guide to the original papers.
+- See [Design Documents](./design/) for a guide to the original papers.

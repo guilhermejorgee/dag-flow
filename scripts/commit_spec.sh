@@ -1,0 +1,39 @@
+#!/bin/bash
+# scripts/commit_spec.sh
+# Validation gate for writing specifications into the physically locked .specs/features/ vault.
+
+set -euo pipefail
+
+FEATURE="$1"
+if [ -z "$FEATURE" ]; then
+  echo "Usage: $0 <feature_name>"
+  exit 1
+fi
+
+STAGING_DIR=".specs/staging/$FEATURE"
+VAULT_DIR=".specs/features/$FEATURE"
+
+SPEC_MD="$STAGING_DIR/spec.md"
+PAGRL_XML="$STAGING_DIR/spec.pagrl.xml"
+
+if [ ! -f "$SPEC_MD" ] || [ ! -f "$PAGRL_XML" ]; then
+  echo "❌ Error: Both spec.md and spec.pagrl.xml must exist in $STAGING_DIR"
+  exit 1
+fi
+
+# 1. Run Python validation
+echo "🔍 Validating PAGRL schema for phase: specify"
+python3 scripts/validate_pagrl.py --phase specify "$PAGRL_XML"
+
+# 2. Unlock vault, move files, and lock
+chmod 755 .specs/features 2>/dev/null || true
+mkdir -p "$VAULT_DIR"
+chmod 755 "$VAULT_DIR" 2>/dev/null || true
+
+# Trap to guarantee the vault is locked even if the script crashes
+trap 'chmod 555 .specs/features 2>/dev/null || true; chmod 555 "$VAULT_DIR" 2>/dev/null || true' EXIT ERR
+
+mv "$SPEC_MD" "$VAULT_DIR/"
+mv "$PAGRL_XML" "$VAULT_DIR/"
+
+echo "✅ Spec securely written to $VAULT_DIR"

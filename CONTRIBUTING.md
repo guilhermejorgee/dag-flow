@@ -4,7 +4,7 @@ First off, thank you for considering contributing to dag-flow! It's people like 
 
 ## 🧠 Project Philosophy
 
-`dag-flow` is heavily rooted in cognitive science, systems engineering, and strict architectural constraints. Before contributing, please familiarize yourself with the [Theory & Neurocognitive Paradigm](docs/theory.md) and the [Architecture](docs/architecture.md). 
+`dag-flow` is heavily rooted in cognitive science, systems engineering, and strict architectural constraints. Before contributing, please familiarize yourself with the [Theory & Neurocognitive Paradigm](docs/theory.md) and the [Architecture](docs/architecture/architecture.md). 
 
 **The Golden Rule of dag-flow:** *The Orchestrator plans; the Worker executes. They must never mix.*
 
@@ -31,7 +31,7 @@ If your feature introduces a major structural change or a shift in the cognitive
 
 2. **Understand the Structure:**
    - `docs/` — User-facing documentation (English).
-   - `research/` — Original research papers and benchmarks (Portuguese).
+   - `docs/design/` — Original research papers, findings, and design documents (Portuguese).
    - `scripts/` — The core bash executors (`run_dag.sh`, `auditor.sh`).
    - `hooks/` — Integration scripts for agent runtimes.
    - `mcp/` — The bundled Model Context Protocol server.
@@ -54,7 +54,7 @@ If your feature introduces a major structural change or a shift in the cognitive
 - **TypeScript (MCP):** Use standard TypeScript conventions. Adhere to the existing `project.json` and ESLint configurations.
 - **Documentation:**
   - **User-Facing:** All files in `docs/`, `README.md`, and this file must be written in clear, concise **English**.
-  - **Research:** Files in `research/` must be preserved in their original **Portuguese**, as they form the intellectual foundation of the project.
+  - **Research:** Files in `docs/design/` must be preserved in their original **Portuguese**, as they form the intellectual foundation of the project.
 - **LLM Prompts:** Changes to `SKILL.md` or `references/*.md` must be highly token-efficient. Use "Caveman Mode" (ultra-concise grammar) for system rules.
 
 ## 📖 The Role of `CONTEXT.md`

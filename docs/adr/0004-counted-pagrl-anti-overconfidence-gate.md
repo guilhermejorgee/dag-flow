@@ -8,7 +8,7 @@ Accepted
 
 ## Context
 
-Benchmarks of dag-flow against large frontier models (notably Gemini 3.1 Pro High) revealed a consistent failure pattern: the model would skip the Specify phase entirely (zero Q&A turns), hallucinate project-specific values (file size limits, MIME types), skip the loading of `references/tasks.md`, and improvise the tasks output to the console rather than writing the strict markdown table to `.specs/features/[feature]/tasks.md`. The full diagnostic, including investigation of RLHF-induced overconfidence and semantic gravity in pretraining, is documented in `research/Otimização Do Projeto Dag-Flow.md`.
+Benchmarks of dag-flow against large frontier models (notably Gemini 3.1 Pro High) revealed a consistent failure pattern: the model would skip the Specify phase entirely (zero Q&A turns), hallucinate project-specific values (file size limits, MIME types), skip the loading of `references/tasks.md`, and improvise the tasks output to the console rather than writing the strict markdown table to `.specs/features/[feature]/tasks.md`. The full diagnostic, including investigation of RLHF-induced overconfidence and semantic gravity in pretraining, is documented in `docs/design/Otimização Do Projeto Dag-Flow.md`.
 
 The original skill relied on prose-level rules ("Anti-Hallucination", "you MUST read references/tasks.md") to enforce phase discipline. These rules competed in token weight against the model's RLHF-trained tendency to "be helpful immediately", and they lost. The skill also contained a "Bypass Check" section that granted the orchestrator discretion to skip the Design phase for "Pattern-Conforming" features (CRUD endpoints, UI components, bug fixes). Two failure modes were observed:
 

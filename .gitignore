@@ -7,9 +7,7 @@ __pycache__/
 list_files.py
 log.txt
 
-# Estado local do agentmemory / context-mode
-data/state_store.db/
-data/stream_store/
+# Estado local do context-mode
 *.bin
 
 # Node

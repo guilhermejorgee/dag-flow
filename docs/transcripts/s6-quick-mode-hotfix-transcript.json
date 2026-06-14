@@ -1,0 +1,10 @@
+[
+  {
+    "interaction": 1,
+    "question": "ContinueInterrogation\n\n[Quick Mode] [abort] [missing canonical phrase in prompt]. [Specify Phase] [start] [Default Policy enforced]. [question] [ask user] [Intent seems hotfix-shaped. Do you want to invoke Quick Mode explicitly by replying with canonical phrase 'Fix bug' or 'Hotfix', or proceed with full Specify phase for auth.js password validation failure?].",
+    "answer": "Hotfix. bcrypt.compare not awaited in login handler. Fix now."
+  },
+  {
+    "event": "finished"
+  }
+]

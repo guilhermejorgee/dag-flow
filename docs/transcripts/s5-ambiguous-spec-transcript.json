@@ -1,0 +1,66 @@
+[
+  {
+    "interaction": 1,
+    "question": "ContinueInterrogation\n\nStart specify phase. Read rules. Index repo done. Need clarify notification feature. What delivery channels (in-app, email, push, SMS) must app support for these notifications?",
+    "answer": "Notifications in-app only for now. No email, push, or SMS support. Focus real-time delivery inside application dashboard. Next step: design WebSocket pipeline."
+  },
+  {
+    "interaction": 2,
+    "question": "ContinueInterrogation\n\nChannel logged. CONTEXT.md updated with  InAppNotification . Must clarify state. Do notifications need persistence (survive page reload, track read/unread state in database) or purely ephemeral (disappear if user reloads)?",
+    "answer": "Notifications must survive page refresh and track read states using server memory. Database not needed for this release. Build server-side memory storage next."
+  },
+  {
+    "interaction": 3,
+    "question": "ContinueInterrogation\n\nPersistence logged. CONTEXT.md updated with  MemoryNotificationStore . Cannot build yet. Still in Specify phase. What specific app events trigger these notifications? (e.g. job completion, system error, user action?)",
+    "answer": "Notification trigger when task created, status updated, or assigned to user. Keep users updated on task progress. Next, implement WebSocket push."
+  },
+  {
+    "interaction": 4,
+    "question": "ContinueInterrogation\n\nTriggers logged. CONTEXT.md updated with  TaskEvent . Codebase currently lacks User/Task models but has  jsonwebtoken  in  package.json . How must the WebSocket pipeline authenticate connections to map sockets to specific users? (e.g., JWT in connection handshake?)",
+    "answer": "Token check during handshake identify user. User pass login token when start connection. This link socket to correct user account."
+  },
+  {
+    "interaction": 5,
+    "question": "ContinueInterrogation\n\nAuth logged. What WebSocket library must be used for the server implementation (e.g.,  ws  or  socket.io )?",
+    "answer": "Socket.io library used. Deliver real-time notifications to connected clients. Start building backend endpoints."
+  },
+  {
+    "interaction": 6,
+    "question": "ContinueInterrogation\n\nsocket.io  logged. Cannot build backend yet. Specify phase must finish first. What exact data fields must the notification payload contain? (e.g., id, message, timestamp, taskId, readStatus?)",
+    "answer": "Notification payload must contain a unique identifier, the specific notification type, a clear human-readable message, its read status, and the creation timestamp. We want to keep it simple, so we do not need to include the task ID in this initial version. Let me know if you need any further clarification to get started!"
+  },
+  {
+    "interaction": 7,
+    "question": "ContinueInterrogation\n\nPayload logged. How does client retrieve missed notifications upon reconnect and mark them as read? (e.g., REST API endpoints like  GET /notifications  and  POST /notifications/:id/read , or WebSocket events?)",
+    "answer": "Client retrieve missed notification with GET request to notifications list. Client mark read with POST request to notification read path. WebSockets only push new alert to online user."
+  },
+  {
+    "interaction": 8,
+    "question": "ContinueInterrogation\n\nRetrieval mechanism logged. To prevent server memory leak, what is the maximum number of notifications to keep in memory per user before dropping old ones? (e.g., limit 50, 100, or unlimited?)",
+    "answer": "Notification limit set fifty per user. Old ones drop to prevent memory overload. Start implementation."
+  },
+  {
+    "event": "waiting",
+    "content_lines": 17,
+    "cursor": {
+      "row": 46
+    }
+  },
+  {
+    "event": "waiting",
+    "content_lines": 17,
+    "cursor": {
+      "row": 46
+    }
+  },
+  {
+    "event": "waiting",
+    "content_lines": 17,
+    "cursor": {
+      "row": 46
+    }
+  },
+  {
+    "event": "finished"
+  }
+]

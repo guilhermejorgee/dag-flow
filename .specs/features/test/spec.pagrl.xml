@@ -1,0 +1,9 @@
+```xml
+<PAGRL phase="Specify">
+  <QuestionsAsked>2</QuestionsAsked>
+  <MissingContextTerms></MissingContextTerms>
+  <UnresolvedAmbiguities></UnresolvedAmbiguities>
+  <AssumedValues></AssumedValues>
+  <Decision>WriteSpec</Decision>
+</PAGRL>
+```
