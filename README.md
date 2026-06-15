@@ -30,7 +30,7 @@ graph LR
     B -->|Drafts XML & Markdown| SA[Staging Area]
     SA -->|Python XML Validation| BG[Bash Gates]
     BG -->|Locks OS Vault| S[spec.md & design.md]
-    S -->|Subagent Relay| C[tasks.md DAG]
+    S -->|Subagent Relay| C[JSON AST DAG]
     C --> D[DAG Runner]
     D -->|Spawns Stateless| E[Worker 1]
     D -->|Spawns Stateless| F[Worker 2]
@@ -46,7 +46,7 @@ By decoupling the Orchestrator from execution, features are broken into a Direct
 ### Topology Separation & OS-Level Gating
 To combat "Semantic Gravity" and LLM overconfidence where models ignore prompt-based constraints and hallucinate DAG formats, `dag-flow` uses **physical OS-level boundaries**. Human-readable specs live in `.specs/features/`, while executable DAGs live in `.specs/dags/`. **Both of these directories are physically locked** (`chmod 555`).
 
-The Orchestrator cannot write to these vaults directly. It must draft its cognitive trace (PAGRL XML) and Markdown artifacts into an open `.specs/staging/` area. Then, it uses deterministic **Bash Gates** (`commit_spec.sh`, `commit_design.sh`, `write_dag.sh`) which run raw Python string-slicing to validate the XML format, bypassing LLM markdown hallucinations, before safely moving the files to the vaults and restoring the lock. To further isolate the lock, the actual DAG table generation is handed off to a read-only **Subagent Planner**.
+The Orchestrator cannot write to these vaults directly. It must draft its cognitive trace (PAGRL XML) and Markdown artifacts into an open `.specs/staging/` area. Then, it uses deterministic **Bash Gates** (`commit_spec.sh`, `commit_design.sh`, `write_dag.sh`) which run raw Python string-slicing to validate the XML format, bypassing LLM markdown hallucinations, before safely moving the files to the vaults and restoring the lock. To further isolate the lock, the actual JSON DAG generation is handed off to a read-only **Subagent Planner**.
 
 ### Quick Mode (Emergency Hotfixes)
 For emergency bug fixes, the heavy Socratic interrogation and architectural design ceremonies are bypassed to deliver raw speed while retaining execution safety.
@@ -56,7 +56,7 @@ graph LR
     A[Emergency Bug] --> B[Orchestrator]
     B -->|Drafts XML & Mini-DAG| SA[Staging Area]
     SA -->|Python XML Validation| BG[Bash Gates]
-    BG --> C[Mini-DAG tasks.md]
+    BG --> C[Mini-DAG JSON AST]
     C --> D[Stateless Worker]
     D -->|Edits + In-Code Comment| E[Auditor]
     E -->|Pass| F[Code Integrated]
@@ -105,9 +105,9 @@ Run the indexing hook setup script for your specific runtime (e.g., `antigravity
 
 ### 4. Run Your First Feature
 1. **Specify:** Ask your agent: *"Specify a new feature: a user login system."* Answer its questions.
-2. **Execute:** Once it generates the executable DAG table, run the automated executor:
+2. **Execute:** Once it generates the executable JSON DAG, run the automated executor:
 ```bash
-./scripts/run_dag.sh .specs/dags/user-login.md
+./scripts/run_dag.sh .specs/dags/user-login.json
 ```
 
 [Read the full Getting Started Guide →](docs/getting-started.md)
@@ -120,8 +120,8 @@ Run the indexing hook setup script for your specific runtime (e.g., `antigravity
 |:---|:---|:---|
 | **1. Specify** | Socratic interrogation to eradicate ambiguity. Drafted in `.specs/staging/`. | `spec.md`, `CONTEXT.md` |
 | **2. Design** | Technical architecture and trade-off decisions. Drafted in `.specs/staging/`. | `design.md`, `ADRs` |
-| **3. Tasks** | A read-only **Subagent Planner** converts specs/design into an executable graph. Validated via `write_dag.sh` OS-level gate. Includes **T-Final** to update the Living Memory. | `.specs/dags/*.md` (The DAG) |
-| **4. Execute** | Decentralized Bash execution of stateless workers, powered by **Dynamic Skill Injection (MCP)**. | Application Source Code |
+| **3. Tasks** | A read-only **Subagent Planner** converts specs/design into an executable graph. Validated via `write_dag.sh` OS-level gate. Includes **T-Final** to update the Living Memory. | `.specs/dags/*.json` (The DAG) |
+| **4. Execute** | Decentralized concurrent Python execution of stateless workers, powered by **Dynamic Skill Injection (MCP)**. | Application Source Code |
 
 ## Standalone Operations
 

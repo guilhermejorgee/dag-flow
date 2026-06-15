@@ -1,0 +1,13 @@
+{
+  "assertions": [
+    {
+      "type": "grep",
+      "pattern": "U2VjdXJpdHlIZWFkZXJSdWxl",
+      "file": "src/services/auth_service.js"
+    },
+    {
+      "type": "exit_code",
+      "command": "npm test"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 #!/bin/bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # scripts/commit_design.sh
 # Validation gate for writing designs into the physically locked .specs/features/ vault.
 
@@ -23,7 +24,7 @@ fi
 
 # 1. Run Python validation
 echo "🔍 Validating PAGRL schema for phase: design"
-python3 scripts/validate_pagrl.py --phase design "$PAGRL_XML"
+python3 "$SCRIPT_DIR/validate_pagrl.py" --phase design "$PAGRL_XML"
 
 # 2. Unlock vault, move files, and lock
 chmod 755 .specs/features 2>/dev/null || true

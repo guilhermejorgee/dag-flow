@@ -1,0 +1,15 @@
+[
+  {
+    "id": "T1",
+    "description": "Run tests",
+    "context_ref": "feature",
+    "skill": "None",
+    "depends_on": [],
+    "input_files": ["src/models/user.js"],
+    "output_files": [],
+    "done_when": "node test.js",
+    "status": "Pending",
+    "last_error": null,
+    "attempts": 0
+  }
+]

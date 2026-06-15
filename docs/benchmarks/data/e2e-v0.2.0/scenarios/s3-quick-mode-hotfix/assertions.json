@@ -1,0 +1,17 @@
+{
+  "assertions": [
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/quickmode-entry*"
+    },
+    {
+      "type": "grep",
+      "pattern": "res.status\\(200\\)",
+      "file": "src/routes/auth.js"
+    },
+    {
+      "type": "exit_code",
+      "command": "npm test"
+    }
+  ]
+}

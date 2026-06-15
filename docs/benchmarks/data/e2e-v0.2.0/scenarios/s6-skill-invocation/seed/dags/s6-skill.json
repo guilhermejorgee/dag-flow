@@ -1,0 +1,15 @@
+[
+  {
+    "id": "T1",
+    "description": "Create auth_service.js with SecurityHeaderRule",
+    "context_ref": "feature",
+    "skill": "cybersecurity-check",
+    "depends_on": [],
+    "input_files": [],
+    "output_files": ["src/services/auth_service.js"],
+    "done_when": "node test.js",
+    "status": "Pending",
+    "last_error": null,
+    "attempts": 0
+  }
+]

@@ -1,0 +1,12 @@
+{
+  "assertions": [
+    {
+      "type": "glob_exists",
+      "pattern": "src/features/hello.js"
+    },
+    {
+      "type": "exit_code",
+      "command": "npm test"
+    }
+  ]
+}

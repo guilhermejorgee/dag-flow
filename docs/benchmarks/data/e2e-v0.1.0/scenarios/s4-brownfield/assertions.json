@@ -2,8 +2,8 @@
   "assertions": [
     { "type": "file_exists", "path": "CONTEXT.md" },
     { "type": "glob_exists", "pattern": ".specs/features/*/design.md" },
-    { "type": "glob_exists", "pattern": ".specs/dags/*.md" },
-    { "type": "glob_grep", "glob": ".specs/dags/*.md",
+    { "type": "glob_exists", "pattern": ".specs/dags/*.json" },
+    { "type": "glob_grep", "glob": ".specs/dags/*.json",
       "pattern": "agy --dangerously-skip-permissions" },
     { "type": "glob_grep", "glob": ".specs/features/*/design.md",
       "pattern": "[Rr]edis|[Rr]ate.?[Ll]imit|throttl" },

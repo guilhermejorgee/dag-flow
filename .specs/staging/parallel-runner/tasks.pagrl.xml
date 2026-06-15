@@ -1,0 +1,7 @@
+<PAGRL phase="Tasks">
+  <ReferencesRead>references/tasks.md, references/specify.md, references/design.md</ReferencesRead>
+  <ArtifactPath>.specs/dags/parallel-runner.md</ArtifactPath>
+  <UncreatedADRs></UncreatedADRs>
+  <TableSchemaSource>references/tasks.md</TableSchemaSource>
+  <Decision>WriteTasksTable</Decision>
+</PAGRL>

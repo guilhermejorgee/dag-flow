@@ -1,0 +1,21 @@
+<PAGRL phase="Design">
+  <ReferencesRead>references/design.md, references/specify.md</ReferencesRead>
+  <SolutionComponents>
+    <item>dag_runner.py using asyncio and Semaphore</item>
+    <item>Isolated Logging mechanism</item>
+    <item>run_dag.sh wrapper</item>
+  </SolutionComponents>
+  <PatternsReused>
+    <item>CLI execution wrapper</item>
+    <item>auditor.sh validation per task</item>
+  </PatternsReused>
+  <NewPatternsIntroduced>
+    <item>Async Subprocess Orchestration</item>
+    <item>Isolated File Logging</item>
+  </NewPatternsIntroduced>
+  <ADRsRequired>
+  </ADRsRequired>
+  <UnjustifiedDecisions>
+  </UnjustifiedDecisions>
+  <Decision>WriteDesign</Decision>
+</PAGRL>

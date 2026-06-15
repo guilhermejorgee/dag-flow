@@ -1,0 +1,17 @@
+{
+  "assertions": [
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/quickmode-entry*"
+    },
+    {
+      "type": "grep",
+      "pattern": "ReferenceError",
+      "file": ".specs/staging/*/quickmode-diagnosis*"
+    },
+    {
+      "type": "exit_code",
+      "command": "npm test"
+    }
+  ]
+}

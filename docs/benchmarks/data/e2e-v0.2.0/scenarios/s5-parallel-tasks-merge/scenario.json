@@ -1,0 +1,9 @@
+{
+  "id": "s5-parallel-tasks-merge",
+  "name": "Parallel Tasks Execution",
+  "target": "taskflow-api",
+  "target_state": "greenfield",
+  "feature_requirements": "This is bypassed. The DAG is already generated. Your task is to execute it.",
+  "dag_flow_prompt": "The project specification, design, and DAG are already complete and vaulted. A user is attempting to run the DAG. Wait for the user to report execution status.",
+  "expected_pagrl_phases": []
+}

@@ -1,0 +1,41 @@
+[
+  {
+    "id": "T1",
+    "description": "Create logger.js",
+    "context_ref": "feature",
+    "skill": "None",
+    "depends_on": [],
+    "input_files": [],
+    "output_files": ["src/logger.js"],
+    "done_when": "node test.js",
+    "status": "Pending",
+    "last_error": null,
+    "attempts": 0
+  },
+  {
+    "id": "T2",
+    "description": "Create cache.js",
+    "context_ref": "feature",
+    "skill": "None",
+    "depends_on": [],
+    "input_files": [],
+    "output_files": ["src/cache.js"],
+    "done_when": "node test.js",
+    "status": "Pending",
+    "last_error": null,
+    "attempts": 0
+  },
+  {
+    "id": "T3",
+    "description": "Create index.js",
+    "context_ref": "feature",
+    "skill": "None",
+    "depends_on": ["T1", "T2"],
+    "input_files": ["src/logger.js", "src/cache.js"],
+    "output_files": ["src/index.js"],
+    "done_when": "node test.js",
+    "status": "Pending",
+    "last_error": null,
+    "attempts": 0
+  }
+]

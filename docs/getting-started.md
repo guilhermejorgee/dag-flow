@@ -77,19 +77,19 @@ The Orchestrator will **not** write code immediately. It will ask you clarifying
 Watch as it generates `CONTEXT.md` and `.specs/features/user-login/spec.md`.
 
 ### Step 3: DAG Generation (Tasks Phase)
-Once the specification is complete, the Orchestrator will output an executable DAG table. Because the `.specs/dags/` folder is physically locked by the OS (`chmod 555`) to prevent LLM hallucination, the Orchestrator will automatically pipe this table through the `scripts/write_dag.sh` gate to safely save it as `.specs/dags/user-login.md`. It will then stop and hand control back to you.
+Once the specification is complete, the Orchestrator will output an executable JSON AST DAG. Because the `.specs/dags/` folder is physically locked by the OS (`chmod 555`) to prevent LLM hallucination, the Orchestrator will automatically pipe this JSON through the `scripts/write_dag.sh` gate to safely save it as `.specs/dags/user-login.json`. It will then stop and hand control back to you.
 
 ### Step 4: Decentralized Execution (Implement Phase)
 You are now ready to execute the plan. Run the independent DAG runner in your terminal:
 
 ```bash
-./scripts/run_dag.sh .specs/dags/user-login.md
+./scripts/run_dag.sh .specs/dags/user-login.json
 ```
 
 **What happens next?**
 - You will see the script spawn "dumb" workers in parallel.
 - The workers will write the code.
-- The `auditor.sh` script will run the "Done When" test gates.
+- The `auditor.py` script will run the "Done When" test gates.
 - If a test fails, the runner will automatically feed the error back to the worker until it passes.
 
 ### Step 5: Delta Update (Living Memory)

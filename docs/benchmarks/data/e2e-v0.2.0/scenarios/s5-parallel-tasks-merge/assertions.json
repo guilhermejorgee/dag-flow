@@ -1,0 +1,16 @@
+{
+  "assertions": [
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/dags/logs/T1.log"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/dags/logs/T2.log"
+    },
+    {
+      "type": "exit_code",
+      "command": "npm test"
+    }
+  ]
+}

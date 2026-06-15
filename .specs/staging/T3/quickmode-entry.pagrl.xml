@@ -1,0 +1,5 @@
+<PAGRL phase="QuickModeEntry">
+  <UserExplicitlyInvokedQuickMode>true</UserExplicitlyInvokedQuickMode>
+  <TriggerPhrase>ESCALATION</TriggerPhrase>
+  <Decision>ProceedToDiagnosis</Decision>
+</PAGRL>

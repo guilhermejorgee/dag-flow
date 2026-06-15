@@ -1,9 +1,9 @@
 {
   "assertions": [
     { "type": "file_exists", "path": "CONTEXT.md" },
-    { "type": "glob_exists", "pattern": ".specs/dags/*.md",
+    { "type": "glob_exists", "pattern": ".specs/dags/*.json",
       "comment": "Quick mode still generates hotfix md (scoped to hotfixes dir)" },
-    { "type": "glob_grep", "glob": ".specs/dags/*.md",
+    { "type": "glob_grep", "glob": ".specs/dags/*.json",
       "pattern": "agy --dangerously-skip-permissions" },
     { "type": "file_not_exists", "path": ".specs/spec.md",
       "comment": "Quick mode skips spec.md — goes direct to tasks" },
@@ -13,7 +13,7 @@
       "comment": "Quick mode may not ask questions (hotfix = speed over thoroughness)" },
     { "type": "token_lte", "phase": "quick-mode-total", "threshold_pct_of_s1": 35 },
     { "type": "skill_in_set", "expected": ["security-review", "tdd-workflow", "backend-patterns"] },
-    { "type": "llm_judge", "glob": ".specs/dags/*.md", 
+    { "type": "llm_judge", "glob": ".specs/dags/*.json", 
       "requirement": "The document must explicitly instruct adding an await before bcrypt.compare." }
   ]
 }

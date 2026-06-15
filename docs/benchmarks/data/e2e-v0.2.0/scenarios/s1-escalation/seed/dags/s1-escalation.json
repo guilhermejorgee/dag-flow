@@ -1,0 +1,28 @@
+[
+  {
+    "id": "T1",
+    "description": "Setup Math Test",
+    "context_ref": "feature",
+    "skill": "None",
+    "depends_on": [],
+    "input_files": ["src/math.js"],
+    "output_files": ["src/math.test.js"],
+    "done_when": "npx jest src/math.test.js",
+    "status": "Pending",
+    "last_error": null,
+    "attempts": 0
+  },
+  {
+    "id": "T-Final",
+    "description": "Sync Index",
+    "context_ref": "feature",
+    "skill": "None",
+    "depends_on": ["T1"],
+    "input_files": ["src/math.js"],
+    "output_files": [],
+    "done_when": "ctx_index .specs/dags/s1-escalation.json src/math.test.js",
+    "status": "Pending",
+    "last_error": null,
+    "attempts": 0
+  }
+]

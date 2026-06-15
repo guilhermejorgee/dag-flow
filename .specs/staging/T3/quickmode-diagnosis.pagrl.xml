@@ -1,0 +1,6 @@
+<PAGRL phase="QuickModeDiagnosis">
+  <Intention>Diagnose bug T3</Intention>
+  <Rules>Read-only access to source code. Do not write fixes directly.</Rules>
+  <Reasoning>Auditor for T3 failed because references/escalation-phase.md still references sequential bash execution and does not mention concurrent python execution (dag_runner.py), the worker pool, or the isolated logs directory (.specs/runs/[ID]/logs/[Task_ID].log).</Reasoning>
+  <Decision>Generate a Mini-DAG for the hot-patch.</Decision>
+</PAGRL>

@@ -1,0 +1,7 @@
+{
+  "name": "s2-happy-path-execution",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node test.js"
+  }
+}

@@ -89,7 +89,7 @@ You may only advance when **all** of the following hold in your most recent `<PA
 
 When advancing, you MUST:
 1. Write `design.md` and `design.pagrl.xml` to the staging area `.specs/staging/[feature]/`.
-2. Use the `run_command` tool to execute `scripts/commit_design.sh [feature]`. This script runs Python validation against your XML and, if successful, moves the files into the physically locked vault.
+2. Use the `run_command` tool to execute `<path-to-skill>/scripts/commit_design.sh [feature]`. This script runs Python validation against your XML and, if successful, moves the files into the physically locked vault.
 
 You may only advance to the Tasks phase after the gate script succeeds and every item in `<ADRsRequired>` has been created in `docs/adr/`.
 
@@ -99,4 +99,4 @@ During the Design Phase, the Orchestrator is FORBIDDEN from modifying any functi
 
 ## Exit Condition
 
-The Design Phase concludes when `design.md` has been successfully vaulted via `scripts/commit_design.sh`, all required ADRs exist in `docs/adr/`, and the most recent PAGRL has `<Decision>WriteDesign</Decision>` with all advancement-rule conditions met.
+The Design Phase concludes when `design.md` has been successfully vaulted via `<path-to-skill>/scripts/commit_design.sh`, all required ADRs exist in `docs/adr/`, and the most recent PAGRL has `<Decision>WriteDesign</Decision>` with all advancement-rule conditions met.

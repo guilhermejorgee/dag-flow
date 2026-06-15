@@ -1,0 +1,31 @@
+[
+  {
+    "id": "Task ID",
+    "description": "Description",
+    "dependencies": [
+      "Depends On"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "T1",
+    "description": "Create `src/logger.js` exporting `log(msg)` that returns `[LOG] ${msg}`.",
+    "dependencies": [],
+    "status": "pending"
+  },
+  {
+    "id": "T2",
+    "description": "Create `src/cache.js` exporting `get(key)` returning `null`.",
+    "dependencies": [],
+    "status": "pending"
+  },
+  {
+    "id": "T3",
+    "description": "Create `src/index.js` that imports `logger` and `cache` and exports a combined function.",
+    "dependencies": [
+      "T1",
+      "T2"
+    ],
+    "status": "pending"
+  }
+]

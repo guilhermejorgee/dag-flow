@@ -1,0 +1,16 @@
+[
+  {
+    "id": "Task ID",
+    "description": "Description",
+    "dependencies": [
+      "Depends On"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "T1",
+    "description": "Load the skill `custom-security-linter` using `read_skill` from the `dag-flow-skills` MCP before starting your edit. Then, create `src/services/auth_service.js` strictly following the skill's instructions.",
+    "dependencies": [],
+    "status": "pending"
+  }
+]

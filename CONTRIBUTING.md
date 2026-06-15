@@ -12,7 +12,7 @@ First off, thank you for considering contributing to dag-flow! It's people like 
 
 When submitting a bug report, please include:
 1. **Your Runtime:** Are you using Claude Code, Cursor, Gemini CLI, or Antigravity?
-2. **The Output Logs:** Provide the `last_failure.log` if the DAG runner halted.
+2. **The Output Logs:** Provide the isolated `.specs/dags/logs/T[ID].log` if a worker task failed.
 3. **The Artifacts:** Provide snippets of the generated `tasks.md` or `.specs/` that caused the issue.
 4. **Expected vs Actual Behavior:** Be as specific as possible.
 
@@ -32,7 +32,7 @@ If your feature introduces a major structural change or a shift in the cognitive
 2. **Understand the Structure:**
    - `docs/` — User-facing documentation (English).
    - `docs/design/` — Original research papers, findings, and design documents (Portuguese).
-   - `scripts/` — The core bash executors (`run_dag.sh`, `auditor.sh`).
+   - `scripts/` — The core executors (`dag_runner.py`, `auditor.sh`, `run_dag.sh` wrapper).
    - `hooks/` — Integration scripts for agent runtimes.
    - `mcp/` — The bundled Model Context Protocol server.
    - `SKILL.md` / `references/` — LLM-facing internal prompts.
@@ -50,7 +50,8 @@ If your feature introduces a major structural change or a shift in the cognitive
 
 ## 📝 Code Style & Conventions
 
-- **Bash Scripts:** Follow the established patterns in `run_dag.sh`. Use `set -euo pipefail` where applicable. Ensure commands are POSIX-compliant where possible.
+- **Python Scripts:** Follow standard `asyncio` patterns for the DAG engine.
+- **Bash Scripts:** Use `set -euo pipefail` where applicable. Ensure commands are POSIX-compliant where possible.
 - **TypeScript (MCP):** Use standard TypeScript conventions. Adhere to the existing `project.json` and ESLint configurations.
 - **Documentation:**
   - **User-Facing:** All files in `docs/`, `README.md`, and this file must be written in clear, concise **English**.

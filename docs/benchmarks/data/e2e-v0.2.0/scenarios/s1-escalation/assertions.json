@@ -1,0 +1,16 @@
+{
+  "assertions": [
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/dag.md"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/quickmode-entry*"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/quickmode-diagnosis*"
+    }
+  ]
+}

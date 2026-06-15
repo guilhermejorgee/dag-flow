@@ -14,14 +14,14 @@ graph TD
     B -->|Write Rules| D[(Perennial Memory\nCONTEXT.md / ADRs)]
     B -->|Pipe to write_dag.sh| E[(Locked Executable Vault\n.specs/dags/)]
     
-    F[DAG Runner\nrun_dag.sh] -->|Reads| E
+    F[DAG Runner\ndag_runner.py] -->|Reads| E
     F -->|Spawns| G1(Worker 1)
     F -->|Spawns| G2(Worker 2)
     
     G1 -->|Edits| H[Source Code]
     G2 -->|Edits| H
     
-    F -->|Triggers| I[Auditor\nauditor.sh]
+    F -->|Triggers| I[Auditor\nauditor.py]
     I -->|Validates| H
     I -->|Pass| J[Task Done]
     I -->|Fail| K[Auto-Healing Loop]
@@ -42,14 +42,14 @@ The motor system. Spawned by the DAG Runner via CLI.
 - They are completely "dumb" and amnesic. They don't know the full architecture; they only know their specific task and the files they are allowed to touch.
 - This creates the **Financial Firewall**: executing complex features is exponentially cheaper because workers only load the exact tokens they need for their atomic task.
 
-### The DAG Runner (`run_dag.sh`)
-The automated Bash script that parses the `.specs/dags/*.md` table.
+### The DAG Runner (`dag_runner.py`)
+The asynchronous Python engine that parses the `.specs/dags/*.json` table.
 - Dispatches workers in parallel based on task dependencies.
 - Handles the Auto-Healing Loop (feeding errors back to the worker).
 - Runs the Auditor for verification.
 
-### The Independent Auditor (`auditor.sh`)
-The gatekeeper. It executes the `Done When` command defined in the DAG table.
+### The Independent Auditor (`auditor.py`)
+The gatekeeper. It executes the `Done When` command defined in the JSON DAG.
 - **Mechanical Tasks:** Runs standard test commands (e.g., `npm test`).
 - **Architectural Tasks:** Uses a Zero-Context LLM judge to verify if the code adheres to the systemic rules, without reading the full specification.
 
@@ -63,8 +63,8 @@ This guarantees that the worker has Senior-level expertise *exactly tailored to 
 A core philosophy of `dag-flow` is that **prompt instructions are insufficient to contain large LLMs**. Due to "Semantic Gravity" and pretraining bias, large models inevitably ignore instructions like "You MUST output a 9-column table" or "Do NOT write to this folder".
 To combat this Overconfidence, `dag-flow` relies on **physical OS-level boundaries**. 
 - **Topology Separation:** Human-readable specifications are stored in open directories (`.specs/features/`), completely isolated from executable graphs.
-- **Physical Lock:** Executable DAG tables are stored in a physically locked directory (`.specs/dags/` set to `chmod 555`). 
-- **The Interceptor Gate:** The Orchestrator is forbidden and unable to write to the locked directory. It must pipe its output through `scripts/write_dag.sh`, an interceptor that validates the table schema before elevating permissions and saving it. If the model hallucinates the format, the script errors, forcing a structural contradiction and self-correction.
+- **Physical Lock:** Executable JSON DAGs are stored in a physically locked directory (`.specs/dags/` set to `chmod 555`). 
+- **The Interceptor Gate:** The Orchestrator is forbidden and unable to write to the locked directory. It must pipe its output through `scripts/write_dag.sh`, an interceptor that validates the JSON schema before elevating permissions and saving it. If the model hallucinates the format, the script errors, forcing a structural contradiction and self-correction.
 
 ---
 
@@ -78,7 +78,7 @@ The pipeline flows through 4 distinct sequential phases:
 1. **Specify (The Eradicator):** Deep Socratic interrogation. Generates the `spec.md` and updates the ubiquitous language dictionary (`CONTEXT.md`).
 2. **Design (The Architect):** Identifies trade-offs, defines infrastructure, and generates Architecture Decision Records (`docs/adr/`).
 3. **Tasks (The Engineer):** Converts the Spec and Design into the executable Directed Acyclic Graph, piping it through `write_dag.sh`.
-4. **Execute (The Factory Floor):** The decentralized execution phase where `run_dag.sh` takes over and coordinates the Workers and Auditor.
+4. **Execute (The Factory Floor):** The decentralized execution phase where `dag_runner.py` takes over and coordinates the Workers and Auditor concurrently.
 
 ### Standalone Operations
 These are executed independently of the core pipeline.
@@ -112,7 +112,7 @@ A common flaw in agentic coding is the need to constantly re-scan the entire cod
 `dag-flow` solves this via the **Living Memory ecosystem**, powered by physical files and `context-mode`:
 
 1. **The Discovery Phase (Initialization):** When `dag-flow` encounters a new repository, it doesn't read every file. The indexing is handled out-of-band by a pre-boot Global Indexing hook (`setup_indexer.sh`). The Orchestrator uses `context-mode` solely to surgically query this pre-populated index, synthesizing highly compressed Architectural Invariants into `CONTEXT.md`.
-2. **The T-Final Task (Delta Update):** When the Orchestrator generates the DAG table, it injects a final task at the end (`T-Final`). Because the Orchestrator just planned the feature, it knows *exactly* which files will be modified by the workers. 
+2. **The T-Final Task (Delta Update):** When the Orchestrator generates the JSON DAG, it injects a final task at the end (`T-Final`). Because the Orchestrator just planned the feature, it knows *exactly* which files will be modified by the workers. 
 3. **The Silent Sync:** Once the workers finish, the `T-Final` task instructs the indexer to update *only* those specific modified files. 
 
 The system memory stays perfectly synchronized with the architecture in real-time, achieving an evolving, living memory with near-zero token waste.

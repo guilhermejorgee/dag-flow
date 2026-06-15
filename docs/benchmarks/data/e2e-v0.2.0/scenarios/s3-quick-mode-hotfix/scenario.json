@@ -1,0 +1,19 @@
+{
+  "id": "s3-quick-mode-hotfix",
+  "name": "Quick Mode Hotfix",
+  "target": "taskflow-api",
+  "target_state": "brownfield",
+  "feature_requirements": "Fix the bug in the /login route",
+  "user_context": {
+    "persona": "backend developer",
+    "feature_requirements": {
+      "bug": "The /login route is returning a 500 error because of an undefined variable. Fix it quickly."
+    },
+    "answering_style": "Direct and concise."
+  },
+  "dag_flow_prompt": "A user reported a bug in production. Ask them for details to initiate a hotfix.",
+  "expected_pagrl_phases": [
+    "QuickModeEntry",
+    "QuickModeDiagnosis"
+  ]
+}

@@ -1,0 +1,15 @@
+[
+  {
+    "id": "T1",
+    "description": "Create hello.js",
+    "context_ref": "feature",
+    "skill": "None",
+    "depends_on": [],
+    "input_files": [],
+    "output_files": ["src/features/hello.js"],
+    "done_when": "node test.js",
+    "status": "Pending",
+    "last_error": null,
+    "attempts": 0
+  }
+]

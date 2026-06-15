@@ -1,0 +1,16 @@
+[
+  {
+    "id": "Task ID",
+    "description": "Description",
+    "dependencies": [
+      "Depends On"
+    ],
+    "status": "pending"
+  },
+  {
+    "id": "T1",
+    "description": "Create a file `src/features/hello.js` that exports a function returning 'Hello World'.",
+    "dependencies": [],
+    "status": "pending"
+  }
+]

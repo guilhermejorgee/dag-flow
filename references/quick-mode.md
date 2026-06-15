@@ -76,39 +76,39 @@ Even in an emergency, the Orchestrator NEVER directly edits functional code. Use
 ```
 
 ### 2. Mini-DAG Generation
-Generate a simplified, sequential table. Unlike the full `tasks.md` process, a Mini-DAG typically represents a linear sequence of atomic fixes.
+Generate a simplified, sequential JSON AST. Unlike the full `tasks.md` process, a Mini-DAG typically represents a linear sequence of atomic fixes.
 
 **Skill Injection Rule:**
-After outputting the `<PAGRL>`, the Orchestrator MUST use the `search_skills` tool based on the diagnosis to find relevant local skills for the worker. Only after receiving the search results, it should generate the Mini-DAG table.
+After outputting the `<PAGRL>`, the Orchestrator MUST use the `search_skills` tool based on the diagnosis to find relevant local skills for the worker. Only after receiving the search results, it should generate the Mini-DAG JSON AST.
 
 **Artifact Generation & Gating:**
 The physical vault `.specs/dags/` is locked (`chmod 555`). You cannot write to it directly.
 
 When generating a Quick Mode DAG, you MUST:
 1. Write BOTH your entry PAGRL (`quickmode-entry.pagrl.xml`) and your diagnosis PAGRL (`quickmode-diagnosis.pagrl.xml`) to `.specs/staging/[issue_id]/`.
-2. Write the Mini-DAG table to `.specs/staging/[issue_id]/dag.md`.
-3. Use the `run_command` tool to execute `scripts/write_dag.sh [issue_id] --phase quick-mode`. This script runs Python validation against both XML files and, if successful, moves the DAG into the physically locked vault.
+2. Write the Mini-DAG JSON to `.specs/staging/[issue_id]/dag.json`.
+3. Use the `run_command` tool to execute `<path-to-skill>/scripts/write_dag.sh [issue_id] --phase quick-mode`. This script runs Python validation against both XML files and, if successful, moves the DAG into the physically locked vault.
 
-**Output format for the dag.md table:**
-1. **Diagnosis Summary:** Brief explanation of the root cause.
-2. **Mini-DAG Table (9 columns):**
-   `| ID | Description | Context Ref | Skill | Depends On | Input Files | Output Files | Done When (Gate) | Status |`
-   - *Note on `Context Ref`:* The Orchestrator MUST populate this column with a rich, self-contained summary of the diagnostic failure (since there is no spec.md in Quick Mode). For `T-Final`, use `Orchestrator Rule`.
-   - *Note on `Depends On`:* You MUST include this column to avoid breaking the DAG Runner parser. Fill it sequentially (e.g., T2 depends on T1).
-   - *Note on `Done When`:* 
+**Output format for the dag.json:**
+1. **Diagnosis Summary:** Brief explanation of the root cause (included as comments or in the PAGRL).
+2. **Mini-DAG JSON Array:**
+   A strict JSON array representing the DAG. Markdown tables are strictly forbidden.
+   - *Note on `context_ref`:* The Orchestrator MUST populate this column with a rich, self-contained summary of the diagnostic failure (since there is no spec.md in Quick Mode). For `T-Final`, use `Orchestrator Rule`.
+   - *Note on `dependencies`:* You MUST include this field to avoid breaking the DAG Runner parser. Fill it sequentially (e.g., T2 depends on `["T1"]`).
+   - *Note on `done_when_gate`:* 
      - **For Mechanical Tasks:** Use atomic test commands (e.g., `npm test file.test.ts` or `npx eslint file.ts`).
      - **For Non-Mechanical Tasks (LLM-as-a-judge):** Use the Zero-Context Auditor template: `agy --dangerously-skip-permissions --prompt "Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>"`. The Orchestrator MUST replace `[CONTEXT_REF]` with the rich text from the Context Ref column.
-   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `Done When` gate must execute `agy --dangerously-skip-permissions --prompt "Call ctx_index for .specs/dags/[issue_id].md and [modified_files]."` to sync the index.
+   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `done_when_gate` must execute `agy --dangerously-skip-permissions --prompt "Call ctx_index for .specs/dags/[issue_id].json and [modified_files]."` to sync the index.
 
 *Note on In-Code Documentation:* Instruct the worker to leave an explicit inline code comment explaining the hotfix logic. This enables automated multi-dev onboarding without bloating `CONTEXT.md`.
 
-*Note on Tokens (Financial Firewall):* Be extremely precise with `Input Files`. The automated runner will inject only these files into the stateless worker to save tokens.
+*Note on Tokens (Financial Firewall):* Be extremely precise with `input_files`. The automated runner will inject only these files into the stateless worker to save tokens.
 
 ### 3. Execution & Auto-Healing
 The Orchestrator's job concludes with the generation of the Mini-DAG. Instruct the user to run the automated script:
 
 ```bash
-<path-to-skill>/scripts/run_dag.sh .specs/dags/[issue_id].md
+<path-to-skill>/<path-to-skill>/scripts/run_dag.sh .specs/dags/[issue_id].json
 ```
 
 The bash script takes over, spawning stateless workers, running the verification gates, and auto-healing any failures via terminal loops without polluting the Orchestrator's context window.
