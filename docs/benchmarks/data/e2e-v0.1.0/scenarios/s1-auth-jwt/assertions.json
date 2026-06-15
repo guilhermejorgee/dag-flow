@@ -16,7 +16,7 @@
       "glob": ".specs/features/*/design.md",
       "comment": "Design must satisfy routing and persistence semantics" },
     { "type": "socratic_turns", "min_turns": 1,
-      "comment": "Agent must have asked at least 1 Socratic question" },
+      "comment": "Agent MUST surface assumptions in common_ground.md and pause for approval" },
     { "type": "grep_not", "pattern": "\\bgemini\\b", "path": "transcript.jsonl",
       "comment": "Model name must not appear in transcript (blind benchmark)" },
     { "type": "token_lte", "phase": "discovery", "threshold": 3000 },

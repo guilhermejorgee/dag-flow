@@ -10,7 +10,7 @@
     { "type": "file_not_exists", "path": ".specs/design.md",
       "comment": "Quick mode skips design.md at root level" },
     { "type": "socratic_turns", "min_turns": 0,
-      "comment": "Quick mode may not ask questions (hotfix = speed over thoroughness)" },
+      "comment": "Quick mode skips Two-Phase Common Ground Flow (hotfix = speed over thoroughness)" },
     { "type": "token_lte", "phase": "quick-mode-total", "threshold_pct_of_s1": 35 },
     { "type": "skill_in_set", "expected": ["security-review", "tdd-workflow", "backend-patterns"] },
     { "type": "llm_judge", "glob": ".specs/dags/*.json", 

@@ -7,7 +7,8 @@
       "pattern": "agy --dangerously-skip-permissions" },
     { "type": "glob_grep", "glob": ".specs/features/*/design.md",
       "pattern": "[Mm]ulter|[Ff]ile.?[Uu]pload|[Ff]ile.?[Tt]ype|[Ff]ile.?[Ss]ize" },
-    { "type": "socratic_turns", "min_turns": 1 },
+    { "type": "socratic_turns", "min_turns": 1,
+      "comment": "Agent MUST surface assumptions in common_ground.md and pause for approval" },
     { "type": "token_lte", "phase": "discovery", "threshold": 3000 },
     { "type": "token_lte", "phase": "specify", "threshold": 10000 },
     { "type": "skill_in_set", "expected": ["security-review", "backend-patterns"] }
