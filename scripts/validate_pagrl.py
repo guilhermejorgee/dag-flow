@@ -51,16 +51,6 @@ def is_empty(node: ET.Element, tag: str) -> bool:
     return True
 
 def validate_specify(root: ET.Element):
-    try:
-        qa_str = get_text(root, "QuestionsAsked")
-        qa = int(qa_str)
-        if qa < 1:
-            print("❌ Validation failed: <QuestionsAsked> must be >= 1")
-            return False
-    except ValueError:
-        print("❌ Validation failed: <QuestionsAsked> is not a valid integer")
-        return False
-
     if not is_empty(root, "MissingContextTerms"):
         print("❌ Validation failed: <MissingContextTerms> is not empty")
         return False

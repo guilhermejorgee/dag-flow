@@ -39,8 +39,14 @@ The manual labor is dispatched to "dumb", stateless, and amnesic **Workers**.
 
 The system does not operate through free-form trial and error, but through rigorous inhibition and Socratic orchestration.
 
-### Socratic Interrogation (The Adversarial Analyst)
-The Orchestrator acts with incisive questioning (depth-first search) to eradicate ambiguity *before* generating code. It exhausts the decision tree, validating interdependencies and demanding mathematical certainty before formulating premises. It refuses to guess.
+### The Two-Phase Common Ground Flow (Socratic Interrogation)
+Early versions of `dag-flow` relied on syntactic validations (e.g. self-reported `<QuestionsAsked>` tags) to enforce Socratic interrogation. However, extensive stress-testing revealed the **Socratic Bypass**: models would hallucinate questions and simulate user responses in the same turn, bypassing the cognitive pause. 
+To eradicate this, `dag-flow` abandoned syntactic tags in favor of a **Physical Turn Break**. The *Specify* phase is divided into two distinct, physically separated steps:
+1. **Phase 1 (Surface):** The Orchestrator halts execution, generates a `common_ground.md` file surfacing all implicit assumptions, and forces a hard turn break.
+2. **Phase 2 (Steer):** The Orchestrator is mathematically prohibited from proceeding to architecture generation until a human explicitly inputs "Approved".
+
+### The Determinism Rule (Context Blindness)
+LLMs suffer from *Context Blindness*—a cognitive failure where semantic instructions ("rewrite the auth middleware to use JWT") lead to destructive regressions in surrounding code. `dag-flow` institutionalizes the **Determinism Rule**: no agent is permitted to perform subjective *string matching* or semantic codebase rewrites. All refactoring and architectural shifts must be delegated through strict physical coordinates (exact line numbers, regex, or AST manipulation).
 
 ### PAGRL (Pre-Action Governance Reasoning Loop)
 This is a mandatory inhibitory mechanism. Before acting, the model is forced to explicitly declare its intention via a systemic trace (`<PAGRL>`), confronting its desired action with the established architectural rules. This prevents spontaneous deviation from the plan.

@@ -118,7 +118,7 @@ Run the indexing hook setup script for your specific runtime (e.g., `antigravity
 
 | Phase | Description | Key Output |
 |:---|:---|:---|
-| **1. Specify** | Socratic interrogation to eradicate ambiguity. Drafted in `.specs/staging/`. | `spec.md`, `CONTEXT.md` |
+| **1. Specify (The Eradicator)** | Socratic interrogation divided into two physical phases (Surface & Steer). Generates `common_ground.md`, forces a human approval turn break, and drafts `spec.md` and `CONTEXT.md` in `.specs/staging/`. | `common_ground.md`, `spec.md`, `CONTEXT.md` |
 | **2. Design** | Technical architecture and trade-off decisions. Drafted in `.specs/staging/`. | `design.md`, `ADRs` |
 | **3. Tasks** | A read-only **Subagent Planner** converts specs/design into an executable graph. Validated via `write_dag.sh` OS-level gate. Includes **T-Final** to update the Living Memory. | `.specs/dags/*.json` (The DAG) |
 | **4. Execute** | Decentralized concurrent Python execution of stateless workers, powered by **Dynamic Skill Injection (MCP)**. | Application Source Code |

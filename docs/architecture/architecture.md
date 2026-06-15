@@ -75,7 +75,7 @@ The architecture separates the core feature development pipeline from standalone
 ### The Core Feature Pipeline
 The pipeline flows through 4 distinct sequential phases:
 
-1. **Specify (The Eradicator):** Deep Socratic interrogation. Generates the `spec.md` and updates the ubiquitous language dictionary (`CONTEXT.md`).
+1. **Specify (The Eradicator):** Executed via the **Two-Phase Common Ground Flow**. The Orchestrator halts to surface assumptions into `common_ground.md`, forces a human Turn Break for approval, and only then steers the generation of `spec.md` and `CONTEXT.md`.
 2. **Design (The Architect):** Identifies trade-offs, defines infrastructure, and generates Architecture Decision Records (`docs/adr/`).
 3. **Tasks (The Engineer):** Converts the Spec and Design into the executable Directed Acyclic Graph, piping it through `write_dag.sh`.
 4. **Execute (The Factory Floor):** The decentralized execution phase where `dag_runner.py` takes over and coordinates the Workers and Auditor concurrently.

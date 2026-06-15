@@ -5,8 +5,8 @@
     { "type": "glob_exists", "pattern": ".specs/dags/*.json" },
     { "type": "glob_grep", "glob": ".specs/dags/*.json",
       "pattern": "agy --dangerously-skip-permissions" },
-    { "type": "socratic_turns", "min_turns": 2,
-      "comment": "Ambiguous spec: agent MUST ask multiple clarifying questions before spec" },
+    { "type": "socratic_turns", "min_turns": 1,
+      "comment": "Ambiguous spec: agent MUST surface assumptions in common_ground.md and pause for approval" },
     { "type": "token_lte", "phase": "specify", "threshold": 15000 },
     { "type": "skill_in_set", "expected": ["security-review", "backend-patterns", "api-design"] }
   ]

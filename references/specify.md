@@ -12,13 +12,14 @@ The **Specify Phase** represents the bedrock of dag-flow. Its core objective is 
 
 ## Core Mechanics
 
-### 1. Socratic Interrogation
-The Orchestrator assumes the role of an adversarial systems analyst. Rather than accepting vague requirements, you must recursively drill down into the user's intent.
+### 1. Two-Phase Common Ground Flow
+The Orchestrator assumes the role of an adversarial systems analyst. Rather than accepting vague requirements, you must recursively drill down into the user's intent by establishing Common Ground.
 
-**The Golden Rule:** You must ask exactly **ONE architectural or business-logic question per turn**.
-- Do not overwhelm the user with a list of questions.
-- Wait for the user's answer before asking the next question.
-- Do not make assumptions about edge cases. Ask.
+- **Step 1 (Surface):** The Orchestrator generates a `common_ground.md` file in `.specs/staging/[feature]/` detailing: Explicit Directives (what the user literally asked for), Surfaced Assumptions (what the model believes is true but wasn't stated), Paths Not Taken, and Unresolved Ambiguities. 
+  - **The Turn Break:** The Orchestrator is **STRICTLY FORBIDDEN** from running `commit_spec.sh` at this stage. It must halt execution entirely and ask the user for approval.
+  - **Determinism Rule:** *When planning code changes, reflect critically on the nature of the target: does its location depend on human semantic interpretation, or is it mathematically deducible by a blind machine? Any reliance on subjective interpretation classifies the target as ambiguous. You MUST map semantic intents to absolute literal coordinates (deterministic strings, regular expressions, or AST nodes) before advancing to Design. If the exact coordinates are unknown, you must halt the phase advancement and mandatorily declare the gap in the `<UnresolvedAmbiguities>` block.*
+
+- **Step 2 (Steer & Commit):** After the user says "Approved" (or provides corrections) in the chat, the Orchestrator incorporates the feedback, generates `spec.md` and `spec.pagrl.xml`, and finally executes `commit_spec.sh`.
 
 ### 2. Live Dictionary Building (`CONTEXT.md`)
 As the Socratic Interrogation progresses and the user defines domain concepts, the Orchestrator MUST immediately update the `CONTEXT.md` file in the project root. This ensures a ubiquitous language is maintained from the start.
@@ -41,7 +42,6 @@ PAGRL in the Specify phase is not free prose. It is a structured XML block with 
 | Field | Type | Why it exists |
 |---|---|---|
 | `<ReferencesRead>` | comma-separated list | Forces explicit acknowledgment of which reference files were loaded this turn. The Tasks-phase failure where the model improvised the table format originated in skipping reference loading; declaring an empty list here is a visible self-incrimination. |
-| `<QuestionsAsked>` | non-negative integer | Counts Socratic questions asked so far in this Specify session. Cannot be lied about while still claiming to have advanced. |
 | `<MissingContextTerms>` | list of `<item>` elements | Lists any core domain entities or concepts discussed that are not yet defined in `CONTEXT.md`. Must be empty to advance. Forces the model to create/update `CONTEXT.md` on fresh repositories. |
 | `<UnresolvedAmbiguities>` | list of `<item>` elements | Lists every ambiguity the model is aware of and has not yet resolved. Must be empty to advance. |
 | `<AssumedValues>` | list of `<item>` elements | **Direct antidote to the file-upload benchmark.** Lists every project-specific value (limits, types, paths) the model is about to use without explicit user input. Must be empty to advance. If the model is tempted to assume "5MB", it must list "5MB for max file size" here - and listing it forces it to be elicited instead. |
@@ -53,7 +53,6 @@ PAGRL in the Specify phase is not free prose. It is a structured XML block with 
 ```xml
 <PAGRL phase="Specify">
   <ReferencesRead>references/specify.md</ReferencesRead>
-  <QuestionsAsked>2</QuestionsAsked>
   <MissingContextTerms>
     <item>S3 Bucket</item>
   </MissingContextTerms>
@@ -77,7 +76,6 @@ The physical vault `.specs/features/` is locked (`chmod 555`). You cannot write 
 
 You may only advance when **all** of the following hold in your most recent `<PAGRL phase="Specify">`:
 
-- `<QuestionsAsked>` ≥ 1
 - `<MissingContextTerms>` is empty
 - `<UnresolvedAmbiguities>` is empty
 - `<AssumedValues>` is empty

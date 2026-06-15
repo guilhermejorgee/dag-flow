@@ -105,8 +105,9 @@ Before defining the `done_when_gate`, you MUST populate `cognitive_rationale` to
 - `done_when_gate`: Use atomic test commands: `npm test path/to/specific.test.ts` or `npx eslint src/schema.ts`.
 
 **For Architectural/Complex Tasks (LLM-as-a-judge):**
+- **CRITICAL WARNING:** You are STRICTLY FORBIDDEN from using the LLM Auditor (`agy`) to verify the presence, absence, or replacement of strings, or for purely textual refactoring. LLMs suffer from Context Blindness. For any task involving text replacement or string verification, you MUST use deterministic shell commands in `done_when_gate` (e.g., `grep -q 'target' file` or `! grep -q 'target' file`).
 - `cognitive_rationale`: Explain why mechanical tests fall short and cognitive validation is needed.
-- `done_when_gate`: If the task implements a complex rule or architectural decision that cannot be verified by tests, you MUST use the following exact `agy` command template. Replace the bracketed variables. Do NOT instruct the Auditor to read external context files, as the summarized `context_ref` is sufficient:
+- `done_when_gate`: If the task implements a complex rule or architectural decision that cannot be verified by tests, you MUST use the following exact `agy` command template. Keep the `agy` command template ONLY for semantic rules (e.g., "Does this follow SOLID principles?"). Replace the bracketed variables. Do NOT instruct the Auditor to read external context files, as the summarized `context_ref` is sufficient:
 `agy --dangerously-skip-permissions --prompt "Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>"`
 
 ### 3. The Financial Firewall (Token Economy)
