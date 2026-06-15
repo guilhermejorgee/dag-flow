@@ -97,14 +97,14 @@ def validate_tasks(root: ET.Element):
         print("❌ Validation failed: <UncreatedADRs> is not empty")
         return False
 
-    schema_source = get_text(root, "TableSchemaSource")
+    schema_source = get_text(root, "DagSchemaSource")
     if schema_source.lower() == "memory":
-        print("❌ Validation failed: <TableSchemaSource> cannot be 'memory'")
+        print("❌ Validation failed: <DagSchemaSource> cannot be 'memory'")
         return False
 
     decision = get_text(root, "Decision")
-    if decision != "WriteTasksTable":
-        print(f"❌ Validation failed: <Decision> must be WriteTasksTable, got {decision}")
+    if decision != "WriteJsonDag":
+        print(f"❌ Validation failed: <Decision> must be WriteJsonDag, got {decision}")
         return False
 
     return True

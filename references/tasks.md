@@ -16,7 +16,7 @@ PAGRL in the Tasks phase has its own field set, attacking the failure characteri
 **Schema example:**
 
 ```xml
-<PAGRL phase="TaskPlanning">
+<PAGRL phase="Tasks">
   <ReferencesRead>references/tasks.md, references/specify.md, references/design.md</ReferencesRead>
   <ArtifactPath>.specs/staging/file-upload/dag.json</ArtifactPath>
   <UncreatedADRs>

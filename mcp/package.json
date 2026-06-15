@@ -2,24 +2,7 @@
   "name": "@dag-flow/skills-mcp",
   "version": "0.1.3",
   "description": "The official MCP for dag-flow agent-skills. Local progressive disclosure flow.",
-  "author": "Tech Leads Club",
   "license": "MIT",
-  "homepage": "https://github.com/tech-leads-club/agent-skills",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tech-leads-club/agent-skills.git",
-    "directory": "packages/mcp"
-  },
-  "keywords": [
-    "mcp",
-    "agent-skills",
-    "skills",
-    "catalog",
-    "claude",
-    "cursor",
-    "ai",
-    "agents"
-  ],
   "type": "module",
   "bin": {
     "agent-skills-mcp": "./main.js"
@@ -35,7 +18,8 @@
     "access": "public"
   },
   "scripts": {
-    "start:dev": "nx build @tech-leads-club/agent-skills-mcp --configuration=development && npx @modelcontextprotocol/inspector node ../../dist/packages/mcp/main.js"
+    "build": "esbuild src/main.ts --bundle --platform=node --format=esm --outfile=main.js",
+    "start:dev": "npm run build && npx @modelcontextprotocol/inspector node main.js"
   },
   "dependencies": {
     "fastmcp": "^3.34.0",

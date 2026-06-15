@@ -11,7 +11,7 @@ Foi decidido **abandonar as tabelas Markdown** como AST para definição de tare
 A nova arquitetura implementa:
 1. **JSON DAGs:** A topologia das execuções passa a ser unicamente definida por arquivos `.json` nativos, aplicando restrições rígidas baseadas em array de objetos (ex: campos obrigatórios para input_files, output_files e skill).
 2. **Cognitive Rationale Field:** Adiciona-se o campo `cognitive_rationale` em cada nó da tarefa. O Subagent Planner deve justificar *por que* definiu um teste estrutural ou cognitivo (`agy`) antes de gravar a instrução no terminal (`done_when_gate`).
-3. **PAGRL TaskPlanning XML:** A fase final do Planejador agora emite obrigatoriamente um bloco estruturado em XML `<PAGRL phase="TaskPlanning">` antes de gerar a DAG, assegurando que as regras lógicas essenciais tenham sido lidas e consideradas antes do output do JSON.
+3. **PAGRL Task XML:** A fase final do Planejador agora emite obrigatoriamente um bloco estruturado em XML `<PAGRL phase="Tasks">` antes de gerar a DAG, assegurando que as regras lógicas essenciais tenham sido lidas e consideradas antes do output do JSON.
 4. **Python-Native State Mutation:** `dag_runner.py` foi reestruturado para ser 100% nativo JSON. O motor de execução também implementa a Separação de Runtime copiando o plano mestre do Vault (`.specs/dags/`) para um diretório mutável de estado (`.specs/runs/`). Isso permitiu reescrever os validadores (`auditor.py`, `update_task_status.py`) com operações atômicas exclusivas baseadas em `fcntl.flock`.
 
 ## Consequences

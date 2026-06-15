@@ -31,10 +31,19 @@ def run_auditor(task_id, dag_file):
         
     print(f"Running Execution Gate: {gate_command}")
     
-    cmd = f"rtk {gate_command}"
+    # Ensure ~/.local/bin is in PATH so rtk can be found
+    env = os.environ.copy()
+    local_bin = os.path.expanduser("~/.local/bin")
+    if os.path.exists(local_bin) and local_bin not in env.get("PATH", "").split(os.path.pathsep):
+        env["PATH"] = local_bin + os.path.pathsep + env.get("PATH", "")
+
+    if gate_command.startswith("! "):
+        cmd = f"! rtk {gate_command[2:]}"
+    else:
+        cmd = f"rtk {gate_command}"
     
     try:
-        result = subprocess.run(cmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        result = subprocess.run(cmd, shell=True, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env)
         exit_code = result.returncode
         eval_output = result.stdout
     except Exception as e:

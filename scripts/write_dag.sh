@@ -46,8 +46,8 @@ else
     exit 1
   fi
   
-  echo "🔍 Validating PAGRL schema for phase: TaskPlanning"
-  python3 "$SCRIPT_DIR/validate_pagrl.py" --phase TaskPlanning "$PAGRL_XML"
+  echo "🔍 Validating PAGRL schema for phase: tasks"
+  python3 "$SCRIPT_DIR/validate_pagrl.py" --phase tasks "$PAGRL_XML"
 fi
 
 echo "🔍 Extracting JSON DAG..."
