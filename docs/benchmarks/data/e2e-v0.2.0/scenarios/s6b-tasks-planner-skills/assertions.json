@@ -1,0 +1,64 @@
+{
+  "assertions": [
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/tasks.pagrl.xml"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/planner.pagrl.xml"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/dag.json"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/tasks.pagrl.xml",
+      "pattern": "references/tasks\\.md"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/planner.pagrl.xml",
+      "pattern": "<SkillsApplied>[^<]*custom-security-linter"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/planner.pagrl.xml",
+      "pattern": "<DomainsIdentified>"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/planner.pagrl.xml",
+      "pattern": "<EscalationDecision>Proceed</EscalationDecision>"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/planner.pagrl.xml",
+      "pattern": "<GateReasoning>"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/dag.json",
+      "pattern": "\"skill\":\\s*\"custom-security-linter\""
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/dag.json",
+      "pattern": "U2VjdXJpdHlIZWFkZXJSdWxl|SecurityHeader|security.linter"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/dags/*.json"
+    },
+    {
+      "type": "grep",
+      "pattern": "U2VjdXJpdHlIZWFkZXJSdWxl",
+      "file": "src/services/auth_service.js"
+    },
+    {
+      "type": "exit_code",
+      "command": "npm test"
+    }
+  ]
+}

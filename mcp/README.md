@@ -2,97 +2,94 @@
 
 High-speed, stateless MCP (Model Context Protocol) server for retrieving skills. Optimized for automated, non-graphical interface CLI shells and containerized workflows.
 
+> **Not on the npm registry.** Install from this repository: `npm install && npm run build` in `mcp/`, then `npm link` or use an absolute path to `main.js`. See [local install guide](../docs/planning/multi-runtime-implementation-plan.md#q3--instalação-local-npm-link).
+
 ---
 
-## 🚀 CLI Execution & Execution Modes
+## 🚀 CLI Execution
 
-This MCP server communicates over standard input/output (`stdio`) and can be launched directly from a shell CLI in three ways:
+This MCP server communicates over standard input/output (`stdio`).
 
-### 1. Local Built Bundle (Recommended for Local Dev/CI)
-Run the compiled JavaScript entry point directly using Node.js:
+### Local built bundle (recommended)
+
 ```bash
-node dist/main.js
+npm run build   # outputs main.js in this directory
+node main.js
 ```
-> [!NOTE]
-> Make sure to compile the TypeScript source files before running. See [Local Development](#-local-development).
-
-
 
 ---
 
 ## 🤖 Integration into Automated Workflows (e.g. `dag-flow`)
 
-In automated workflows, stateless workers are executed concurrently using CLI-based agent wrappers like `agy` or `gemini`:
-```bash
-agy --dangerously-skip-permissions --prompt "..."
-```
+In automated workflows, stateless workers are executed concurrently using CLI-based agent wrappers like `agy` or `cursor agent`.
 
 To enable the worker agent to discover and load skills, the MCP server must be declared in the agent's runtime configurations.
 
 ### Configuration for CLI Agents
 
 #### A. Gemini CLI / Antigravity (`~/.gemini/antigravity-cli/mcp/`)
-Create or edit the MCP config file mapping the server:
+
 ```json
 {
   "mcpServers": {
     "dag-flow-skills": {
       "command": "node",
-      "args": ["/absolute/path/to/dag-flow/mcp/dist/main.js"]
+      "args": ["/absolute/path/to/dag-flow/mcp/main.js"]
     }
   }
 }
 ```
 
+After `npm link` in `mcp/`, you may use `"command": "agent-skills-mcp"` if that bin is on the runtime's PATH.
+
 #### B. Claude Code CLI
-Register the local binary directly in Claude's global MCP environment:
+
 ```bash
-claude mcp add dag-flow-skills -- node /absolute/path/to/dag-flow/mcp/dist/main.js
+claude mcp add dag-flow-skills -- node /absolute/path/to/dag-flow/mcp/main.js
 ```
 
 ---
 
 ## 🛠️ Diagnostics & Manual Shell Testing
 
-To test and verify the MCP tools interactively inside a CLI shell before running automated workloads, use the official MCP Inspector:
-
 ```bash
-# Build and inspect locally
-npx @modelcontextprotocol/inspector node dist/main.js
+npm run build
+npx @modelcontextprotocol/inspector node main.js
 ```
-
-This starts a local developer server with a web interface where you can trigger and test the following tools:
 
 | Tool | Purpose | Primary Inputs |
 | :--- | :--- | :--- |
-| `list_skills` | Retrieve a compact category-grouped list of all available skills | `explicit_request: true` |
-| `search_skills` | Fuzzy search the skill index by task intent (e.g. "error handling") | `query` (string) |
-| `read_skill` | Fetch the main `SKILL.md` instructions and list of references | `skill_name` (string) |
-| `fetch_skill_files` | Retrieve contents of specific reference files (e.g. scripts/docs) | `skill_name`, `file_paths` (array) |
+| `list_skills` | Compact category-grouped skill list | `explicit_request: true` |
+| `search_skills` | Fuzzy search by task intent | `query` (string) |
+| `read_skill` | Fetch `SKILL.md` and reference list | `skill_name` (string) |
+| `fetch_skill_files` | Fetch reference file contents | `skill_name`, `file_paths` (array) |
 
 ---
 
 ## ⚡ Stderr Logging & Protocol Isolation
 
 > [!IMPORTANT]
-> Because the MCP protocol relies strictly on `stdout` for JSON-RPC messages, **all operational logs, warnings, registry fetch attempts, and CDN failures are routed to `stderr`**. This prevents stdout pollution and keeps the automated CLI shell pipeline clean.
+> MCP uses `stdout` for JSON-RPC only. Operational logs go to **`stderr`**.
 
 ---
 
 ## 🛠️ Local Development
 
 ### Requirements
-* Node.js $\ge$ 24
 
-### Build and Watch
-Compile the TypeScript sources into the runnable `dist/` bundle:
+* Node.js ≥ 24
+
+### Build
+
 ```bash
-# Clean install dependencies
-npm ci
+npm ci          # or npm install
+npm run build   # esbuild → main.js
+npm run start:dev   # build + MCP Inspector
+```
 
-# Compile once
-npm run build
+Optional global link for local development:
 
-# Start dev server with Inspector
-npm run start:dev:mcp
+```bash
+npm link
+which agent-skills-mcp
 ```

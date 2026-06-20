@@ -1,0 +1,23 @@
+{
+  "id": "s6b-tasks-planner-skills",
+  "name": "Tasks Phase Planner Skill Discovery",
+  "target": "taskflow-api",
+  "target_state": "greenfield",
+  "feature_requirements": "Generate and execute a Tasks-phase DAG for auth-header using the Subagent Planner with skill discovery.",
+  "user_context": {
+    "persona": "backend developer",
+    "feature_requirements": {
+      "feature": "auth-header",
+      "spec": "Vaulted at .specs/features/auth-header/spec.md — create src/services/auth_service.js with SecurityHeaderRule per custom-security-linter skill.",
+      "design": "Vaulted at .specs/features/auth-header/design.md — single file, no ADRs.",
+      "skill": "Project skill custom-security-linter is at .dag-flow/skills/custom-security-linter/SKILL.md. Planner must search_skills and read_skill before generating the DAG.",
+      "execution": "After vaulting the DAG, provide run_dag.sh and wait for execution status."
+    },
+    "answering_style": "Direct and concise. Confirm Tasks phase when asked; approve proceeding to DAG generation."
+  },
+  "dag_flow_prompt": "Implement the auth-header feature. Specification and design are already vaulted at .specs/features/auth-header/. Enter the Tasks phase, use the Subagent Planner to generate the JSON DAG, vault it, then guide execution.",
+  "expected_pagrl_phases": [
+    "Tasks",
+    "DagPlanner"
+  ]
+}

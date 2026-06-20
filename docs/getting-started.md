@@ -33,33 +33,45 @@ Clone the repository to act as your base template or integrate it into your exis
 git clone https://github.com/guilhermejorgee/dag-flow.git
 cd dag-flow
 
-# Setup the Skills MCP Server
+# Setup the Skills MCP Server (local — not on npm registry)
 cd mcp
 npm install
 npm run build
+npm link    # optional: exposes agent-skills-mcp globally
 cd ..
 ```
+
+See [local install (`npm link`)](../planning/multi-runtime-implementation-plan.md#q3--instalação-local-npm-link).
 
 ---
 
 ## 3. Runtime Integration
 
-`dag-flow` must connect to your chosen LLM runtime. We provide a setup script that automatically configures the **Global Indexing Hook** for your specific agent.
+### Skills MCP
 
-Run the setup script from the root of the project:
+Configure your agent runtime with the **absolute path** to `mcp/main.js` (or `agent-skills-mcp` after `npm link`). Examples: [mcp/README.md](../mcp/README.md).
+
+### dag-flow skill
+
+Until `dag init` ships ([implementation plan](../planning/multi-runtime-implementation-plan.md)), copy this repository's skill artifacts into your orchestrator's skills path (e.g. `.agents/skills/dag-flow/`).
+
+### Project topology
+
+Create the vault layout manually:
 
 ```bash
-./hooks/setup_indexer.sh --runtime <your-runtime>
+mkdir -p .specs/staging .specs/features .specs/dags
+chmod 755 .specs/staging
+chmod 555 .specs/features .specs/dags
 ```
 
-**Supported runtimes:**
-- `antigravity` (Generates a `GEMINI.md` boot rule)
-- `claude` (Registers the sessionstart hook via Claude Code)
-- `gemini-cli` (Registers the sessionstart hook via Gemini CLI)
-- `cursor` (Generates an `.mdc` rule for Cursor)
-- `codex` / `vscode-copilot`
+Or use `dag init` when the CLI is available.
 
-*(Follow any on-screen instructions provided by the script to restart your runtime).*
+### Indexing (`context-mode`)
+
+Install and configure `context-mode` separately (prerequisite §1). It is **not** part of dag-flow install.
+
+> **Deprecated:** `./hooks/setup_indexer.sh` mixed dag-flow bootstrap with context-mode indexing. Do not use for new projects.
 
 ---
 

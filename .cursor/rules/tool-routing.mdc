@@ -1,0 +1,25 @@
+---
+description: "Tool routing precedence — codegraph navigation vs context-mode analysis"
+alwaysApply: true
+---
+
+# Tool routing (enforced by `.cursor/hooks/tool-routing.mjs`)
+
+One guidance source per tool call. When in doubt, follow this table.
+
+## Precedence
+
+| Situation | Use |
+|-----------|-----|
+| Find symbol / who calls X / blast radius / read indexed source to edit | **codegraph** (`codegraph_explore`, `codegraph_node`, `codegraph_search`, `codegraph_callers`) |
+| Read indexed `.ts`/`.py`/`.js`/`.sh` under 50KB for editing | **codegraph_node**(file) — not Read |
+| Read large file or logs to analyze / summarize / extract | **context-mode** (`ctx_execute_file`, `ctx_execute`) |
+| Grep simple symbol or path fragment on indexed code | **codegraph** first |
+| Grep to count, filter, or aggregate many matches | **context-mode** (`ctx_execute` with ripgrep in sandbox) |
+| Shell, WebFetch, curl, npm test output, multi-URL I/O | **context-mode** only |
+| After codegraph returns | trust it — **no Grep** to verify |
+
+## Fallbacks
+
+- No `.codegraph/` in project → navigation uses Read/Grep; heavy output still uses context-mode.
+- Stale-index banner from codegraph → Read those specific files only.

@@ -93,15 +93,23 @@ cargo install rtk-ai
 git clone https://github.com/guilhermejorgee/dag-flow.git
 cd dag-flow
 
-# Build the bundled skills server
-cd mcp && npm install && npm run build && cd ..
+# Build the bundled skills MCP (local — not on npm registry)
+cd mcp && npm install && npm run build && npm link && cd ..
 ```
 
+See [local install (`npm link`)](docs/planning/multi-runtime-implementation-plan.md#q3--instalação-local-npm-link) for MCP wiring details.
+
 ### 3. Wire Your Agent
-Run the indexing hook setup script for your specific runtime (e.g., `antigravity`, `claude`, `cursor`, `gemini-cli`):
-```bash
-./hooks/setup_indexer.sh --runtime claude
-```
+
+**Skills MCP:** Point your agent runtime at the absolute path to `mcp/main.js` (or use the `agent-skills-mcp` bin after `npm link`). See [mcp/README.md](mcp/README.md).
+
+**dag-flow skill:** Copy this repository into your orchestrator's skills directory (e.g. `.agents/skills/dag-flow/`) until `dag init` ships — track [multi-runtime implementation plan](docs/planning/multi-runtime-implementation-plan.md).
+
+**Project topology:** Create `.specs/staging/` (`chmod 755`), `.specs/features/` and `.specs/dags/` (`chmod 555`), or use `dag init` when available.
+
+**Indexing:** Install `context-mode` separately (prerequisite above). It is not configured by dag-flow install.
+
+> **Deprecated:** `./hooks/setup_indexer.sh` mixed dag-flow bootstrap with context-mode setup. Do not use it for new projects.
 
 ### 4. Run Your First Feature
 1. **Specify:** Ask your agent: *"Specify a new feature: a user login system."* Answer its questions.

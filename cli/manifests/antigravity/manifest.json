@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "runtime_id": "antigravity",
+  "extends": null,
+  "orchestrator": {
+    "hook_wiring_tier": "boot_file",
+    "hook_config_path": null,
+    "hook_event": null,
+    "hook_entry_id": null,
+    "boot_file": "GEMINI.md",
+    "skill_install_path": ".agents/skills",
+    "partials": {
+      "SPAWN_SUBAGENT_BLOCK": "spawn-subagent.md",
+      "SPAWN_SUBAGENT_SKILL_BLOCK": "spawn-subagent-skill.md",
+      "SPAWN_SUBAGENT_QUICK_BLOCK": "spawn-subagent-quick.md"
+    },
+    "placeholders": {
+      "TOOL_RUN_COMMAND": "run_command",
+      "TOOL_VIEW_FILE": "view_file",
+      "RUNTIME_NAME": "Antigravity"
+    }
+  },
+  "worker": {
+    "command_template": ["agy", "--dangerously-skip-permissions", "--prompt", "<<<PROMPT>>>"],
+    "worker_validation_status": "validated",
+    "auditor_wrapper": null,
+    "placeholders": {
+      "CLI_COMMAND_PREFIX": "agy --dangerously-skip-permissions",
+      "AUDITOR_COMMAND_TEMPLATE": "agy --dangerously-skip-permissions --prompt \"Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>\""
+    }
+  }
+}

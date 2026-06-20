@@ -41,18 +41,21 @@ If your feature introduces a major structural change or a shift in the cognitive
    ```bash
    cd mcp
    npm install
+   npm run build
    ```
 
 4. **Testing the MCP:**
    ```bash
-   npm test
+   npm run build
+   npx @modelcontextprotocol/inspector node main.js
    ```
+   *(The MCP package has no `npm test` script yet — Jest config exists for future tests.)*
 
 ## 📝 Code Style & Conventions
 
 - **Python Scripts:** Follow standard `asyncio` patterns for the DAG engine.
 - **Bash Scripts:** Use `set -euo pipefail` where applicable. Ensure commands are POSIX-compliant where possible.
-- **TypeScript (MCP):** Use standard TypeScript conventions. Adhere to the existing `project.json` and ESLint configurations.
+- **TypeScript (MCP / CLI):** Standard TypeScript conventions. MCP builds with **esbuild** (`npm run build` → `main.js`). Future `cli/` package uses esbuild + Jest — see [implementation plan](docs/planning/multi-runtime-implementation-plan.md).
 - **Documentation:**
   - **User-Facing:** All files in `docs/`, `README.md`, and this file must be written in clear, concise **English**.
   - **Research:** Files in `docs/design/` must be preserved in their original **Portuguese**, as they form the intellectual foundation of the project.
@@ -71,7 +74,7 @@ Follow the format of existing ADRs (Context, Decision, Consequences).
 
 1. Fork the repo and create your branch from `main`.
 2. If you've added code that should be tested, add tests.
-3. If you've changed the MCP server, ensure `npm test` passes.
+3. If you've changed the MCP server, ensure `npm run build` succeeds.
 4. Ensure your commit messages follow conventional commits (e.g., `feat: add new worker runtime support`, `fix: auditor awk parsing`).
 5. Open a PR and describe the "Why" behind your changes.
 

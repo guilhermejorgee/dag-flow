@@ -1,10 +1,23 @@
 {
   "version": 1,
   "hooks": {
+    "sessionStart": [
+      {
+        "command": ".cursor/hooks/caveman-session-start.mjs",
+        "timeout": 10
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": ".cursor/hooks/caveman-before-submit.mjs",
+        "timeout": 8
+      }
+    ],
     "preToolUse": [
       {
-        "command": "context-mode hook cursor pretooluse",
-        "matcher": "Shell|Read|Grep|WebFetch|Task|MCP:ctx_execute|MCP:ctx_execute_file|MCP:ctx_batch_execute"
+        "command": ".cursor/hooks/tool-routing.mjs",
+        "timeout": 10,
+        "matcher": "Shell|Read|Grep|WebFetch|Task|MCP:"
       }
     ],
     "postToolUse": [
