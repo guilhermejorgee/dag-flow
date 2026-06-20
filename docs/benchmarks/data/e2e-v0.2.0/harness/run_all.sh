@@ -2,7 +2,7 @@
 set -e
 
 # ---------------------------------------------------------------------------
-# run_all.sh — runs all 6 E2E benchmark scenarios sequentially
+# run_all.sh — runs all E2E benchmark scenarios sequentially
 #
 # Usage:
 #   bash run_all.sh [--dry-run] [--mode dag_flow|baseline|both] [workspace_dir]
@@ -32,7 +32,7 @@ done
 WORKSPACE_DIR=${1:-"workspace/run-$(date +%s)"}
 BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-SCENARIOS=("s1-escalation" "s2-happy-path-execution" "s3-quick-mode-hotfix" "s4-critical-error-escalation" "s5-parallel-tasks-merge" "s6-skill-invocation")
+SCENARIOS=("s1-escalation" "s2-happy-path-execution" "s3-quick-mode-hotfix" "s3b-quick-mode-planner" "s4-critical-error-escalation" "s5-parallel-tasks-merge" "s6-skill-invocation")
 
 if [ "$DRY_RUN" -eq 1 ]; then
   echo "Execution plan (mode=$MODE):"

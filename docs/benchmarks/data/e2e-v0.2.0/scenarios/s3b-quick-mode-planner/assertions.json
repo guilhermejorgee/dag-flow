@@ -1,0 +1,63 @@
+{
+  "assertions": [
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/quickmode-entry.pagrl.xml"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/quickmode-diagnosis.pagrl.xml"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/planner.pagrl.xml"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/staging/*/dag.json"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/quickmode-diagnosis.pagrl.xml",
+      "pattern": "<FilesInspected>[^<]*test\\.js"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/planner.pagrl.xml",
+      "pattern": "<DomainsIdentified>"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/planner.pagrl.xml",
+      "pattern": "<EscalationDecision>Proceed</EscalationDecision>"
+    },
+    {
+      "type": "glob_grep",
+      "glob": ".specs/staging/*/dag.json",
+      "pattern": "done_when_gate\":\\s*\"node [^\"]*test"
+    },
+    {
+      "type": "glob_grep_not",
+      "glob": ".specs/staging/*/dag.json",
+      "pattern": "node -c"
+    },
+    {
+      "type": "glob_grep_not",
+      "glob": ".specs/staging/*/dag.json",
+      "pattern": "cd /"
+    },
+    {
+      "type": "glob_exists",
+      "pattern": ".specs/dags/*.json"
+    },
+    {
+      "type": "grep",
+      "pattern": "res.status\\(200\\)",
+      "file": "src/src/routes/auth.js"
+    },
+    {
+      "type": "exit_code",
+      "command": "npm test"
+    }
+  ]
+}

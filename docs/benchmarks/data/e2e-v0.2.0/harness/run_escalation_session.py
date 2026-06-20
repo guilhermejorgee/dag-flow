@@ -55,6 +55,9 @@ import time
 import pexpect
 import pyte
 
+from agent_prompt import build_dag_flow_prompt, communication_rules_from_scenario
+from session_completion import session_complete
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -199,11 +202,9 @@ def find_question(screen: pyte.Screen, answered: set) -> tuple[str, str] | None:
 
 
 def is_finished(screen: pyte.Screen, workspace_dir: str) -> bool:
-    """
-    Return True if the agent has completed the Escalation phase.
-    """
+    """True when DAG run finished on disk or screen announces completion."""
     content = "\n".join(_content_lines(screen))
-    return any(sig in content for sig in FINISHED_SIGNALS)
+    return session_complete(workspace_dir, content)
 
 def find_execution_request(screen: pyte.Screen, executed: set) -> tuple[str, str] | None:
     lines = _content_lines(screen)
@@ -332,16 +333,17 @@ def run_session(
     log_path: str,
     mode: str,
     dag_flow_model: str | None = None,
+    communication_rules: str | None = None,
 ) -> list[dict]:
     """
     Spawn an interactive agy session and drive it turn-by-turn.
 
-    dag_flow mode → prompt prefixed with 'Use the dag-flow skill to:'
+    dag_flow mode → skill prefix + task prompt + communication rules (user prefs)
     baseline mode → prompt sent as-is (no skill prefix)
     dag_flow_model → optional model override for the dag-flow agent
     """
     if mode == "dag_flow":
-        full_prompt = f"Use the dag-flow skill to: {initial_prompt}"
+        full_prompt = build_dag_flow_prompt(initial_prompt, communication_rules)
     else:
         full_prompt = initial_prompt
 
@@ -411,7 +413,7 @@ def run_session(
 
             # --- Check if finished ---
             if is_finished(screen, workspace_dir):
-                print("[escalation] ✓ Agent finished (update_task_status.sh detected).")
+                print("[escalation] ✓ Session complete (DAG run done or completion signal on screen).")
                 transcript.append({"event": "finished"})
                 child.sendline("/exit")
                 time.sleep(1)
@@ -510,6 +512,15 @@ def run_session(
                         interactions += 1
                         continue
 
+                # If DAG run finished but agent is idle without a question, exit.
+                if session_complete(workspace_dir, "\n".join(content)):
+                    print("[escalation] ✓ DAG execution complete on disk — ending session.")
+                    transcript.append({"event": "finished", "reason": "dag_execution_complete"})
+                    child.sendline("/exit")
+                    time.sleep(1)
+                    child.close(force=True)
+                    break
+
                 # Reduced-verbosity dump: just cursor row + last 8 visible rows.
                 print(f"[socratic] Screen stable, no question yet. Cursor=row {cursor_row}.")
                 for i, row in enumerate(screen.display):
@@ -573,6 +584,12 @@ def main() -> None:
         f"socratic_{args.mode}.log",
     )
 
+    comm_rules = (
+        communication_rules_from_scenario(scenario)
+        if args.mode == "dag_flow"
+        else None
+    )
+
     transcript = run_session(
         workspace_dir=os.path.abspath(args.workspace),
         initial_prompt=prompt,
@@ -581,6 +598,7 @@ def main() -> None:
         dag_flow_model=args.dag_flow_model,
         log_path=log_path,
         mode=args.mode,
+        communication_rules=comm_rules,
     )
 
     q_and_a = [t for t in transcript if "question" in t]

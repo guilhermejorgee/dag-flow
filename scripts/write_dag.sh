@@ -40,6 +40,18 @@ if [ "$PHASE" = "quick-mode" ]; then
   
   echo "🔍 Validating PAGRL schema for phase: quick-mode-diagnosis"
   python3 "$SCRIPT_DIR/validate_pagrl.py" --phase quick-mode-diagnosis "$DIAGNOSIS_XML"
+
+  # Assert planner.pagrl.xml exists
+  PLANNER_PAGRL="$STAGING_DIR/planner.pagrl.xml"
+  if [ ! -f "$PLANNER_PAGRL" ]; then
+    echo "❌ Error: planner.pagrl.xml not found in $STAGING_DIR"
+    echo "   The Orchestrator must extract the <planner_pagrl> block from the Subagent message"
+    echo "   and write it to $PLANNER_PAGRL before running this script."
+    exit 1
+  fi
+
+  echo "🔍 Validating PAGRL schema for phase: dag-planner"
+  python3 "$SCRIPT_DIR/validate_pagrl.py" --phase dag-planner "$PLANNER_PAGRL"
 else
   if [ ! -f "$DAG_JSON" ] || [ ! -f "$PAGRL_XML" ]; then
     echo "❌ Error: dag.json and tasks.pagrl.xml must exist in $STAGING_DIR"
@@ -48,6 +60,18 @@ else
   
   echo "🔍 Validating PAGRL schema for phase: tasks"
   python3 "$SCRIPT_DIR/validate_pagrl.py" --phase tasks "$PAGRL_XML"
+
+  # Assert planner.pagrl.xml exists
+  PLANNER_PAGRL="$STAGING_DIR/planner.pagrl.xml"
+  if [ ! -f "$PLANNER_PAGRL" ]; then
+    echo "❌ Error: planner.pagrl.xml not found in $STAGING_DIR"
+    echo "   The Orchestrator must extract the <planner_pagrl> block from the Subagent message"
+    echo "   and write it to $PLANNER_PAGRL before running this script."
+    exit 1
+  fi
+
+  echo "🔍 Validating PAGRL schema for phase: dag-planner"
+  python3 "$SCRIPT_DIR/validate_pagrl.py" --phase dag-planner "$PLANNER_PAGRL"
 fi
 
 echo "🔍 Extracting JSON DAG..."

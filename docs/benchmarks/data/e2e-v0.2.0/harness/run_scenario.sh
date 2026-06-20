@@ -74,7 +74,7 @@ fi
 
 if [[ "$MODE" == "dag_flow" || "$MODE" == "both" ]]; then
   echo "Starting dag-flow Escalation session..."
-  python3.13 "$BASE_DIR/harness/run_escalation_session.py" \
+  PYTHONUNBUFFERED=1 python3.13 -u "$BASE_DIR/harness/run_escalation_session.py" \
     --workspace "$RUN_DIR/with_dag_flow" \
     --scenario-json "$SCENARIO_JSON" \
     --mode "dag_flow" \

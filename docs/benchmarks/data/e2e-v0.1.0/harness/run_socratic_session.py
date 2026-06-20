@@ -55,6 +55,8 @@ import time
 import pexpect
 import pyte
 
+from session_completion import session_complete
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -200,28 +202,9 @@ def find_question(screen: pyte.Screen, answered: set) -> tuple[str, str] | None:
 
 
 def is_finished(screen: pyte.Screen, workspace_dir: str) -> bool:
-    """
-    Return True if the agent has completed the Tasks/Execute phase.
-
-    Two signals are checked:
-      1. Any tasks.md anywhere under .specs/ exists on disk (glob search).
-      2. Screen content contains a FINISHED_SIGNAL string.
-
-    The filesystem check is the more reliable signal — it works even if the
-    agent completed silently without printing a status message.  We use a
-    recursive glob because dag-flow scopes output under .specs/features/<name>/.
-    """
-    # Filesystem check (primary) — glob for *.json under .specs/features/ or .specs/dags/
-    for folder in ["dags", "features"]:
-        target_dir = os.path.join(workspace_dir, ".specs", folder)
-        if os.path.isdir(target_dir):
-            matches = globmod.glob(os.path.join(target_dir, "**", "*.json"), recursive=True)
-            if matches:
-                return True
-
-    # Screen content check (secondary)
+    """True when DAG run finished on disk or screen announces completion."""
     content = "\n".join(_content_lines(screen))
-    return any(sig in content for sig in FINISHED_SIGNALS)
+    return session_complete(workspace_dir, content)
 
 
 # ---------------------------------------------------------------------------

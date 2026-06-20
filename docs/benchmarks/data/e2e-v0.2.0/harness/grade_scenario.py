@@ -17,11 +17,15 @@ def resolve_dir(base_dir, scenario_id, workspace_dir, mode):
         return os.path.join(scenario_run, "with_dag_flow")
 
 
+def _rel_path(assertion: dict) -> str:
+    return assertion.get("path") or assertion.get("file", "")
+
+
 def check_assertion(assertion, output_dir):
     atype = assertion.get("type")
 
     if atype == "file_exists":
-        path = os.path.join(output_dir, assertion.get("path", ""))
+        path = os.path.join(output_dir, _rel_path(assertion))
         passed = os.path.exists(path)
         return {"text": f"File exists: {assertion.get('path')}", "passed": passed, "evidence": f"Found: {passed} (in {output_dir})"}
 
@@ -48,13 +52,31 @@ def check_assertion(assertion, output_dir):
         return {"text": f"Glob grep: {assertion.get('pattern')} in {assertion.get('glob')}",
                 "passed": passed, "evidence": f"Checked {len(matches)} file(s)"}
 
+    elif atype == "glob_grep_not":
+        # No file matching the glob may contain the pattern.
+        file_glob = os.path.join(output_dir, assertion.get("glob", ""))
+        matches = glob.glob(file_glob, recursive=True)
+        passed = len(matches) > 0
+        offender = None
+        for m in matches:
+            with open(m, "r", errors="replace") as f:
+                if re.search(assertion.get("pattern", ""), f.read()):
+                    passed = False
+                    offender = m
+                    break
+        evidence = f"Checked {len(matches)} file(s)"
+        if offender:
+            evidence += f"; matched in {os.path.relpath(offender, output_dir)}"
+        return {"text": f"Glob grep not {assertion.get('pattern')} in {assertion.get('glob')}",
+                "passed": passed, "evidence": evidence}
+
     elif atype == "file_not_exists":
         path = os.path.join(output_dir, assertion.get("path", ""))
         passed = not os.path.exists(path)
         return {"text": f"File does not exist: {assertion.get('path')}", "passed": passed, "evidence": f"Not found: {passed}"}
 
     elif atype == "grep":
-        path = os.path.join(output_dir, assertion.get("path", ""))
+        path = os.path.join(output_dir, _rel_path(assertion))
         passed = False
         if os.path.exists(path):
             with open(path, "r", errors="replace") as f:

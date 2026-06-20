@@ -55,6 +55,9 @@ import time
 import pexpect
 import pyte
 
+from agent_prompt import build_dag_flow_prompt, communication_rules_from_scenario
+from session_completion import session_complete
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -200,28 +203,9 @@ def find_question(screen: pyte.Screen, answered: set) -> tuple[str, str] | None:
 
 
 def is_finished(screen: pyte.Screen, workspace_dir: str) -> bool:
-    """
-    Return True if the agent has completed the Tasks/Execute phase.
-
-    Two signals are checked:
-      1. Any tasks.md anywhere under .specs/ exists on disk (glob search).
-      2. Screen content contains a FINISHED_SIGNAL string.
-
-    The filesystem check is the more reliable signal — it works even if the
-    agent completed silently without printing a status message.  We use a
-    recursive glob because dag-flow scopes output under .specs/features/<name>/.
-    """
-    # Filesystem check (primary) — glob for *.json under .specs/features/ or .specs/dags/
-    for folder in ["dags", "features"]:
-        target_dir = os.path.join(workspace_dir, ".specs", folder)
-        if os.path.isdir(target_dir):
-            matches = globmod.glob(os.path.join(target_dir, "**", "*.json"), recursive=True)
-            if matches:
-                return True
-
-    # Screen content check (secondary)
+    """True when DAG run finished on disk or screen announces completion."""
     content = "\n".join(_content_lines(screen))
-    return any(sig in content for sig in FINISHED_SIGNALS)
+    return session_complete(workspace_dir, content)
 
 
 # ---------------------------------------------------------------------------
@@ -332,16 +316,17 @@ def run_session(
     log_path: str,
     mode: str,
     dag_flow_model: str | None = None,
+    communication_rules: str | None = None,
 ) -> list[dict]:
     """
     Spawn an interactive agy session and drive it turn-by-turn.
 
-    dag_flow mode → prompt prefixed with 'Use the dag-flow skill to:'
+    dag_flow mode → skill prefix + task prompt + communication rules (user prefs)
     baseline mode → prompt sent as-is (no skill prefix)
     dag_flow_model → optional model override for the dag-flow agent
     """
     if mode == "dag_flow":
-        full_prompt = f"Use the dag-flow skill to: {initial_prompt}"
+        full_prompt = build_dag_flow_prompt(initial_prompt, communication_rules)
     else:
         full_prompt = initial_prompt
 
@@ -515,6 +500,12 @@ def main() -> None:
         f"socratic_{args.mode}.log",
     )
 
+    comm_rules = (
+        communication_rules_from_scenario(scenario)
+        if args.mode == "dag_flow"
+        else None
+    )
+
     transcript = run_session(
         workspace_dir=os.path.abspath(args.workspace),
         initial_prompt=prompt,
@@ -523,6 +514,7 @@ def main() -> None:
         dag_flow_model=args.dag_flow_model,
         log_path=log_path,
         mode=args.mode,
+        communication_rules=comm_rules,
     )
 
     q_and_a = [t for t in transcript if "question" in t]

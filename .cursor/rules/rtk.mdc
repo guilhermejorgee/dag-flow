@@ -1,0 +1,27 @@
+---
+description: RTK proxy for token-optimized shell output
+alwaysApply: true
+---
+
+# RTK — token-optimized shell output
+
+`rtk` is a CLI proxy that filters and compresses command output before it enters context. Use it for shell commands with large or noisy output.
+
+## When to use rtk
+
+```bash
+rtk git status / log / diff   # git commands
+rtk gh pr list / issue list   # GitHub CLI
+rtk ls / rtk tree             # directory listings
+rtk <any command>             # large output you need to read directly
+```
+
+## When NOT to use rtk
+
+- Output you need to **parse in code** → use `ctx_execute` / `ctx_batch_execute` instead
+- Short commands (<10 lines output) → plain Shell is fine
+- Commands where rtk has no proxy (e.g. `npm test`, `python3`) → rtk passes through as-is; prefer `ctx_batch_execute` for build/test output
+
+## Rule
+
+> Any shell command that would produce >20 lines: either `rtk <cmd>` or `ctx_batch_execute`. Never raw Shell with large output dumped directly into context.

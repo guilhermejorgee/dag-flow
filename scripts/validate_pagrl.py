@@ -113,16 +113,53 @@ def validate_quick_mode_entry(root: ET.Element):
     return True
 
 def validate_quick_mode_diagnosis(root: ET.Element):
+    if is_empty(root, "ReferencesRead"):
+        print("❌ Validation failed: <ReferencesRead> must not be empty. "
+              "Declare which protocol files were read (at minimum: references/quick-mode.md).")
+        return False
+
+    if is_empty(root, "FilesInspected"):
+        print("❌ Validation failed: <FilesInspected> must not be empty. "
+              "Declare which source and test files were read during diagnosis.")
+        return False
+
     decision = get_text(root, "Decision")
     if decision != "Generate a Mini-DAG for the hot-patch.":
-        print(f"❌ Validation failed: <Decision> expected 'Generate a Mini-DAG for the hot-patch.', got '{decision}'")
+        print(f"❌ Validation failed: <Decision> expected "
+              f"'Generate a Mini-DAG for the hot-patch.', got '{decision}'")
+        return False
+
+    return True
+
+def validate_dag_planner(root: ET.Element):
+    if is_empty(root, "DomainsIdentified"):
+        print("❌ Validation failed: <DomainsIdentified> must not be empty. "
+              "Declare the technical domains identified from the spec before skill search.")
+        return False
+
+    tasks_count = get_text(root, "TasksCount")
+    try:
+        if int(tasks_count) <= 0:
+            raise ValueError
+    except (ValueError, TypeError):
+        print(f"❌ Validation failed: <TasksCount> must be a positive integer, got '{tasks_count}'")
+        return False
+
+    escalation = get_text(root, "EscalationDecision")
+    if escalation not in ("Proceed", "Escalate"):
+        print(f"❌ Validation failed: <EscalationDecision> must be 'Proceed' or 'Escalate', got '{escalation}'")
+        return False
+
+    if escalation == "Escalate" and is_empty(root, "OpenDecisions"):
+        print("❌ Validation failed: <EscalationDecision> is 'Escalate' but <OpenDecisions> is empty. "
+              "Name the specific open decision that requires user input.")
         return False
 
     return True
 
 def main():
     parser = argparse.ArgumentParser(description="Validate PAGRL XML schema.")
-    parser.add_argument("--phase", required=True, choices=["specify", "design", "tasks", "quick-mode-entry", "quick-mode-diagnosis"])
+    parser.add_argument("--phase", required=True, choices=["specify", "design", "tasks", "quick-mode-entry", "quick-mode-diagnosis", "dag-planner"])
     parser.add_argument("xml_file", help="Path to the .pagrl.xml file")
     
     args = parser.parse_args()
@@ -148,6 +185,8 @@ def main():
         success = validate_quick_mode_entry(root)
     elif args.phase == "quick-mode-diagnosis":
         success = validate_quick_mode_diagnosis(root)
+    elif args.phase == "dag-planner":
+        success = validate_dag_planner(root)
         
     if success:
         print(f"✅ PAGRL validation passed for phase: {args.phase}")

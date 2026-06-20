@@ -1,0 +1,20 @@
+{
+  "id": "s3b-quick-mode-planner",
+  "name": "Quick Mode Planner Artifacts",
+  "target": "taskflow-api",
+  "target_state": "brownfield",
+  "feature_requirements": "Fix the bug in the /login route using the Subagent Planner protocol (not inline Mini-DAG).",
+  "user_context": {
+    "persona": "backend developer",
+    "feature_requirements": {
+      "bug": "Fix bug: /login returns 500. ReferenceError: undefinedVar is not defined in src/src/routes/auth.js. test.js calls auth({}, res) and expects res.status(200). Use Quick Mode hotfix."
+    },
+    "answering_style": "Direct and concise. Include the phrase 'Fix bug' when answering."
+  },
+  "dag_flow_prompt": "A user reported a bug in production. Ask them for details to initiate a hotfix.",
+  "expected_pagrl_phases": [
+    "QuickModeEntry",
+    "QuickModeDiagnosis",
+    "DagPlanner"
+  ]
+}

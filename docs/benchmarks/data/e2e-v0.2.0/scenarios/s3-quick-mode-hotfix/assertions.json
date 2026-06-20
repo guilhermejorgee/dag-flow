@@ -7,7 +7,7 @@
     {
       "type": "grep",
       "pattern": "res.status\\(200\\)",
-      "file": "src/routes/auth.js"
+      "file": "src/src/routes/auth.js"
     },
     {
       "type": "exit_code",

@@ -1,0 +1,26 @@
+---
+description: Codegraph-first codebase navigation — use before Read/Grep
+alwaysApply: true
+---
+
+# Codegraph — use before Read/Grep
+
+Codegraph is a pre-built AST knowledge graph. One call returns verbatim source + callers + callees. Reach for it BEFORE Read/Grep on indexed source files.
+
+## Tool selection
+
+| Intent | Tool |
+|--------|------|
+| Understand an area / answer a question | `codegraph_explore` (PRIMARY — start here) |
+| Find a symbol by name | `codegraph_search` |
+| Read a file (instead of `Read` tool) | `codegraph_node` with `file` path |
+| Read a symbol with its callers/callees | `codegraph_node` with `symbol` + `includeCode: true` |
+| "What calls this?" / blast radius | `codegraph_callers` |
+
+## Rules
+
+- `codegraph_explore` first — one call returns relevant source grouped by file; most often the ONLY call needed.
+- `codegraph_node` instead of `Read` for indexed `.ts`, `.py`, `.js`, `.sh` files — same `<n>\t<line>` output, faster, with blast radius attached.
+- Do NOT re-verify codegraph results with Grep — results come from full AST parse, not regex.
+- Do NOT chain `codegraph_search` + `codegraph_node` to understand an area — use one `codegraph_explore`.
+- Fall back to `Read`/`Grep` only for configs, docs, or files flagged as stale (⚠️ banner in response).

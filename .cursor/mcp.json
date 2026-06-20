@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "context-mode": {
+      "command": "context-mode"
+    },
+    "codegraph": {
+      "type": "stdio",
+      "command": "codegraph",
+      "args": [
+        "serve",
+        "--mcp",
+        "--path",
+        "/home/guilherme/Área de trabalho/Repos/dag-flow"
+      ]
+    }
+  }
+}

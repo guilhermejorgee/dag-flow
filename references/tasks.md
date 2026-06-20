@@ -43,9 +43,30 @@ You may only generate the tasks JSON when **all** of the following hold:
 
 When advancing, you MUST:
 1. Write your `tasks.pagrl.xml` to the staging area `.specs/staging/[feature]/`.
-2. Spawn a Subagent Planner (`define_subagent` with `enable_write_tools=false`) to generate the JSON DAG and send it back to you via message.
-3. Write the JSON to `.specs/staging/[feature]/dag.json`.
-4. Use the `run_command` tool to execute `<path-to-skill>/scripts/write_dag.sh [feature] --phase tasks`. This script runs Python validation against your XML and JSON, and if successful, moves the DAG into the physically locked vault.
+   (You MUST write the XML BEFORE spawning - the Subagent receives its content verbatim.)
+2. Use the `view_file` tool to read `references/planner-template.md` verbatim.
+   This is the system prompt for the Subagent. Do not paraphrase or reconstruct from memory.
+3. Spawn a Subagent Planner (`define_subagent` with `enable_mcp_tools=true`,
+   `enable_write_tools=false`) with:
+   - system_prompt: the verbatim content of `references/planner-template.md`
+   - first_message: (a) the content of `tasks.pagrl.xml` just written, verbatim;
+     (b) paths to `.specs/features/[feature]/spec.md`,
+     `.specs/features/[feature]/design.md`, `references/tasks.md`;
+     (c) path to `CONTEXT.md` if it exists at the project root;
+     (d) instruction: "Call search_skills in parallel for all technical domains in the
+     spec, then call read_skill on each found skill before generating the JSON. Return
+     your response using the two-block format specified in the Output Contract."
+4. Receive and detect:
+   - If the Subagent message contains `<dag_json>` (normal flow):
+     Extract both blocks. Write `planner.pagrl.xml` and `dag.json` to
+     `.specs/staging/[feature]/`. Run `write_dag.sh --phase tasks`.
+     If `write_dag.sh` fails: spawn a new Subagent session (same system prompt,
+     original user message + broken content + validation error appended). One retry.
+   - If the Subagent message contains no `<dag_json>` (escalation flow):
+     Read `<OpenDecisions>` in the `<planner_pagrl>` block. Conduct a focused Socratic
+     session with the user. The Orchestrator writes the draft skill to
+     `.dag-flow/skills/[domain-name]/SKILL.md`. Spawn a new Subagent session.
+5. Use the `run_command` tool to execute `<path-to-skill>/scripts/write_dag.sh [feature] --phase tasks`.
 
 The **Tasks Phase** is the bridge between specification/architecture and execution. The Orchestrator translates `.specs/features/[feature]/spec.md` (and `design.md`, if created) into an executable Directed Acyclic Graph (DAG) for the automated DAG Runner. The Orchestrator NEVER executes these tasks itself.
 
@@ -91,7 +112,12 @@ A strict JSON array representing the DAG. Markdown tables are strictly forbidden
 ```
 
 **The MCP Skill Injection Rule:**
-The Orchestrator MUST use a **parallel search** strategy for `search_skills`. Instead of calling it row-by-row (which wastes roundtrips), identify all required technical domains (e.g., "react", "postgres"), execute multiple `search_skills` tool calls simultaneously in a single turn, and then write the entire JSON assigning the found skills to the `skill` field. Use `None` if no specific skill is needed.
+The Subagent Planner is responsible for skill discovery and loading - not the Orchestrator.
+The Subagent calls `search_skills` in parallel across all technical domains identified in
+spec.md and design.md, then calls `read_skill` on each found skill. It applies the skill
+content to write precise `context_ref`, `execution_prompt`, and `done_when_gate` - not
+just to assign the `skill:` field. The `skill:` field in the task JSON points the worker
+to the same skill for execution-time learning.
 
 **The Traceability Rule (Context Ref):**
 The Orchestrator MUST map every functional task to a specific rule in `spec.md` and every architectural task to a decision in `design.md`. This field provides the *Reason* for the task. It MUST be a **self-contained, highly detailed summary** of the exact rule to be evaluated (e.g., "The JSON must use UUID v4. The cache must use Redis per ADR-002." rather than just "Database rules"). This ensures the stateless Auditor can validate the code without reading the full spec files.
