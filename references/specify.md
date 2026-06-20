@@ -85,7 +85,7 @@ If any of these fails, the only valid action is to ask another Socratic question
 
 When advancing, you MUST:
 1. Write `spec.md` and `spec.pagrl.xml` to the staging area `.specs/staging/[feature]/`.
-2. Use the `run_command` tool to execute `<path-to-skill>/scripts/commit_spec.sh [feature]`. This script runs Python validation against your XML and, if successful, moves the files into the physically locked vault.
+2. Use the `<<<DAG:TOOL_RUN_COMMAND>>>` tool to execute `<path-to-skill>/scripts/commit_spec.sh [feature]`. This script runs Python validation against your XML and, if successful, moves the files into the physically locked vault.
 
 ### 4. Zero Execution
 During the Specify Phase, the Orchestrator is **FORBIDDEN** from modifying any functional application code (`src/`, `lib/`, etc.). All writes must be confined to `.specs/staging/`, `docs/adr/`, and `CONTEXT.md`.

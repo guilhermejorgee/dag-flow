@@ -31,6 +31,6 @@ This protocol ensures we recover from failures without violating the **Intention
 4. **Hotfix Completion:** User reports that the hotfix DAG ran successfully.
 5. **Double Verify:** Orchestrator instructs the **User** to directly run `python3 <path-to-skill>/<path-to-skill>/scripts/auditor.py <Task_ID> .specs/runs/[ID]/dag.json` to manually verify the hotfix against the main DAG's gate.
 6. **Resolution:**
-   - **If PASS:** Orchestrator explicitly updates the main task's status to `Done` by executing `python3 <path-to-skill>/<path-to-skill>/scripts/update_task_status.py .specs/runs/[ID]/dag.json <Task_ID> Done` using the `run_command` tool, then instructs the **User** to resume `<path-to-skill>/<path-to-skill>/scripts/run_dag.sh .specs/runs/[ID]/dag.json`.
+   - **If PASS:** Orchestrator explicitly updates the main task's status to `Done` by executing `python3 <path-to-skill>/<path-to-skill>/scripts/update_task_status.py .specs/runs/[ID]/dag.json <Task_ID> Done` using the `<<<DAG:TOOL_RUN_COMMAND>>>` tool, then instructs the **User** to resume `<path-to-skill>/<path-to-skill>/scripts/run_dag.sh .specs/runs/[ID]/dag.json`.
    - **If FAIL:** Orchestrator reads the new error from the user, wipes the old Mini-DAG, and generates a new Mini-DAG to continue fixing the issue.
 

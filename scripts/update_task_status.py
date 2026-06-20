@@ -4,33 +4,63 @@ import json
 import os
 import fcntl
 
+VAULT_DAGS_DIR = os.path.join(".specs", "dags")
+
+
+def is_vault_dag_path(dag_file):
+    parts = os.path.normpath(os.path.abspath(dag_file)).split(os.sep)
+    try:
+        idx = parts.index(".specs")
+    except ValueError:
+        return False
+    return idx + 1 < len(parts) and parts[idx + 1] == "dags"
+
+
+def unlock_vault_dags():
+    if os.path.isdir(VAULT_DAGS_DIR):
+        os.chmod(VAULT_DAGS_DIR, 0o755)
+
+
+def lock_vault_dags():
+    if os.path.isdir(VAULT_DAGS_DIR):
+        os.chmod(VAULT_DAGS_DIR, 0o555)
+
+
 def update_status(dag_file, task_id, status):
     if not os.path.exists(dag_file):
         print(f"❌ Error: Could not find DAG file {dag_file}")
         sys.exit(1)
-        
-    # We use file locking to prevent race conditions when multiple workers
-    # try to update their status simultaneously.
-    with open(dag_file, 'r+', encoding='utf-8') as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
-        tasks = json.load(f)
-        
-        updated = False
-        for task in tasks:
-            if task.get('id') == task_id:
-                task['status'] = status
-                updated = True
-                break
-                
-        if not updated:
-            print(f"❌ Error: Task {task_id} not found in {dag_file}")
-            sys.exit(1)
-            
-        f.seek(0)
-        f.truncate()
-        json.dump(tasks, f, indent=2)
-        fcntl.flock(f, fcntl.LOCK_UN)
-        
+
+    vault_path = is_vault_dag_path(dag_file)
+    if vault_path:
+        unlock_vault_dags()
+
+    try:
+        # We use file locking to prevent race conditions when multiple workers
+        # try to update their status simultaneously.
+        with open(dag_file, "r+", encoding="utf-8") as f:
+            fcntl.flock(f, fcntl.LOCK_EX)
+            tasks = json.load(f)
+
+            updated = False
+            for task in tasks:
+                if task.get("id") == task_id:
+                    task["status"] = status
+                    updated = True
+                    break
+
+            if not updated:
+                print(f"❌ Error: Task {task_id} not found in {dag_file}")
+                sys.exit(1)
+
+            f.seek(0)
+            f.truncate()
+            json.dump(tasks, f, indent=2)
+            fcntl.flock(f, fcntl.LOCK_UN)
+    finally:
+        if vault_path:
+            lock_vault_dags()
+
     print(f"✅ Task {task_id} updated to '{status}' in {dag_file}")
 
 if __name__ == "__main__":

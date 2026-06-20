@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "runtime_id": "child",
+  "extends": "/home/guilherme/Área de trabalho/Repos/dag-flow/cli/test/fixtures/manifest-resolver/parent",
+  "orchestrator": {
+    "hook_wiring_tier": "pre_tool_use",
+    "hook_config_path": ".cursor/hooks.json",
+    "hook_event": "preToolUse",
+    "hook_entry_id": "dag-flow-guard",
+    "boot_file": null,
+    "skill_install_path": ".cursor/skills",
+    "partials": {
+      "SPAWN_SUBAGENT_BLOCK": "spawn-custom.md"
+    },
+    "placeholders": {
+      "TOOL_RUN_COMMAND": "Shell",
+      "RUNTIME_NAME": "Child"
+    }
+  },
+  "worker": {
+    "command_template": [
+      "child-cli",
+      "-p",
+      "<<<PROMPT>>>"
+    ],
+    "worker_validation_status": "validated",
+    "auditor_wrapper": null,
+    "placeholders": {
+      "CLI_COMMAND_PREFIX": "child-cli"
+    }
+  }
+}

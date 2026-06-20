@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "runtime_id": "parent",
+  "extends": null,
+  "orchestrator": {
+    "hook_wiring_tier": "none",
+    "hook_config_path": null,
+    "hook_event": null,
+    "hook_entry_id": null,
+    "boot_file": null,
+    "skill_install_path": ".parent/skills",
+    "partials": {
+      "SPAWN_SUBAGENT_BLOCK": "spawn-subagent.md"
+    },
+    "placeholders": {
+      "TOOL_RUN_COMMAND": "parent_tool",
+      "TOOL_VIEW_FILE": "parent_view",
+      "RUNTIME_NAME": "Parent"
+    }
+  },
+  "worker": {
+    "command_template": [
+      "parent-cli",
+      "-p",
+      "<<<PROMPT>>>"
+    ],
+    "worker_validation_status": "validated",
+    "auditor_wrapper": null,
+    "placeholders": {
+      "CLI_COMMAND_PREFIX": "parent-cli",
+      "AUDITOR_COMMAND_TEMPLATE": "parent-auditor"
+    }
+  }
+}

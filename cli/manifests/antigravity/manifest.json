@@ -17,6 +17,7 @@
     "placeholders": {
       "TOOL_RUN_COMMAND": "run_command",
       "TOOL_VIEW_FILE": "view_file",
+      "TOOL_SPAWN_SUBAGENT": "define_subagent",
       "RUNTIME_NAME": "Antigravity"
     }
   },
@@ -25,6 +26,7 @@
     "worker_validation_status": "validated",
     "auditor_wrapper": null,
     "placeholders": {
+      "CLI_COMMAND_BINARY": "agy",
       "CLI_COMMAND_PREFIX": "agy --dangerously-skip-permissions",
       "AUDITOR_COMMAND_TEMPLATE": "agy --dangerously-skip-permissions --prompt \"Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>\""
     }

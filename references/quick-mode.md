@@ -103,7 +103,7 @@ to generate the Mini-DAG JSON. Do NOT generate the JSON inline - this is what pr
 weak gates and imprecise task descriptions.
 
 **Step 1 - Load the system prompt template:**
-Use the `view_file` tool to read `references/planner-template.md` verbatim.
+Use the `<<<DAG:TOOL_VIEW_FILE>>>` tool to read `references/planner-template.md` verbatim.
 This is the system prompt for the Subagent. Do not paraphrase or reconstruct from memory.
 
 **Step 2 - Compose the user message with this structure:**
@@ -127,8 +127,7 @@ Instructions:
 ```
 
 **Step 3 - Spawn:**
-`define_subagent` with `enable_mcp_tools=true`, `enable_write_tools=false`,
-`system_prompt=<template from Step 1>`, `first_message=<user message from Step 2>`.
+<<<DAG:SPAWN_SUBAGENT_QUICK_BLOCK>>>
 
 **Step 4 - Receive and detect:**
 The Subagent message contains either (a) both blocks or (b) only `<planner_pagrl>`:
@@ -204,7 +203,7 @@ When completing Quick Mode, the Orchestrator MUST have these files in `.specs/st
 3. `planner.pagrl.xml` — extracted from Subagent `<planner_pagrl>` block (§1.5)
 4. `dag.json` — extracted from Subagent `<dag_json>` block (§1.5)
 
-Then use `run_command` to execute `<path-to-skill>/scripts/write_dag.sh [issue_id] --phase quick-mode`.
+Then use `<<<DAG:TOOL_RUN_COMMAND>>>` to execute `<path-to-skill>/scripts/write_dag.sh [issue_id] --phase quick-mode`.
 
 **Output format for the dag.json:**
 1. **Diagnosis Summary:** Brief explanation of the root cause (included as comments or in the PAGRL).
@@ -214,8 +213,8 @@ Then use `run_command` to execute `<path-to-skill>/scripts/write_dag.sh [issue_i
    - *Note on `dependencies`:* You MUST include this field to avoid breaking the DAG Runner parser. Fill it sequentially (e.g., T2 depends on `["T1"]`).
    - *Note on `done_when_gate`:* 
      - **For Mechanical Tasks:** Use atomic test commands (e.g., `npm test file.test.ts` or `npx eslint file.ts`).
-     - **For Non-Mechanical Tasks (LLM-as-a-judge):** Use the Zero-Context Auditor template: `agy --dangerously-skip-permissions --prompt "Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>"`. The Orchestrator MUST replace `[CONTEXT_REF]` with the rich text from the Context Ref column.
-   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `done_when_gate` must execute `agy --dangerously-skip-permissions --prompt "Call ctx_index for .specs/dags/[issue_id].json and [modified_files]."` to sync the index.
+     - **For Non-Mechanical Tasks (LLM-as-a-judge):** Use the Zero-Context Auditor template: `<<<DAG:AUDITOR_COMMAND_TEMPLATE>>>`. The Orchestrator MUST replace `[CONTEXT_REF]` with the rich text from the Context Ref column.
+   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `done_when_gate` must execute `<<<DAG:CLI_COMMAND_PREFIX>>> --prompt "Call ctx_index for .specs/dags/[issue_id].json and [modified_files]."` to sync the index.
 
 *Note on In-Code Documentation:* Instruct the worker to leave an explicit inline code comment explaining the hotfix logic. This enables automated multi-dev onboarding without bloating `CONTEXT.md`.
 

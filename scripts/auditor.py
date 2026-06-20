@@ -50,10 +50,16 @@ def run_auditor(task_id, dag_file):
         eval_output = str(e)
         exit_code = 1
         
-    if exit_code == 0:
+    if exit_code == 0 and "PASS" in eval_output:
         print("✅ Tests Passed.")
         print(f"Update dag.json -> {task_id} Status: 🟢 Done")
         sys.exit(0)
+    elif exit_code == 0:
+        print("❌ Execution Gate Failed: exit 0 but stdout missing PASS (D6 contract)")
+        print("--- Test Output ---")
+        print(eval_output)
+        print("-------------------")
+        sys.exit(1)
     else:
         print(f"❌ Execution Gate Failed (Exit Code: {exit_code})")
         print("--- Test Output ---")

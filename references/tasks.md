@@ -44,18 +44,9 @@ You may only generate the tasks JSON when **all** of the following hold:
 When advancing, you MUST:
 1. Write your `tasks.pagrl.xml` to the staging area `.specs/staging/[feature]/`.
    (You MUST write the XML BEFORE spawning - the Subagent receives its content verbatim.)
-2. Use the `view_file` tool to read `references/planner-template.md` verbatim.
+2. Use the `<<<DAG:TOOL_VIEW_FILE>>>` tool to read `references/planner-template.md` verbatim.
    This is the system prompt for the Subagent. Do not paraphrase or reconstruct from memory.
-3. Spawn a Subagent Planner (`define_subagent` with `enable_mcp_tools=true`,
-   `enable_write_tools=false`) with:
-   - system_prompt: the verbatim content of `references/planner-template.md`
-   - first_message: (a) the content of `tasks.pagrl.xml` just written, verbatim;
-     (b) paths to `.specs/features/[feature]/spec.md`,
-     `.specs/features/[feature]/design.md`, `references/tasks.md`;
-     (c) path to `CONTEXT.md` if it exists at the project root;
-     (d) instruction: "Call search_skills in parallel for all technical domains in the
-     spec, then call read_skill on each found skill before generating the JSON. Return
-     your response using the two-block format specified in the Output Contract."
+3. <<<DAG:SPAWN_SUBAGENT_BLOCK>>>
 4. Receive and detect:
    - If the Subagent message contains `<dag_json>` (normal flow):
      Extract both blocks. Write `planner.pagrl.xml` and `dag.json` to
@@ -66,7 +57,7 @@ When advancing, you MUST:
      Read `<OpenDecisions>` in the `<planner_pagrl>` block. Conduct a focused Socratic
      session with the user. The Orchestrator writes the draft skill to
      `.dag-flow/skills/[domain-name]/SKILL.md`. Spawn a new Subagent session.
-5. Use the `run_command` tool to execute `<path-to-skill>/scripts/write_dag.sh [feature] --phase tasks`.
+5. Use the `<<<DAG:TOOL_RUN_COMMAND>>>` tool to execute `<path-to-skill>/scripts/write_dag.sh [feature] --phase tasks`.
 
 The **Tasks Phase** is the bridge between specification/architecture and execution. The Orchestrator translates `.specs/features/[feature]/spec.md` (and `design.md`, if created) into an executable Directed Acyclic Graph (DAG) for the automated DAG Runner. The Orchestrator NEVER executes these tasks itself.
 
@@ -105,8 +96,8 @@ A strict JSON array representing the DAG. Markdown tables are strictly forbidden
     "dependencies": ["T1"],
     "input_files": [],
     "output_files": [],
-    "cognitive_rationale": "Mandatory Delta Update for context-mode. Must use agy to invoke ctx_index.",
-    "done_when_gate": "agy --dangerously-skip-permissions --prompt \"Call ctx_index for src/schema.ts.\""
+    "cognitive_rationale": "Mandatory Delta Update for context-mode. Must use <<<DAG:CLI_COMMAND_BINARY>>> to invoke ctx_index.",
+    "done_when_gate": "<<<DAG:CLI_COMMAND_PREFIX>>> --prompt \"Call ctx_index for src/schema.ts.\""
   }
 ]
 ```
@@ -131,10 +122,10 @@ Before defining the `done_when_gate`, you MUST populate `cognitive_rationale` to
 - `done_when_gate`: Use atomic test commands: `npm test path/to/specific.test.ts` or `npx eslint src/schema.ts`.
 
 **For Architectural/Complex Tasks (LLM-as-a-judge):**
-- **CRITICAL WARNING:** You are STRICTLY FORBIDDEN from using the LLM Auditor (`agy`) to verify the presence, absence, or replacement of strings, or for purely textual refactoring. LLMs suffer from Context Blindness. For any task involving text replacement or string verification, you MUST use deterministic shell commands in `done_when_gate` (e.g., `grep -q 'target' file` or `! grep -q 'target' file`).
+- **CRITICAL WARNING:** You are STRICTLY FORBIDDEN from using the LLM Auditor (`<<<DAG:CLI_COMMAND_BINARY>>>`) to verify the presence, absence, or replacement of strings, or for purely textual refactoring. LLMs suffer from Context Blindness. For any task involving text replacement or string verification, you MUST use deterministic shell commands in `done_when_gate` (e.g., `grep -q 'target' file` or `! grep -q 'target' file`).
 - `cognitive_rationale`: Explain why mechanical tests fall short and cognitive validation is needed.
-- `done_when_gate`: If the task implements a complex rule or architectural decision that cannot be verified by tests, you MUST use the following exact `agy` command template. Keep the `agy` command template ONLY for semantic rules (e.g., "Does this follow SOLID principles?"). Replace the bracketed variables. Do NOT instruct the Auditor to read external context files, as the summarized `context_ref` is sufficient:
-`agy --dangerously-skip-permissions --prompt "Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>"`
+- `done_when_gate`: If the task implements a complex rule or architectural decision that cannot be verified by tests, you MUST use the following exact `<<<DAG:CLI_COMMAND_BINARY>>>` command template. Keep the `<<<DAG:CLI_COMMAND_BINARY>>>` command template ONLY for semantic rules (e.g., "Does this follow SOLID principles?"). Replace the bracketed variables. Do NOT instruct the Auditor to read external context files, as the summarized `context_ref` is sufficient:
+`<<<DAG:AUDITOR_COMMAND_TEMPLATE>>>`
 
 ### 3. The Financial Firewall (Token Economy)
 The `input_files` field is critical. Because the DAG Runner spawns *stateless* background workers, every file listed is read from scratch.
@@ -143,7 +134,7 @@ The `input_files` field is critical. Because the DAG Runner spawns *stateless* b
 ### 4. Living Memory (The Delta Update Task)
 To ensure the project's Architectural Invariants do not rot, the Orchestrator MUST inject a final task (`T-Final`) into every JSON DAG. 
 - **The Token-Efficient Delta:** The Orchestrator MUST NOT ask for a full codebase re-scan. It must list ONLY the newly modified folders/files for `ctx_index`.
-- **CRITICAL TEMPLATE:** The Orchestrator MUST wrap the prompt in double quotes exactly like this: `agy --dangerously-skip-permissions --prompt "Call ctx_index for src/api.ts."`
+- **CRITICAL TEMPLATE:** The Orchestrator MUST wrap the prompt in double quotes exactly like this: `<<<DAG:CLI_COMMAND_PREFIX>>> --prompt "Call ctx_index for src/api.ts."`
 - This ensures the search index stays fresh with zero token waste.
 
 ### 5. Handoff to Execution (DAG Runner)
