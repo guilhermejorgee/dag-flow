@@ -12,7 +12,7 @@ TARGET_DUAL="$(mktemp -d)"
 trap 'rm -rf "$FAKE_BIN" "$TARGET_CURSOR" "$TARGET_DUAL"' EXIT
 
 printf '#!/bin/sh\n' > "$FAKE_BIN/context-mode"
-printf '#!/bin/sh\n' > "$FAKE_BIN/rtk"
+printf '#!/bin/sh\nexec "$@"\n' > "$FAKE_BIN/rtk"
 chmod +x "$FAKE_BIN/context-mode" "$FAKE_BIN/rtk"
 export PATH="$FAKE_BIN:$PATH"
 run_dag() { node "$CLI_ROOT/dist/index.js" "$@"; }

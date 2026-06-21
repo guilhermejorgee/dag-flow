@@ -111,7 +111,7 @@ A common flaw in agentic coding is the need to constantly re-scan the entire cod
 
 `dag-flow` solves this via the **Living Memory ecosystem**, powered by physical files and `context-mode`:
 
-1. **The Discovery Phase (Initialization):** When `dag-flow` encounters a new repository, it doesn't read every file. The indexing is handled out-of-band by a pre-boot Global Indexing hook (`setup_indexer.sh`). The Orchestrator uses `context-mode` solely to surgically query this pre-populated index, synthesizing highly compressed Architectural Invariants into `CONTEXT.md`.
+1. **The Discovery Phase (Initialization):** On explicit user request only, the Orchestrator does not read every file natively. Dense indexing is handled out-of-band by `context-mode` (user-installed prerequisite). The Orchestrator uses `ctx_search` to surgically query the pre-populated FTS5 index, synthesizing highly compressed Architectural Invariants into `CONTEXT.md`.
 2. **The T-Final Task (Delta Update):** When the Orchestrator generates the JSON DAG, it injects a final task at the end (`T-Final`). Because the Orchestrator just planned the feature, it knows *exactly* which files will be modified by the workers. 
 3. **The Silent Sync:** Once the workers finish, the `T-Final` task instructs the indexer to update *only* those specific modified files. 
 

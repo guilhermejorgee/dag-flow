@@ -69,11 +69,10 @@ The final task of the Mini-DAG (`T-Final`) runs silently. The local vector datab
 
 What happens when a new developer clones an existing `dag-flow` project?
 
-1. The developer clones the repo and runs `./hooks/setup_indexer.sh`.
-2. The developer opens their Agent and types: *"Specify a new feature..."*
-3. The Orchestrator wakes up. It checks `CONTEXT.md` and realizes it is "blind" (it has no Architectural Invariants of the project).
-4. **The Discovery Phase automatically triggers.** The Orchestrator uses the `context-mode` MCP to surgically search the codebase for invariants, `package.json`, and structural boundaries.
-5. The Orchestrator populates `CONTEXT.md` with the synthesized Architectural Invariants.
-6. Only after the mapping is complete does it respond to the user: *"Map complete. Now, regarding your feature..."*
+1. The developer clones the repo and runs `dag init` (project scaffold) plus installs `context-mode` separately.
+2. The developer opens their Agent and types: *"Do a discovery of this project"* (explicit trigger).
+3. The Orchestrator uses `ctx_search` to surgically query the pre-populated FTS5 index for invariants, `package.json`, and structural boundaries.
+4. The Orchestrator populates `CONTEXT.md` with the synthesized Architectural Invariants.
+5. Discovery ends; the developer can then ask: *"Specify a new feature..."*
 
-This guarantees perfectly synchronized team onboarding without human intervention.
+This gives brownfield teams a token-efficient architecture map before Specify — but only when someone explicitly asks for discovery.

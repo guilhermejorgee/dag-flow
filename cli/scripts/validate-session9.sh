@@ -13,7 +13,7 @@ AGY_INIT_TARGET="$(mktemp -d)"
 trap 'rm -rf "$FAKE_BIN" "$INIT_TARGET" "$AGY_INIT_TARGET" "$(dirname "$SCAFFOLD_RUNTIME")" "$(dirname "$AGY_RUNTIME")"' EXIT
 
 printf '#!/bin/sh\n' > "$FAKE_BIN/context-mode"
-printf '#!/bin/sh\n' > "$FAKE_BIN/rtk"
+printf '#!/bin/sh\nexec "$@"\n' > "$FAKE_BIN/rtk"
 chmod +x "$FAKE_BIN/context-mode" "$FAKE_BIN/rtk"
 export PATH="$FAKE_BIN:$PATH"
 run_dag() { node "$CLI_ROOT/dist/index.js" "$@"; }

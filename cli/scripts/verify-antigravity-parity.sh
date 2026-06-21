@@ -9,7 +9,7 @@ FAKE_BIN="$(mktemp -d)"
 trap 'rm -rf "$OUT" "$FAKE_BIN"' EXIT
 
 printf '#!/bin/sh\n' > "$FAKE_BIN/context-mode"
-printf '#!/bin/sh\n' > "$FAKE_BIN/rtk"
+printf '#!/bin/sh\nexec "$@"\n' > "$FAKE_BIN/rtk"
 chmod +x "$FAKE_BIN/context-mode" "$FAKE_BIN/rtk"
 export PATH="$FAKE_BIN:$PATH"
 

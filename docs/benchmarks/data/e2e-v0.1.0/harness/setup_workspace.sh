@@ -98,13 +98,7 @@ if [ "$INJECT_SKILL" -eq 1 ]; then
   fi
 fi
 
-# 4. Setup indexer
-if [ -f "$BASE_DIR/setup_indexer.sh" ]; then
-  # run setup_indexer using absolute path but from workspace?
-  # The original scripts did `bash "../../setup_indexer.sh" "$WORKSPACE"`
-  bash "$BASE_DIR/setup_indexer.sh" "$WORKSPACE" || true
-fi
-
+# 4. Indexing baseline stub (context-mode is a user prerequisite — not dag-flow install)
 export hook_indexing_ms=100
 
 # 5. Initialize git repo to ensure git ls-files works for context indexing

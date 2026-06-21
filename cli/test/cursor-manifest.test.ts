@@ -153,7 +153,11 @@ describe('cursor built-in manifest', () => {
         outputDir,
       });
 
-      expect(result.markdownFiles.length).toBeGreaterThanOrEqual(8);
+      const sourceRefCount = readdirSync(path.join(REPO_ROOT, 'references')).filter((name) =>
+        name.endsWith('.md'),
+      ).length;
+      expect(result.markdownFiles.length).toBe(1 + sourceRefCount);
+      expect(result.markdownFiles).not.toContain('references/discovery.md');
       for (const rel of result.markdownFiles) {
         const content = readFileSync(path.join(outputDir, rel), 'utf8');
         validateNoRemainingPlaceholders(content, rel);

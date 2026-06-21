@@ -109,7 +109,7 @@ See [local install (`npm link`)](docs/planning/multi-runtime-implementation-plan
 
 **Indexing:** Install `context-mode` separately (prerequisite above). It is not configured by dag-flow install.
 
-> **Deprecated:** `./hooks/setup_indexer.sh` mixed dag-flow bootstrap with context-mode setup. Do not use it for new projects.
+> **Removed:** `hooks/setup_indexer.sh` mixed dag-flow bootstrap with context-mode setup. Use `dag init` for project scaffold; install `context-mode` separately.
 
 ### 4. Run Your First Feature
 1. **Specify:** Ask your agent: *"Specify a new feature: a user login system."* Answer its questions.

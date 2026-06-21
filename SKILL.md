@@ -92,7 +92,12 @@ These operations are executed independently and are not part of the core feature
 
 **Goal:** Establish an accurate, token-efficient understanding of the existing codebase.
 
-- **Reference:** You MUST use the `<<<DAG:TOOL_VIEW_FILE>>>` tool to read [`references/discovery.md`](/references/discovery.md) for execution rules using `context-mode`. **Why:** standard directory listings are too expensive and inaccurate for deep architectural context.
+**Protocol:**
+- Use `ctx_search` only — do NOT crawl or read source files natively.
+- Query the pre-populated `context-mode` FTS5 index (installed separately by the user).
+- If `CONTEXT.md` already has Architectural Invariants, update them; otherwise create them.
+- Synthesize architectural markers (package manifests, domain layout, core invariants) into `CONTEXT.md`.
+- Exit when `CONTEXT.md` is populated; do NOT auto-trigger during Specify.
 
 ### Emergency / Quick Mode
 

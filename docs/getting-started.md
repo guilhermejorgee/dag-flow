@@ -71,7 +71,7 @@ Or use `dag init` when the CLI is available.
 
 Install and configure `context-mode` separately (prerequisite §1). It is **not** part of dag-flow install.
 
-> **Deprecated:** `./hooks/setup_indexer.sh` mixed dag-flow bootstrap with context-mode indexing. Do not use for new projects.
+> **Removed:** `hooks/setup_indexer.sh` mixed dag-flow bootstrap with context-mode indexing. Use `dag init` for project scaffold; install `context-mode` separately (§1).
 
 ---
 

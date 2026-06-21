@@ -18,7 +18,7 @@ We are implementing Solution (c) originally discussed in ADR-0004: **determinist
 
 To support this:
 1. **Topology Separation**: We separate free-text specifications (`.specs/features/`) from executable DAGs. DAGs will now be stored in a dedicated, physically locked directory: `.specs/dags/`.
-2. **Physical Lock**: The `.specs/dags/` directory is created with `555` (`r-xr-xr-x`) permissions by default via `hooks/setup_indexer.sh`, making it impossible for the LLM to write to it using standard file-editing tools.
+2. **Physical Lock**: The `.specs/dags/` directory is created with `555` (`r-xr-xr-x`) permissions by default via `dag init` project scaffold (formerly `hooks/setup_indexer.sh`, removed), making it impossible for the LLM to write to it using standard file-editing tools.
 3. **DAG Validator Gate**: We introduce `scripts/write_dag.sh`, a shell-level interceptor. This script is the sole authorized writer to the vault. It temporarily elevates directory permissions (`chmod 755`), validates the incoming markdown table for structural correctness (9 columns, presence of `T-Final`, and proper override flags), writes the file, and restores the lock (`chmod 555`) using a crash-safe `trap`.
 
 ## Consequences
