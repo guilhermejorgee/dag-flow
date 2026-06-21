@@ -12,7 +12,9 @@ Usage:
   dag update [options]            Recompile skill and re-wire hooks
   dag manifest scaffold [options] Scaffold a custom runtime manifest
 
-Options:
+Scaffold options:
+  --extends=<id>                  Required built-in base (antigravity, cursor)
+  --output=<dir>                  Output directory for the custom manifest
   -h, --help                      Show this help
 `;
 
