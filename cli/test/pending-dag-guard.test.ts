@@ -82,10 +82,34 @@ describe('pending-dag-guard', () => {
     expect(scanVaultDags(target).ok).toBe(true);
   });
 
-  it('treats status containing Done as complete (dag_runner parity)', () => {
+  it('blocks Not Done (substring must not pass)', () => {
+    const target = mkdtempSync(path.join(tmpdir(), 'dag-guard-'));
+    writeVaultDag(target, 'feature.json', [{ id: 'T1', status: 'Not Done' }]);
+    const result = scanVaultDags(target);
+    expect(result.ok).toBe(false);
+    expect(result.violations[0]?.status).toBe('Not Done');
+    expect(() => assertNoPendingDags(target)).toThrow(/Not Done/);
+  });
+
+  it('blocks Done (verified) — exact match only', () => {
     const target = mkdtempSync(path.join(tmpdir(), 'dag-guard-'));
     writeVaultDag(target, 'feature.json', [{ id: 'T1', status: 'Done (verified)' }]);
-    expect(scanVaultDags(target).ok).toBe(true);
+    expect(scanVaultDags(target).ok).toBe(false);
+    expect(() => assertNoPendingDags(target)).toThrow(/Done \(verified\)/);
+  });
+
+  it('blocks lowercase done (case-sensitive exact match)', () => {
+    const target = mkdtempSync(path.join(tmpdir(), 'dag-guard-'));
+    writeVaultDag(target, 'feature.json', [{ id: 'T1', status: 'done' }]);
+    expect(scanVaultDags(target).ok).toBe(false);
+  });
+
+  it('blocks empty string status', () => {
+    const target = mkdtempSync(path.join(tmpdir(), 'dag-guard-'));
+    writeVaultDag(target, 'feature.json', [{ id: 'T1', status: '' }]);
+    const result = scanVaultDags(target);
+    expect(result.ok).toBe(false);
+    expect(result.violations[0]?.status).toBe('');
   });
 
   it('throws on invalid vault JSON', () => {

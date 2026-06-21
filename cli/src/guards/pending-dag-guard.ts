@@ -27,8 +27,7 @@ interface VaultTask {
 }
 
 function isTaskDone(status: string | undefined): boolean {
-  const normalized = status ?? 'Pending';
-  return normalized.includes('Done');
+  return status === 'Done';
 }
 
 function collectViolationsFromFile(vaultFile: string): PendingDagViolation[] {

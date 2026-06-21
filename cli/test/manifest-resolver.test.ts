@@ -1,8 +1,11 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from '@jest/globals';
 import {
+  isExternalManifestRef,
+  locateManifest,
   ManifestResolverError,
   mergeManifests,
   resolveManifest,
@@ -19,6 +22,73 @@ function writeManifest(dir: string, manifest: RuntimeManifest): void {
 }
 
 describe('manifest-resolver', () => {
+  describe('isExternalManifestRef', () => {
+    it.each([
+      ['antigravity', false],
+      ['cursor', false],
+      ['/abs/path/to/runtime', true],
+      ['./rel/runtime', true],
+      ['my-company/my-runtime', true],
+      ['runtime.v2', true],
+    ])('ref %s → %s', (ref, expected) => {
+      expect(isExternalManifestRef(ref)).toBe(expected);
+    });
+  });
+
+  describe('locateManifest', () => {
+    it('maps built-in id to package manifests directory', () => {
+      const location = locateManifest('cursor', CLI_ROOT);
+      expect(location.manifestDir).toBe(path.join(CLI_ROOT, 'manifests', 'cursor'));
+      expect(location.manifestPath).toBe(
+        path.join(CLI_ROOT, 'manifests', 'cursor', 'manifest.json'),
+      );
+    });
+
+    it('maps external directory ref to filesystem manifest.json', () => {
+      const externalDir = path.join(FIXTURES, 'external-nested');
+      const location = locateManifest(externalDir, CLI_ROOT);
+      expect(location.manifestDir).toBe(path.resolve(externalDir));
+      expect(location.manifestPath).toBe(path.join(path.resolve(externalDir), 'manifest.json'));
+    });
+
+    it('maps external .json ref directly to manifest file', () => {
+      const manifestPath = path.join(FIXTURES, 'external-nested', 'manifest.json');
+      const location = locateManifest(manifestPath, CLI_ROOT);
+      expect(location.manifestDir).toBe(path.dirname(path.resolve(manifestPath)));
+      expect(location.manifestPath).toBe(path.resolve(manifestPath));
+    });
+
+    it('maps audit-style nested ref my-company/my-runtime to filesystem', () => {
+      const base = mkdtempSync(path.join(tmpdir(), 'dag-manifest-locate-'));
+      const runtimeDir = path.join(base, 'my-company', 'my-runtime');
+      writeManifest(runtimeDir, {
+        schema_version: 1,
+        runtime_id: 'nested-audit',
+        extends: null,
+        orchestrator: {
+          hook_wiring_tier: 'none',
+          hook_config_path: null,
+          hook_event: null,
+          hook_entry_id: null,
+          boot_file: null,
+          skill_install_path: '.skills',
+          placeholders: { TOOL_RUN_COMMAND: 'x', TOOL_VIEW_FILE: 'y', RUNTIME_NAME: 'Nested' },
+        },
+        worker: {
+          command_template: ['cli'],
+          worker_validation_status: 'validated',
+          auditor_wrapper: null,
+          placeholders: { CLI_COMMAND_PREFIX: 'cli', AUDITOR_COMMAND_TEMPLATE: 'audit' },
+        },
+      });
+
+      const ref = path.join('my-company', 'my-runtime');
+      const location = locateManifest(path.join(base, ref), CLI_ROOT);
+      expect(location.manifestDir).toBe(runtimeDir);
+      expect(location.manifestPath).toBe(path.join(runtimeDir, 'manifest.json'));
+    });
+  });
+
   it('resolves built-in antigravity manifest', () => {
     const resolved = resolveManifest('antigravity', { packageRoot: CLI_ROOT });
     expect(resolved.manifest.runtime_id).toBe('antigravity');
@@ -196,5 +266,55 @@ describe('manifest-resolver', () => {
       CLI_COMMAND_PREFIX: 'c-cli',
       AUDITOR_COMMAND_TEMPLATE: 'p-audit',
     });
+  });
+
+  it('resolves external nested path via slash ref, not bare id', () => {
+    const externalDir = path.join(FIXTURES, 'external-nested');
+    const slashRef = path.join('fixtures', 'manifest-resolver', 'external-nested');
+    const resolved = resolveManifest(path.join(TEST_DIR, slashRef), { packageRoot: CLI_ROOT });
+    expect(resolved.manifest.runtime_id).toBe('external-nested');
+    expect(resolved.manifestDirs[0]).toBe(externalDir);
+
+    expect(() => resolveManifest('external-nested', { packageRoot: CLI_ROOT })).toThrow(
+      ManifestResolverError,
+    );
+  });
+
+  it('resolves external manifest via direct .json path', () => {
+    const manifestPath = path.join(FIXTURES, 'external-nested', 'manifest.json');
+    const resolved = resolveManifest(manifestPath, { packageRoot: CLI_ROOT });
+    expect(resolved.manifest.runtime_id).toBe('external-nested');
+    expect(resolved.manifestDirs[0]).toBe(path.join(FIXTURES, 'external-nested'));
+  });
+
+  it('resolves audit example my-company/my-runtime from filesystem', () => {
+    const base = mkdtempSync(path.join(tmpdir(), 'dag-manifest-resolve-'));
+    const runtimeDir = path.join(base, 'my-company', 'my-runtime');
+    writeManifest(runtimeDir, {
+      schema_version: 1,
+      runtime_id: 'audit-nested',
+      extends: null,
+      orchestrator: {
+        hook_wiring_tier: 'none',
+        hook_config_path: null,
+        hook_event: null,
+        hook_entry_id: null,
+        boot_file: null,
+        skill_install_path: '.skills',
+        placeholders: { TOOL_RUN_COMMAND: 'x', TOOL_VIEW_FILE: 'y', RUNTIME_NAME: 'Audit' },
+      },
+      worker: {
+        command_template: ['cli'],
+        worker_validation_status: 'validated',
+        auditor_wrapper: null,
+        placeholders: { CLI_COMMAND_PREFIX: 'cli', AUDITOR_COMMAND_TEMPLATE: 'audit' },
+      },
+    });
+
+    const resolved = resolveManifest(path.join(base, 'my-company', 'my-runtime'), {
+      packageRoot: CLI_ROOT,
+    });
+    expect(resolved.manifest.runtime_id).toBe('audit-nested');
+    expect(resolved.manifestDirs[0]).toBe(runtimeDir);
   });
 });

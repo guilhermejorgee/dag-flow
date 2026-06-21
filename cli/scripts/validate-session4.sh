@@ -25,6 +25,7 @@ fail() { echo "❌ $1"; exit 1; }
 echo "=== [critical] golden gate ==="
 cd "$CLI_ROOT"
 npm run build --silent
+npm link --silent
 ./scripts/verify-antigravity-parity.sh
 
 echo "=== [critical] jest suite ==="

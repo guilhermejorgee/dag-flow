@@ -29,6 +29,7 @@ npm test -- --runInBand session10-cleanup.test.ts
 pass "session10-cleanup jest"
 
 echo "=== [critical] golden gate regression ==="
+npm link --silent
 "$CLI_ROOT/scripts/verify-antigravity-parity.sh"
 pass "antigravity parity golden gate"
 

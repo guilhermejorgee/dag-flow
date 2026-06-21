@@ -63,13 +63,14 @@ export function parseInitArgs(args: string[]): InitOptions {
 
 function writeDagConfig(
   outputDir: string,
-  orchestratorId: string,
+  orchestratorRef: string,
+  workerRef: string,
   workerManifest: ReturnType<typeof resolveManifest>,
 ): void {
   const config = {
     _meta: {
-      orchestrator: orchestratorId,
-      worker: workerManifest.manifest.runtime_id,
+      orchestrator: orchestratorRef,
+      worker: workerRef,
       dag_flow_version: DAG_FLOW_VERSION,
       schema_version: 1,
     },
@@ -105,16 +106,16 @@ export function runInit(args: string[], env: { pathEnv?: string } = {}): void {
   const repoRoot = path.dirname(packageRoot);
 
   const orchestratorManifest = resolveManifest(options.orchestrator, { packageRoot });
-  const workerManifest =
-    options.worker === options.orchestrator
-      ? orchestratorManifest
-      : resolveManifest(options.worker, { packageRoot });
-
   const installPath =
     options.skillInstallPath ?? orchestratorManifest.manifest.orchestrator.skill_install_path;
   const outputDir = path.join(options.target, installPath, 'dag-flow');
 
   assertCompiledSkillAbsent(outputDir, options.force);
+
+  const workerManifest =
+    options.worker === options.orchestrator
+      ? orchestratorManifest
+      : resolveManifest(options.worker, { packageRoot });
   mkdirSync(outputDir, { recursive: true });
 
   compileRuntimeSkill({
@@ -134,5 +135,5 @@ export function runInit(args: string[], env: { pathEnv?: string } = {}): void {
     packageRoot,
   });
 
-  writeDagConfig(outputDir, options.orchestrator, workerManifest);
+  writeDagConfig(outputDir, options.orchestrator, options.worker, workerManifest);
 }

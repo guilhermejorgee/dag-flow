@@ -27,6 +27,7 @@ npm run typecheck
 pass "build + typecheck"
 
 echo "=== [critical] session 6 golden gate ==="
+npm link --silent
 ./scripts/verify-antigravity-parity.sh
 
 echo "=== [critical] source skill grep negative (Task 3) ==="

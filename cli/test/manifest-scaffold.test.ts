@@ -231,7 +231,7 @@ describe('dag manifest scaffold', () => {
 
       const config = JSON.parse(readFileSync(path.join(skillDir, 'dag-config.json'), 'utf8'));
       expect(config._meta.orchestrator).toBe(runtimeDir);
-      expect(config._meta.worker).toBe('acme-runtime');
+      expect(config._meta.worker).toBe(runtimeDir);
     });
 
     it('wires inherited pre_tool_use hooks for scaffolded cursor manifest', () => {

@@ -1,0 +1,51 @@
+name: CLI golden gate
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'cli/**'
+      - 'SKILL.md'
+      - 'references/**'
+      - 'scripts/**'
+      - '.github/workflows/cli-golden-gate.yml'
+  pull_request:
+    paths:
+      - 'cli/**'
+      - 'SKILL.md'
+      - 'references/**'
+      - 'scripts/**'
+      - '.github/workflows/cli-golden-gate.yml'
+
+jobs:
+  golden-gate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cli
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: cli/package-lock.json
+
+      - name: Install, build, link dag CLI
+        run: |
+          npm ci
+          npm run build
+          npm link
+          command -v dag
+
+      - name: Golden gate parity script
+        working-directory: ${{ github.workspace }}
+        run: ./cli/scripts/verify-antigravity-parity.sh
+
+      - name: Jest suite
+        run: npm test -- --runInBand
+
+      - name: Typecheck
+        run: npm run typecheck

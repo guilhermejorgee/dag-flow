@@ -35,7 +35,7 @@ export function getPackageRoot(fromUrl: string = import.meta.url): string {
 }
 
 export function isExternalManifestRef(ref: string): boolean {
-  return ref.startsWith('/') || ref.startsWith('.');
+  return ref.includes('/') || ref.includes('.');
 }
 
 export function locateManifest(

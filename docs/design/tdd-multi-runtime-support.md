@@ -723,25 +723,48 @@ Deep merge; filho sobrescreve; parciais do filho sobrescrevem mesmo nome; detect
 # NÃO incluir: migrate_*, test_*, docs/, hooks/, mcp/
 ```
 
+**Pré-requisito (Q3 — instalação local):** o binário `dag` deve estar no PATH via `npm link` no pacote `cli/` (não usar `node dist/index.js` no gate). Build antes do link:
+```bash
+cd cli && npm install && npm run build && npm link
+```
+
+**Path de saída:** antigravity manifest define `orchestrator.skill_install_path: ".agents/skills"` — output compilado em `{target}/.agents/skills/dag-flow/`. Não usar `--skill-install-path` no gate salvo testes unitários isolados.
+
 **Script `cli/scripts/verify-antigravity-parity.sh` (Fase 2):**
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
-OUT="$(mktemp -d)"
-trap 'rm -rf "$OUT"' EXIT
 
-# Compilar para $OUT via runtime-compiler (orchestrator=antigravity, worker=antigravity)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLI_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+OUT="$(mktemp -d)"
+FAKE_BIN="$(mktemp -d)"
+trap 'rm -rf "$OUT" "$FAKE_BIN"' EXIT
+
+# D4 — stubs para context-mode + rtk (init aborta sem eles no PATH)
+printf '#!/bin/sh\n' > "$FAKE_BIN/context-mode"
+printf '#!/bin/sh\nexec "$@"\n' > "$FAKE_BIN/rtk"
+chmod +x "$FAKE_BIN/context-mode" "$FAKE_BIN/rtk"
+export PATH="$FAKE_BIN:$PATH"
+
+if ! command -v dag >/dev/null 2>&1; then
+  echo "❌ dag not on PATH — run: cd cli && npm run build && npm link" >&2
+  exit 1
+fi
+
 dag init --orchestrator=antigravity --target="$OUT" --project-scaffold=false
 
-GOLDEN="cli/test/fixtures/antigravity-parity-golden"
-diff -ru "$GOLDEN" "$OUT/skills/dag-flow" \
+GOLDEN="$CLI_ROOT/test/fixtures/antigravity-parity-golden"
+COMPILED="$OUT/.agents/skills/dag-flow"
+
+diff -ru "$GOLDEN" "$COMPILED" \
   --exclude=dag-config.json \
   || { echo "❌ Gate de ouro falhou"; exit 1; }
 
 echo "✅ Paridade Antigravity OK"
 ```
 
-**Nota:** `dag-config.json` é artefato novo — excluído do diff. `dag init` em testes deve aceitar `--project-scaffold=false` para não poluir workspace do teste.
+**Nota:** `dag-config.json` é artefato novo — excluído do diff. `dag init` em testes deve aceitar `--project-scaffold=false` para não poluir workspace do teste. O script **não** roda `npm run build` — build + link são pré-requisito do ambiente (local ou CI).
 
 **Grep negativo na Source Skill (Fase 2):**
 ```bash

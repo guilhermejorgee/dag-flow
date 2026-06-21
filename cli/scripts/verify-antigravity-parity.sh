@@ -3,31 +3,28 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLI_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-REPO_ROOT="$(cd "$CLI_ROOT/.." && pwd)"
 OUT="$(mktemp -d)"
 FAKE_BIN="$(mktemp -d)"
 trap 'rm -rf "$OUT" "$FAKE_BIN"' EXIT
 
+# D4 prerequisite gate — init aborts without these on PATH
 printf '#!/bin/sh\n' > "$FAKE_BIN/context-mode"
 printf '#!/bin/sh\nexec "$@"\n' > "$FAKE_BIN/rtk"
 chmod +x "$FAKE_BIN/context-mode" "$FAKE_BIN/rtk"
 export PATH="$FAKE_BIN:$PATH"
 
-cd "$CLI_ROOT"
-npm run build --silent
+if ! command -v dag >/dev/null 2>&1; then
+  echo "❌ dag not on PATH — run: cd cli && npm run build && npm link" >&2
+  exit 1
+fi
 
-node dist/index.js init \
-  --orchestrator=antigravity \
-  --target="$OUT" \
-  --skill-install-path=skills \
-  --project-scaffold=false
+dag init --orchestrator=antigravity --target="$OUT" --project-scaffold=false
 
 GOLDEN="$CLI_ROOT/test/fixtures/antigravity-parity-golden"
-COMPILED="$OUT/skills/dag-flow"
+COMPILED="$OUT/.agents/skills/dag-flow"
 
 diff -ru "$GOLDEN" "$COMPILED" \
   --exclude=dag-config.json \
-  --exclude=README.md \
   || { echo "❌ Gate de ouro falhou"; exit 1; }
 
 echo "✅ Paridade Antigravity OK"
