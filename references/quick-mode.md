@@ -214,7 +214,7 @@ Then use `<<<DAG:TOOL_RUN_COMMAND>>>` to execute `<path-to-skill>/scripts/write_
    - *Note on `done_when_gate`:* 
      - **For Mechanical Tasks:** Use atomic test commands (e.g., `npm test file.test.ts` or `npx eslint file.ts`).
      - **For Non-Mechanical Tasks (LLM-as-a-judge):** Use the Zero-Context Auditor template: `<<<DAG:AUDITOR_COMMAND_TEMPLATE>>>`. The Orchestrator MUST replace `[CONTEXT_REF]` with the rich text from the Context Ref column.
-   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `done_when_gate` must execute `<<<DAG:CLI_COMMAND_PREFIX>>> --prompt "Call ctx_index for .specs/dags/[issue_id].json and [modified_files]."` to sync the index.
+   - *Note on Living Memory (T-Final):* The final task MUST be `T-Final`. Its `done_when_gate` must execute `<<<DAG:CLI_COMMAND_PREFIX>>> <<<DAG:CLI_PROMPT_FLAG>>> "Call ctx_index for .specs/dags/[issue_id].json and [modified_files]."` to sync the index.
 
 *Note on In-Code Documentation:* Instruct the worker to leave an explicit inline code comment explaining the hotfix logic. This enables automated multi-dev onboarding without bloating `CONTEXT.md`.
 

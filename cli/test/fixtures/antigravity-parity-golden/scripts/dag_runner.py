@@ -45,6 +45,26 @@ class DagRunner:
         self.failed = set()
         self.cancel_event = asyncio.Event()
         self.script_dir = os.path.dirname(os.path.abspath(__file__))
+        self.command_template = self._load_worker_config()
+
+    def _load_worker_config(self):
+        config_path = os.path.join(self.script_dir, "dag-config.json")
+        if not os.path.exists(config_path):
+            print(f"❌ Error: dag-config.json not found at {config_path}")
+            sys.exit(1)
+        with open(config_path, "r", encoding="utf-8") as f:
+            config = json.load(f)
+        template = config.get("worker", {}).get("command_template")
+        if not template:
+            print("❌ Error: worker.command_template missing in dag-config.json")
+            sys.exit(1)
+        return template
+
+    def build_worker_cmd(self, prompt):
+        return [
+            arg.replace("<<<PROMPT>>>", prompt) if "<<<PROMPT>>>" in arg else arg
+            for arg in self.command_template
+        ]
 
     def parse_tasks(self):
         with open(self.tasks_file, 'r', encoding='utf-8') as f:
@@ -108,11 +128,21 @@ class DagRunner:
                 self.graph[dep].append(t_id)
 
     async def update_status(self, task_id, status):
-        cmd = [sys.executable, os.path.join(self.script_dir, "update_task_status.py"), self.tasks_file, task_id, status]
-        proc = await asyncio.create_subprocess_exec(*cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT)
-        stdout, _ = await proc.communicate()
-        if proc.returncode != 0:
-            print(f"❌ Error updating status for {task_id} to {status}: {stdout.decode('utf-8')}")
+        updater = os.path.join(self.script_dir, "update_task_status.py")
+        targets = [self.tasks_file]
+        if os.path.abspath(self.vault_file) != os.path.abspath(self.tasks_file):
+            targets.append(self.vault_file)
+        for dag_file in targets:
+            cmd = [sys.executable, updater, dag_file, task_id, status]
+            proc = await asyncio.create_subprocess_exec(
+                *cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.STDOUT
+            )
+            stdout, _ = await proc.communicate()
+            if proc.returncode != 0:
+                print(
+                    f"❌ Error updating status for {task_id} to {status} in {dag_file}: "
+                    f"{stdout.decode('utf-8')}"
+                )
 
     async def run_task(self, task):
         log_path = os.path.join(self.log_dir, f"{task.id}.log")
@@ -136,11 +166,14 @@ class DagRunner:
             with open(log_path, 'a', encoding='utf-8') as log_f:
                 log_f.write(f"\n--- Attempt {task.attempts} ---\n")
                 
-                worker_cmd = ['agy', '--dangerously-skip-permissions', '--prompt', prompt]
+                worker_cmd = self.build_worker_cmd(prompt)
+                worker_env = os.environ.copy()
+                worker_env["DAG_FLOW_WORKER"] = "1"
                 worker = await asyncio.create_subprocess_exec(
                     *worker_cmd,
                     stdout=log_f,
-                    stderr=asyncio.subprocess.STDOUT
+                    stderr=asyncio.subprocess.STDOUT,
+                    env=worker_env,
                 )
                 await worker.wait()
 

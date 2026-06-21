@@ -187,7 +187,7 @@ Emit **exactly two tagged blocks**. No prose outside tags. No markdown fences.
     "input_files": [],
     "output_files": [],
     "cognitive_rationale": "Mandatory ctx_index delta.",
-    "done_when_gate": "<<<DAG:CLI_COMMAND_PREFIX>>> --prompt \"Call ctx_index for src/routes/auth.js.\""
+    "done_when_gate": "<<<DAG:CLI_COMMAND_PREFIX>>> <<<DAG:CLI_PROMPT_FLAG>>> \"Call ctx_index for src/routes/auth.js.\""
   }
 ]
 </dag_json>

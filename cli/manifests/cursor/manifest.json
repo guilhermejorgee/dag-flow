@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "runtime_id": "cursor",
+  "extends": null,
+  "orchestrator": {
+    "hook_wiring_tier": "pre_tool_use",
+    "hook_config_path": ".cursor/hooks.json",
+    "hook_event": "preToolUse",
+    "hook_entry_id": "dag-flow-guard",
+    "hook_config_adapter": "cursor",
+    "boot_file": null,
+    "skill_install_path": ".cursor/skills",
+    "partials": {
+      "SPAWN_SUBAGENT_BLOCK": "spawn-subagent.md",
+      "SPAWN_SUBAGENT_SKILL_BLOCK": "spawn-subagent.md",
+      "SPAWN_SUBAGENT_QUICK_BLOCK": "spawn-subagent.md"
+    },
+    "placeholders": {
+      "TOOL_RUN_COMMAND": "Shell",
+      "TOOL_VIEW_FILE": "Read",
+      "TOOL_SPAWN_SUBAGENT": "Task",
+      "RUNTIME_NAME": "Cursor"
+    }
+  },
+  "worker": {
+    "command_template": [
+      "cursor",
+      "agent",
+      "--print",
+      "--output-format",
+      "text",
+      "--trust",
+      "--force",
+      "--approve-mcps",
+      "-p",
+      "<<<PROMPT>>>"
+    ],
+    "worker_validation_status": "validated",
+    "auditor_wrapper": null,
+    "placeholders": {
+      "CLI_COMMAND_BINARY": "cursor agent",
+      "CLI_COMMAND_PREFIX": "cursor agent --print --output-format text --trust --force --approve-mcps",
+      "CLI_PROMPT_FLAG": "-p",
+      "AUDITOR_COMMAND_TEMPLATE": "cursor agent --print --output-format text --trust --force --approve-mcps -p \"Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>\""
+    }
+  }
+}

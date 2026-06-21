@@ -97,7 +97,7 @@ A strict JSON array representing the DAG. Markdown tables are strictly forbidden
     "input_files": [],
     "output_files": [],
     "cognitive_rationale": "Mandatory Delta Update for context-mode. Must use <<<DAG:CLI_COMMAND_BINARY>>> to invoke ctx_index.",
-    "done_when_gate": "<<<DAG:CLI_COMMAND_PREFIX>>> --prompt \"Call ctx_index for src/schema.ts.\""
+    "done_when_gate": "<<<DAG:CLI_COMMAND_PREFIX>>> <<<DAG:CLI_PROMPT_FLAG>>> \"Call ctx_index for src/schema.ts.\""
   }
 ]
 ```
@@ -134,7 +134,7 @@ The `input_files` field is critical. Because the DAG Runner spawns *stateless* b
 ### 4. Living Memory (The Delta Update Task)
 To ensure the project's Architectural Invariants do not rot, the Orchestrator MUST inject a final task (`T-Final`) into every JSON DAG. 
 - **The Token-Efficient Delta:** The Orchestrator MUST NOT ask for a full codebase re-scan. It must list ONLY the newly modified folders/files for `ctx_index`.
-- **CRITICAL TEMPLATE:** The Orchestrator MUST wrap the prompt in double quotes exactly like this: `<<<DAG:CLI_COMMAND_PREFIX>>> --prompt "Call ctx_index for src/api.ts."`
+- **CRITICAL TEMPLATE:** The Orchestrator MUST wrap the prompt in double quotes exactly like this: `<<<DAG:CLI_COMMAND_PREFIX>>> <<<DAG:CLI_PROMPT_FLAG>>> "Call ctx_index for src/api.ts."`
 - This ensures the search index stays fresh with zero token waste.
 
 ### 5. Handoff to Execution (DAG Runner)

@@ -28,6 +28,7 @@
     "placeholders": {
       "CLI_COMMAND_BINARY": "agy",
       "CLI_COMMAND_PREFIX": "agy --dangerously-skip-permissions",
+      "CLI_PROMPT_FLAG": "--prompt",
       "AUDITOR_COMMAND_TEMPLATE": "agy --dangerously-skip-permissions --prompt \"Role: Independent Auditor. Evaluate if the code in [OUTPUT_FILES] strictly obeys this rule: '[CONTEXT_REF]'. Do not read external context files. Respond EXACTLY with PASS or FAIL: <reason>\""
     }
   }
