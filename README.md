@@ -1,7 +1,7 @@
 # dag-flow
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
-![Version](https://img.shields.io/badge/version-0.1.0_Experimental-orange.svg)
+![Version](https://img.shields.io/badge/version-0.2.0_Experimental-orange.svg)
 [![The Benchmark: Baseline vs dag-flow](https://img.shields.io/badge/View_E2E_Benchmark-Passing-brightgreen?style=for-the-badge)](#the-proof-benchmarks)
 
 An advanced Software-Defined Development (SDD) architecture for autonomous AI agents that strictly separates cognitive planning from motor execution. 
