@@ -145,14 +145,14 @@ describe('runtime-compiler', () => {
       expect(result.scripts).toEqual(['dag_runner.py']);
     });
 
-    it('matches repo scripts whitelist against golden fixture set', () => {
-      const goldenScriptsDir = path.join(
-        REPO_ROOT,
-        'cli/test/fixtures/antigravity-parity-golden/scripts',
-      );
-      const goldenScripts = readdirSync(goldenScriptsDir).sort();
-      const allowed = goldenScripts.filter(isCompiledSkillScript).sort();
-      expect(allowed).toEqual(goldenScripts);
-    });
+    it.each(['antigravity-parity-golden', 'cursor-parity-golden'] as const)(
+      'matches repo scripts whitelist against %s fixture set',
+      (fixtureName) => {
+        const goldenScriptsDir = path.join(REPO_ROOT, 'cli/test/fixtures', fixtureName, 'scripts');
+        const goldenScripts = readdirSync(goldenScriptsDir).sort();
+        const allowed = goldenScripts.filter(isCompiledSkillScript).sort();
+        expect(allowed).toEqual(goldenScripts);
+      },
+    );
   });
 });

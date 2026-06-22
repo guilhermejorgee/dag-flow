@@ -31,7 +31,8 @@ pass "session10-cleanup jest"
 echo "=== [critical] golden gate regression ==="
 npm link --silent
 "$CLI_ROOT/scripts/verify-antigravity-parity.sh"
-pass "antigravity parity golden gate"
+"$CLI_ROOT/scripts/verify-cursor-parity.sh"
+pass "antigravity + cursor parity golden gates"
 
 echo "=== source artifact guards ==="
 test ! -f "$REPO_ROOT/references/discovery.md" || fail "references/discovery.md still exists"

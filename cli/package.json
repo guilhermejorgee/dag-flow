@@ -17,7 +17,9 @@
   ],
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=node --format=esm --outfile=dist/index.js --banner:js='#!/usr/bin/env node'",
-    "golden-gate": "npm run build && npm link && cd .. && ./cli/scripts/verify-antigravity-parity.sh",
+    "golden-gate:antigravity": "cd .. && ./cli/scripts/verify-antigravity-parity.sh",
+    "golden-gate:cursor": "cd .. && ./cli/scripts/verify-cursor-parity.sh",
+    "golden-gate": "npm run build && npm link && npm run golden-gate:antigravity && npm run golden-gate:cursor",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "typecheck": "tsc --noEmit"
   },

@@ -375,5 +375,28 @@ describe('cursor built-in manifest', () => {
       expect(skill).toContain('`Shell`');
       expect(readFileSync(path.join(skillDir, 'dag-config.json'), 'utf8')).toContain('"worker": "cursor"');
     });
+
+    it('idempotent double dag update does not duplicate preToolUse guard entries', () => {
+      const target = mkdtempSync(path.join(tmpdir(), 'dag-cursor-update-idem-'));
+      initCursor(target, { copyHooks: true });
+
+      const binDir = makeFakeBinDir(['context-mode', 'rtk']);
+      runUpdate([`--target=${target}`], { pathEnv: binDir });
+      runUpdate([`--target=${target}`], { pathEnv: binDir });
+
+      const config = JSON.parse(
+        readFileSync(path.join(target, '.cursor/hooks.json'), 'utf8'),
+      ) as {
+        hooks: { preToolUse: Array<{ id?: string; command: string }> };
+      };
+      expect(
+        config.hooks.preToolUse.filter(
+          (e) => e.id === 'dag-flow-guard' || e.command.includes('dag-flow-guard'),
+        ),
+      ).toHaveLength(1);
+      expect(
+        config.hooks.preToolUse.some((e) => e.command.includes('tool-routing')),
+      ).toBe(true);
+    });
   });
 });

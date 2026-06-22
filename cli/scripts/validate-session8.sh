@@ -29,6 +29,7 @@ pass "build + typecheck"
 echo "=== [critical] session 6 golden gate ==="
 npm link --silent
 ./scripts/verify-antigravity-parity.sh
+./scripts/verify-cursor-parity.sh
 
 echo "=== [critical] source skill grep negative (Task 3) ==="
 if rg -l 'agy|run_command|view_file|define_subagent' "$REPO_ROOT/SKILL.md" "$REPO_ROOT/references/" 2>/dev/null; then

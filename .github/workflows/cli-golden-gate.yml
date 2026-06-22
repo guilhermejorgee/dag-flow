@@ -40,9 +40,13 @@ jobs:
           npm link
           command -v dag
 
-      - name: Golden gate parity script
+      - name: Antigravity golden gate parity script
         working-directory: ${{ github.workspace }}
         run: ./cli/scripts/verify-antigravity-parity.sh
+
+      - name: Cursor golden gate parity script
+        working-directory: ${{ github.workspace }}
+        run: ./cli/scripts/verify-cursor-parity.sh
 
       - name: Jest suite
         run: npm test -- --runInBand

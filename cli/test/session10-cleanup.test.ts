@@ -15,7 +15,8 @@ import { runInit } from '../src/commands/init.js';
 const TEST_DIR = path.dirname(fileURLToPath(import.meta.url));
 const CLI_ROOT = path.join(TEST_DIR, '..');
 const REPO_ROOT = path.join(CLI_ROOT, '..');
-const GOLDEN_DIR = path.join(CLI_ROOT, 'test/fixtures/antigravity-parity-golden');
+const ANTIGRAVITY_GOLDEN_DIR = path.join(CLI_ROOT, 'test/fixtures/antigravity-parity-golden');
+const CURSOR_GOLDEN_DIR = path.join(CLI_ROOT, 'test/fixtures/cursor-parity-golden');
 const SOURCE_SKILL = path.join(REPO_ROOT, 'SKILL.md');
 const SOURCE_REFS = path.join(REPO_ROOT, 'references');
 
@@ -121,9 +122,13 @@ describe('session 10 cleanup (D9 discovery inline + D10 setup_indexer removal)',
 
     it('matches golden references set (no discovery.md)', () => {
       const sourceRefs = listMarkdownBasenames(SOURCE_REFS);
-      const goldenRefs = listMarkdownBasenames(path.join(GOLDEN_DIR, 'references'));
+      const antigravityGoldenRefs = listMarkdownBasenames(
+        path.join(ANTIGRAVITY_GOLDEN_DIR, 'references'),
+      );
+      const cursorGoldenRefs = listMarkdownBasenames(path.join(CURSOR_GOLDEN_DIR, 'references'));
 
-      expect(sourceRefs).toEqual(goldenRefs);
+      expect(sourceRefs).toEqual(antigravityGoldenRefs);
+      expect(sourceRefs).toEqual(cursorGoldenRefs);
       expect(sourceRefs).not.toContain('discovery.md');
     });
   });

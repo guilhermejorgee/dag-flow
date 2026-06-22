@@ -27,6 +27,7 @@ cd "$CLI_ROOT"
 npm run build --silent
 npm link --silent
 ./scripts/verify-antigravity-parity.sh
+./scripts/verify-cursor-parity.sh
 
 echo "=== [critical] jest suite ==="
 npm test -- --runInBand
