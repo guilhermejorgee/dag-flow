@@ -93,23 +93,54 @@ cargo install rtk-ai
 git clone https://github.com/guilhermejorgee/dag-flow.git
 cd dag-flow
 
-# Build the bundled skills MCP (local — not on npm registry)
+# Skills MCP (local — not on npm registry)
 cd mcp && npm install && npm run build && npm link && cd ..
+
+# dag CLI (local — not on npm registry)
+cd cli && npm install && npm run build && npm link && cd ..
 ```
 
-See [local install (`npm link`)](docs/planning/multi-runtime-implementation-plan.md#q3--instalação-local-npm-link) for MCP wiring details.
+See [mcp/README.md](mcp/README.md) for MCP wiring details.
 
 ### 3. Wire Your Agent
 
 **Skills MCP:** Point your agent runtime at the absolute path to `mcp/main.js` (or use the `agent-skills-mcp` bin after `npm link`). See [mcp/README.md](mcp/README.md).
 
-**dag-flow skill:** Copy this repository into your orchestrator's skills directory (e.g. `.agents/skills/dag-flow/`) until `dag init` ships — track [multi-runtime implementation plan](docs/planning/multi-runtime-implementation-plan.md).
+**dag-flow skill (`dag init`):** In your project root, run `dag init` to install the **Compiled Skill** (placeholders resolved for your runtime), create the Project Scaffold, wire the dag-flow Hook, and write `dag-config.json`:
 
-**Project topology:** Create `.specs/staging/` (`chmod 755`), `.specs/features/` and `.specs/dags/` (`chmod 555`), or use `dag init` when available.
+```bash
+cd /path/to/your-project
+dag init --orchestrator=cursor       # Cursor IDE
+dag init --orchestrator=antigravity  # Antigravity (agy)
+```
+
+`dag init` checks that `context-mode` and `rtk` are on PATH, then produces:
+
+- **Compiled Skill** → `{orchestrator-skill-path}/dag-flow/` (e.g. `.cursor/skills/dag-flow/` or `.agents/skills/dag-flow/`)
+- **Project Scaffold** → `.specs/staging/` (`chmod 755`), `.specs/features/` and `.specs/dags/` (`chmod 555`)
+- **`dag-config.json`** → worker `command_template` used by `dag_runner.py`
+- **Hook wiring** → `dag-flow-guard` in `.cursor/hooks.json` (Cursor) or append to `GEMINI.md` (Antigravity)
+
+Reinstall with `dag init --force` (overwrites local skill edits) or upgrade with `dag update`. See [CLI Reference](docs/cli-reference.md) for flags and behavior.
 
 **Indexing:** Install `context-mode` separately (prerequisite above). It is not configured by dag-flow install.
 
 > **Removed:** `hooks/setup_indexer.sh` mixed dag-flow bootstrap with context-mode setup. Use `dag init` for project scaffold; install `context-mode` separately.
+
+<details>
+<summary><strong>Advanced: manual project topology</strong> (optional — use <code>dag init</code> instead)</summary>
+
+If you skip scaffold creation (`dag init --project-scaffold=false`, common in CI) or manage layout yourself, create the vault manually:
+
+```bash
+mkdir -p .specs/staging .specs/features .specs/dags
+chmod 755 .specs/staging
+chmod 555 .specs/features .specs/dags
+```
+
+You are responsible for correct permissions and layout; the Orchestrator and Bash gates assume this topology. Copying the raw repository into a skills directory installs the unresolved **Source Skill** (with `<<<DAG:>>>` placeholders) — use `dag init` for a Compiled Skill instead.
+
+</details>
 
 ### 4. Run Your First Feature
 1. **Specify:** Ask your agent: *"Specify a new feature: a user login system."* Answer its questions.
@@ -155,6 +186,7 @@ See [local install (`npm link`)](docs/planning/multi-runtime-implementation-plan
 
 - **[The Manifesto](docs/manifesto.md) — Why we must kill the Monolith.**
 - [Getting Started](docs/getting-started.md) — Full installation and first-run guide.
+- [CLI Reference](docs/cli-reference.md) — `dag init`, `dag update`, manifests, and `dag-config.json`.
 - [Architecture](docs/architecture/architecture.md) — Technical deep-dive into the Orchestrator, Workers, and Memory.
 - [Theory & Paradigm](docs/theory.md) — The psychological mechanics that make it work.
 - [Benchmarks](docs/benchmarks/index.md) — End-to-End evaluations (100% Pass Rate).

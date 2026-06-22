@@ -129,3 +129,36 @@ While the full Governance loop (Discovery -> Specify -> Design -> Tasks) provide
 - **In-Code Accountability:** Because there is no formal `spec.md` generated, Quick Mode workers are subject to a strict rule: they *must* leave a mandatory in-code comment explaining the rationale of the hotfix.
 
 This ensures that even when the system moves fast, it never compromises architectural traceability.
+
+---
+
+## 6. Architecture Decision Records
+
+ADRs capture *why* architectural choices were made. They live in [`docs/adr/`](../adr/) and are referenced by the Orchestrator alongside `CONTEXT.md`.
+
+### Epoch 1 — Core Architecture (0001–0009)
+
+| ADR | Title | Summary |
+|:---|:---|:---|
+| [0001](../adr/0001-intentional-manual-execution.md) | Intentional Manual Execution | The human runs `run_dag.sh`; the Orchestrator does not auto-execute workers. |
+| [0002](../adr/0002-offload-global-indexing-to-hook.md) | Offload Global Indexing | Discovery indexing is out-of-band via `context-mode`, not mass native file reads. |
+| [0003](../adr/0003-worker-unsandboxed-cli-execution.md) | Unsandboxed CLI Execution | Workers run via real CLI subprocesses with runtime-specific permission flags. |
+| [0004](../adr/0004-counted-pagrl-anti-overconfidence-gate.md) | Counted PAGRL Gate | PAGRL XML validation blocks overconfident Orchestrator output before vault commit. |
+| [0005](../adr/0005-os-level-gating-and-topology-separation.md) | OS-Level Gating | Physical `chmod` boundaries and Bash gates prevent LLM vault hallucination. |
+| [0006](../adr/0006-staging-area-and-subagent-relay.md) | Staging Area & Subagent Relay | Drafts in `.specs/staging/`; DAG planning delegated to a read-only subagent. |
+| [0007](../adr/0007-deprecate-agentmemory.md) | Deprecate agentmemory | Replaced by file-based perennial memory (`CONTEXT.md`, ADRs). |
+| [0008](../adr/0008-cognitive-hardening-and-json-dag.md) | Cognitive Hardening & JSON DAG | Executable vault uses JSON AST DAGs, not markdown tables. |
+| [0009](../adr/0009-two-phase-common-ground-flow.md) | Two-Phase Common Ground | Surface & Steer specify flow with mandatory human turn break. |
+
+### Epoch 2 — Multi-Runtime V1 (0010–0017)
+
+| ADR | Title | Summary |
+|:---|:---|:---|
+| [0010](../adr/0010-dag-flow-hook-guard-router.md) | dag-flow Hook (Guard + Router) | Guard blocks non-worker writes; Router classifies Quick Mode vs Specify. |
+| [0011](../adr/0011-dual-manifest-compilation.md) | Dual Manifest Compilation | Category A placeholders from worker manifest; B/C from orchestrator. |
+| [0012](../adr/0012-pending-dag-guard.md) | Pending DAG Guard | `dag update` aborts when vault DAGs have non-Done tasks (including Failed). |
+| [0013](../adr/0013-manifest-inheritance.md) | Manifest Inheritance | `extends` deep-merge with cycle detection for custom runtimes. |
+| [0014](../adr/0014-orchestrator-worker-split.md) | Orchestrator / Worker Split | `--worker` flag; `dag-config.json` records both runtime IDs. |
+| [0015](../adr/0015-compiled-skill-scripts-whitelist.md) | Compiled Skill Scripts Whitelist | Only operational scripts ship in the installed skill. |
+| [0016](../adr/0016-v1-runtime-scope.md) | V1 Runtime Scope | Built-ins: `antigravity` + `cursor`; `claude` deferred. |
+| [0017](../adr/0017-per-runtime-worker-permission-flags.md) | Per-Runtime Permission Flags | `agy --dangerously-skip-permissions` vs Cursor `--trust --force --approve-mcps`. |
