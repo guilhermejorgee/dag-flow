@@ -8,7 +8,7 @@ Before installing `dag-flow`, ensure your environment meets the core infrastruct
 
 - **Node.js** (v22+)
 - **Git**
-- An **Agent CLI runtime** — V1 built-ins: **Antigravity** (`agy`) or **Cursor**. Custom runtimes can be added via [`dag manifest scaffold`](cli-reference.md#dag-manifest-scaffold).
+- An **Agent CLI runtime** — V1 built-ins: **Antigravity** (`agy`) or **Cursor**. Custom runtimes can be added via [`dag manifest scaffold`](cli-reference.md#dag-manifest-scaffold). Contributing a new **built-in** runtime: [implementation guide](guides/new-runtime-implementation-guide.md).
 
 ### Required Ecosystem Tools
 `dag-flow` relies on a strict token-economy and virtualized context window. Install the required global dependencies:

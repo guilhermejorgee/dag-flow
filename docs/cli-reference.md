@@ -181,6 +181,8 @@ dag manifest scaffold --extends=<built-in-id> --output=<path>
 4. Override partial files in `partials/` as needed.
 5. Run `dag init --orchestrator=./path/to/my-runtime/`.
 
+For **built-in** runtimes merged into dag-flow, follow the full parity checklist in the [New Runtime Implementation Guide](guides/new-runtime-implementation-guide.md).
+
 ---
 
 ## `dag-config.json`
@@ -225,7 +227,7 @@ Written by `dag init` into the Compiled Skill directory. Read by `dag_runner.py`
 | `antigravity` | Antigravity (`agy`) | `agy --dangerously-skip-permissions` | `boot_file` (appends to `GEMINI.md`) | `.agents/skills` |
 | `cursor` | Cursor IDE | `cursor agent --print --output-format text --trust --force --approve-mcps` | `pre_tool_use` (upserts `.cursor/hooks.json`) | `.cursor/skills` |
 
-`claude` is not a V1 built-in (deferred post-V1). Create a custom manifest via `dag manifest scaffold --extends=cursor`.
+`claude` is not a V1 built-in (deferred post-V1). Create a custom manifest via `dag manifest scaffold --extends=cursor`. To ship a new **built-in**, see the [New Runtime Implementation Guide](guides/new-runtime-implementation-guide.md).
 
 ---
 

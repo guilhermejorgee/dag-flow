@@ -160,5 +160,5 @@ ADRs capture *why* architectural choices were made. They live in [`docs/adr/`](.
 | [0013](../adr/0013-manifest-inheritance.md) | Manifest Inheritance | `extends` deep-merge with cycle detection for custom runtimes. |
 | [0014](../adr/0014-orchestrator-worker-split.md) | Orchestrator / Worker Split | `--worker` flag; `dag-config.json` records both runtime IDs. |
 | [0015](../adr/0015-compiled-skill-scripts-whitelist.md) | Compiled Skill Scripts Whitelist | Only operational scripts ship in the installed skill. |
-| [0016](../adr/0016-v1-runtime-scope.md) | V1 Runtime Scope | Built-ins: `antigravity` + `cursor`; `claude` deferred. |
+| [0016](../adr/0016-v1-runtime-scope.md) | V1 Runtime Scope | Built-ins: `antigravity` + `cursor`; `claude` deferred. New built-ins: [implementation guide](../guides/new-runtime-implementation-guide.md). |
 | [0017](../adr/0017-per-runtime-worker-permission-flags.md) | Per-Runtime Permission Flags | `agy --dangerously-skip-permissions` vs Cursor `--trust --force --approve-mcps`. |

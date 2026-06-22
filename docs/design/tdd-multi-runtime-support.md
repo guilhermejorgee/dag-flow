@@ -711,6 +711,8 @@ Deep merge; filho sobrescreve; parciais do filho sobrescrevem mesmo nome; detect
 
 ### 5.11 Gate de ouro — script de paridade Antigravity
 
+> **Checklist operacional (EN):** [`docs/guides/new-runtime-implementation-guide.md`](../guides/new-runtime-implementation-guide.md)
+
 **Objetivo:** garantir que `dag init --orchestrator=antigravity` não altera comportamento dos usuários atuais (markdown + scripts operacionais).
 
 **Baseline (`cli/test/fixtures/antigravity-parity-golden/`):** gerar **uma vez** na Fase 1:
@@ -772,9 +774,62 @@ rg -l 'agy|run_command|view_file|define_subagent' SKILL.md references/ \
   && { echo "❌ Source Skill ainda tem acoplamento hardcoded"; exit 1; } || true
 ```
 
+#### Gate de ouro — script de paridade Cursor
+
+**Objetivo:** garantir que `dag init --orchestrator=cursor` produz Compiled Skill estável (markdown + scripts operacionais) — mesmo padrão do gate Antigravity acima; **não** incluir `hooks.json` nem `.cursor/hooks.json` no diff.
+
+**Baseline (`cli/test/fixtures/cursor-parity-golden/`):** gerar **uma vez** via `dag init --orchestrator=cursor` (mesmo conteúdo whitelist §5.9 que Antigravity; placeholders compilados distintos).
+
+**Path de saída:** cursor manifest define `orchestrator.skill_install_path: ".cursor/skills"` — output compilado em `{target}/.cursor/skills/dag-flow/`. Não usar `--skill-install-path` no gate.
+
+**Script `cli/scripts/verify-cursor-parity.sh`:**
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CLI_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+OUT="$(mktemp -d)"
+FAKE_BIN="$(mktemp -d)"
+trap 'rm -rf "$OUT" "$FAKE_BIN"' EXIT
+
+printf '#!/bin/sh\n' > "$FAKE_BIN/context-mode"
+printf '#!/bin/sh\nexec "$@"\n' > "$FAKE_BIN/rtk"
+chmod +x "$FAKE_BIN/context-mode" "$FAKE_BIN/rtk"
+export PATH="$FAKE_BIN:$PATH"
+
+if ! command -v dag >/dev/null 2>&1; then
+  echo "❌ dag not on PATH — run: cd cli && npm run build && npm link" >&2
+  exit 1
+fi
+
+dag init --orchestrator=cursor --target="$OUT" --project-scaffold=false
+
+GOLDEN="$CLI_ROOT/test/fixtures/cursor-parity-golden"
+COMPILED="$OUT/.cursor/skills/dag-flow"
+
+diff -ru "$GOLDEN" "$COMPILED" \
+  --exclude=dag-config.json \
+  || { echo "❌ Gate de ouro Cursor falhou"; exit 1; }
+
+echo "✅ Paridade Cursor OK"
+```
+
+**Invariants no golden Cursor (grep após captura):**
+```bash
+rg -q 'cursor agent' cli/test/fixtures/cursor-parity-golden/references/tasks.md
+rg -q '\bShell\b' cli/test/fixtures/cursor-parity-golden/SKILL.md
+! rg -l 'agy|run_command|view_file|define_subagent|--dangerously-skip-permissions' \
+  cli/test/fixtures/cursor-parity-golden/
+```
+
+**Local / CI:** `cd cli && npm run golden-gate` executa **ambos** scripts (Antigravity + Cursor) após `build` + `npm link`.
+
 ---
 
 ### 5.12 Worker Runtime Validation Spike (protocolo S1)
+
+> **Checklist operacional (EN):** [`docs/guides/new-runtime-implementation-guide.md`](../guides/new-runtime-implementation-guide.md)
 
 **Quando executar:** antes de marcar `worker_validation_status: "validated"` e publicar manifest na Fase 7.
 
